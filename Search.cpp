@@ -1,4 +1,5 @@
 #include <typeinfo>
+#include <cstdint> 
 #include "mpfr.h"
 
 static_assert(typeid(mpfr_exp_t) == typeid(int64_t),
