@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <stdexcept>
+#include <limits>
 #include <mpfr.h>
 
 const mpfr_prec_t Precision = 128;
