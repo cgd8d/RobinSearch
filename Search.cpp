@@ -16,7 +16,7 @@ mode appended, typically rndu or rndd.
 void CheckTypes()
 {
     mpfr_set_emax(mpfr_get_emax_max());
-    if(mpfr_get_emax() != std::numeric_limits<int64_t>::max())
+    if(mpfr_get_emax() != (1LL << 62) - 1)
     {
         std::cerr << "mpfr_get_emax() = " << mpfr_get_emax() << std::endl;
         std::cerr << "mpfr_get_emax_max() = " << mpfr_get_emax_max() << std::endl;
