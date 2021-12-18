@@ -33,11 +33,11 @@ jobs:
 
       # Compile code
       - name: Compile
-        run: clang++ -Wall -O3 -lmpfr RobinSearch.cpp -o RobinSearch
+        run: clang++ -Wall -O3 -lmpfr Search.cpp -o Search
 
       # Run code
       - name: Run
-        run: ./RobinSearch
+        run: ./Search
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
