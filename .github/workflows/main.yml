@@ -30,10 +30,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libmpfr-dev
+          sudo apt-get install libprimesieve-dev
 
       # Compile code
       - name: Compile
-        run: clang++ -Wall -O3 -lmpfr Search.cpp -o Search
+        run: clang++ -Wall -O3 -lmpfr -lprimesieve Search.cpp -o Search
 
       # Run code
       - name: Run
