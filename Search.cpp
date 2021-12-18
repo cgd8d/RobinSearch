@@ -1,7 +1,7 @@
 #include <typeinfo>
 #include <cstdint>
 #include <cstdio>
-#include <exception>
+#include <stdexcept>
 #include <mpfr.h>
 
 static_assert(typeid(mpfr_exp_t) == typeid(int64_t),
