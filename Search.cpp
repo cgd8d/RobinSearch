@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <mpfr.h>
+#include <primesieve.hpp>
 
 const mpfr_prec_t Precision = 128;
 
@@ -21,6 +22,34 @@ void CheckTypes()
         throw std::logic_error("mpfr_get_emax is unexpected");
     }
 }
+
+/*
+Structure to store a group of prime factors with
+the same exponent.  The range PrimeLo to PrimeHi
+is inclusive.
+PrimeIter.next_prime() should always return the
+prime just after PrimeLo.
+*/
+struct PrimeGroup
+{
+    uint64_t PrimeLo;
+    uint64_t PrimeHi;
+    primesieve::iterator PrimeIter;
+    mpfr_t CriticalEpsilon_rndd;
+    mpfr_t CriticalEpsilon_rndu;
+
+    PrimeGroup()
+    {
+        mpfr_init2(CriticalEpsilon_rndd, Precision);
+        mpfr_init2(CriticalEpsilon_rndu, Precision);
+    }
+
+    ~PrimeGroup()
+    {
+        mpfr_clear(CriticalEpsilon_rndd);
+        mpfr_clear(CriticalEpsilon_rndu);
+    }
+};
 
 
 int main()
