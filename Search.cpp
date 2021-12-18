@@ -1,13 +1,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <stdexcept>
-#include <boost/type_index.hpp>
 #include <mpfr.h>
-
-static_assert(
-    boost::typeindex::type_id<mpfr_exp_t>() ==
-    boost::typeindex::type_id<int64_t>(),
-    "Type error: mpfr_exp_t");
 
 const mpfr_prec_t Precision = 128;
 
@@ -16,8 +10,18 @@ Convention: All mpfr_t values should have their rounding
 mode appended, typically rndu or rndd.
 */
 
+void CheckTypes()
+{
+    if(mpfr_get_emax() != std::numeric_limits<int64_t>::max())
+    {
+        throw std::logic_error("mpfr_get_emax is unexpected");
+    }
+}
+
+
 int main()
 {
+    CheckTypes();
     int ret;
     mpfr_t ExpGamma_rndu;
     mpfr_init2(ExpGamma_rndu, Precision);
