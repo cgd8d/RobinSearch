@@ -39,7 +39,13 @@ struct PrimeGroup
     mpfr_t CriticalEpsilon_rndd;
     mpfr_t CriticalEpsilon_rndu;
 
+    /*
+    Initialize the PrimeIter with a modest stop_hint,
+    which cuts down on memory usage for the majority
+    of instantiations which will not iterate very high.
+    */
     PrimeGroup()
+    : PrimeIter(0, 1000)
     {
         mpfr_init2(CriticalEpsilon_rndd, Precision);
         mpfr_init2(CriticalEpsilon_rndu, Precision);
