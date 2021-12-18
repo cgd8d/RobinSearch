@@ -1,10 +1,12 @@
-#include <typeinfo>
 #include <cstdint>
 #include <cstdio>
 #include <stdexcept>
+#include <boost/type_index.hpp>
 #include <mpfr.h>
 
-static_assert(typeid(mpfr_exp_t) == typeid(int64_t),
+static_assert(
+    boost::typeindex::type_id<mpfr_exp_t>() ==
+    boost::typeindex::type_id<int64_t>(),
     "Type error: mpfr_exp_t");
 
 const mpfr_prec_t Precision = 128;
