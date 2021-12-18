@@ -34,6 +34,7 @@ struct PrimeGroup
 {
     uint64_t PrimeLo;
     uint64_t PrimeHi;
+    unit8_t Exp;
     primesieve::iterator PrimeIter;
     mpfr_t CriticalEpsilon_rndd;
     mpfr_t CriticalEpsilon_rndu;
