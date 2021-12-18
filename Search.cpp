@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <limits>
 #include <string>
+#include <iostream>
 #include <mpfr.h>
 
 const mpfr_prec_t Precision = 128;
@@ -16,8 +17,9 @@ void CheckTypes()
 {
     if(mpfr_get_emax() != std::numeric_limits<int64_t>::max())
     {
-        throw std::logic_error("mpfr_get_emax is unexpected"
-            + std::to_string(mpfr_get_emax()));
+        std::cerr << "mpfr_get_emax() = " << mpfr_get_emax() << std::endl;
+        std::cerr << "mpfr_get_emax_max() = " << mpfr_get_emax_max() << std::endl;
+        throw std::logic_error("mpfr_get_emax is unexpected");
     }
 }
 
