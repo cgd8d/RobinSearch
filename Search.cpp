@@ -24,7 +24,7 @@ void CheckTypes()
     }
 
     static_assert(sizeof(unsigned long int) == sizeof(uint64_t),
-        "Unsigned long int is not 64 bits.);
+        "Unsigned long int is not 64 bits.");
 }
 
 /*
