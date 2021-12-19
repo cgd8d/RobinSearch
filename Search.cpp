@@ -23,7 +23,8 @@ void CheckTypes()
         throw std::logic_error("mpfr_get_emax is unexpected");
     }
 
-    static_assert(sizeof(unsigned long int) == sizeof(uint64_t));
+    static_assert(sizeof(unsigned long int) == sizeof(uint64_t),
+        "Unsigned long int is not 64 bits.);
 }
 
 /*
@@ -71,11 +72,11 @@ struct PrimeGroup
     */
     bool operator <(const PrimeGroup &b) const
     {
-        if(mpfr_less_p(CriticalEpsilon_rndu, b.CriticalEpsilon_rndd)
+        if(mpfr_less_p(CriticalEpsilon_rndu, b.CriticalEpsilon_rndd))
         {
             return true;
         }
-        else if(mpfr_greater_p(CriticalEpsilon_rndd, b.CriticalEpsilon_rndu)
+        else if(mpfr_greater_p(CriticalEpsilon_rndd, b.CriticalEpsilon_rndu))
         {
             return false;
         }
