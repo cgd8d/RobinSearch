@@ -60,6 +60,40 @@ struct PrimeGroup
         mpfr_clear(CriticalEpsilon_rndu);
     }
 
+
+    /*
+    Compare by critical epsilon value.
+    This should only be called when the critical epsilon
+    has been initialized.  If the two epsilons are not
+    strictly ordered, raise an exception.
+    x < y when x's epsilon is less than y's, meaning that
+    y should have its exponent increased before x.
+    */
+    bool operator <(const PrimeGroup &b) const
+    {
+        if(mpfr_less_p(CriticalEpsilon_rndu, b.CriticalEpsilon_rndd)
+        {
+            return true;
+        }
+        else if(mpfr_greater_p(CriticalEpsilon_rndd, b.CriticalEpsilon_rndu)
+        {
+            return false;
+        }
+        else
+        {
+            std::cerr << "Unable to compare epsilon for "
+                      << PrimeLo << "^" << Exp
+                      << " and "
+                      << b.PrimeLo << "^" << b.Exp
+                      << std::endl;
+            throw std::runtime_error("Insufficient accuracy for epsilon.");
+        }
+    }
+    bool operator >(const PrimeGroup &b) const
+    {
+        return b < *this;
+    }
+
     /*
     Compute the critical epsilon value that leads to
     incrementing the exponent of PrimeLo from Exp to Exp+1.
