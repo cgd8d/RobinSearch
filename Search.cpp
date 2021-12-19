@@ -156,9 +156,14 @@ std::list<PrimeGroup> CurrentNumber;
 
 // Store a priority queue of PrimeGroups, where the top
 // is the next group to increment.
+auto PrimeGroupItComp =
+    [](typename CurrentNumber::iterator x,
+       typename CurrentNumber::iterator y){ return *x < *y; };
 std::priority_queue<
     typename CurrentNumber::iterator,
     std::vector<typename CurrentNumber::iterator>,
+    decltype(PrimeGroupItComp)>
+    PrimeGroup Queue;
 
 
 int main()
