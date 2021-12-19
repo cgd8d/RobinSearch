@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <list>
+#include <queue>
 #include <mpfr.h>
 #include <primesieve.hpp>
 
@@ -152,6 +153,12 @@ struct PrimeGroup
 
 // Store the current number.
 std::list<PrimeGroup> CurrentNumber;
+
+// Store a priority queue of PrimeGroups, where the top
+// is the next group to increment.
+std::priority_queue<
+    typename CurrentNumber::iterator,
+    std::vector<typename CurrentNumber::iterator>,
 
 
 int main()
