@@ -36,7 +36,7 @@ jobs:
       - name: Compile
         run: |
           clang++ --version
-          clang++ -Wall -O3 -lmpfr -lprimesieve Search.cpp -o Search
+          clang++ -std=c++17 -Wall -O3 -lmpfr -lprimesieve Search.cpp -o Search
 
       # Run code
       - name: Run
