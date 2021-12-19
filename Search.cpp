@@ -68,6 +68,9 @@ struct PrimeGroup
             = sigma(PrimeLo^(Exp+1))/(PrimeLo*sigma(PrimeLo^Exp))
             = sigma(PrimeLo^(Exp+1))/(sigma(PrimeLo^(Exp+1))-1)
             = 1 + 1/(PrimeLo^(Exp+1)+PrimeLo^Exp+...+PrimeLo)
+    I think it is hard to rule out overflow if
+    sigma(PrimeLo^(Exp+1)) is computed in uint64_t, so to
+    avoid any risk just do it all in mpfr_t.
     */
 };
 
