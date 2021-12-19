@@ -107,6 +107,11 @@ struct PrimeGroup
 
         mpfr_clear(temp);
     }
+
+    PrimeGroup(const PrimeGroup  & ) = delete;
+    PrimeGroup(PrimeGroup && ) = delete;
+    PrimeGroup& operator=(const PrimeGroup & ) = delete;
+    PrimeGroup& operator=(PrimeGroup && ) = delete;
 };
 
 
