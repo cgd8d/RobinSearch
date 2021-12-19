@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <stdexcept>
 #include <iostream>
+#include <list>
 #include <mpfr.h>
 #include <primesieve.hpp>
 
@@ -113,6 +114,9 @@ struct PrimeGroup
     PrimeGroup& operator=(const PrimeGroup & ) = delete;
     PrimeGroup& operator=(PrimeGroup && ) = delete;
 };
+
+// Store the current number.
+std::list<PrimeGroup> CurrentNumber;
 
 
 int main()
