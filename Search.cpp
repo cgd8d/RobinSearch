@@ -21,6 +21,8 @@ void CheckTypes()
         std::cerr << "mpfr_get_emax_max() = " << mpfr_get_emax_max() << std::endl;
         throw std::logic_error("mpfr_get_emax is unexpected");
     }
+
+    static_assert(sizeof(unsigned long int) == sizeof(uint64_t));
 }
 
 /*
@@ -72,6 +74,39 @@ struct PrimeGroup
     sigma(PrimeLo^(Exp+1)) is computed in uint64_t, so to
     avoid any risk just do it all in mpfr_t.
     */
+    void UpdateEpsilon()
+    {
+        mpfr_t temp;
+        mpfr_init2(temp, Precision);
+
+        // First compute CriticalEpsilon_rndd.
+        mpfr_set_ui(temp, PrimeLo, MPFR_RNDU);
+        for(uint8_t i = 0; i < Exp; i++)
+        {
+            mpfr_add_ui(temp, temp, 1, MPFR_RNDU);
+            mpfr_mul_ui(temp, temp, 1, MPFR_RNDU);
+        }
+        mpfr_ui_div(CriticalEpsilon_rndd, 1, temp, MPFR_RNDD);
+        mpfr_log1p(CriticalEpsilon_rndd, CriticalEpsilon_rndd, MPFR_RNDD);
+        mpfr_set_ui(temp, PrimeLo, MPFR_RNDU);
+        mpfr_log(temp, temp, MPFR_RNDU);
+        mpfr_div(CriticalEpsilon_rndd, CriticalEpsilon_rndd, temp, MPFR_RNDD);
+
+        // Then compute CriticalEpsilon_rndu.
+        mpfr_set_ui(temp, PrimeLo, MPFR_RNDD);
+        for(uint8_t i = 0; i < Exp; i++)
+        {
+            mpfr_add_ui(temp, temp, 1, MPFR_RNDD);
+            mpfr_mul_ui(temp, temp, 1, MPFR_RNDD);
+        }
+        mpfr_ui_div(CriticalEpsilon_rndu, 1, temp, MPFR_RNDU);
+        mpfr_log1p(CriticalEpsilon_rndu, CriticalEpsilon_rndu, MPFR_RNDU);
+        mpfr_set_ui(temp, PrimeLo, MPFR_RNDD);
+        mpfr_log(temp, temp, MPFR_RNDD);
+        mpfr_div(CriticalEpsilon_rndu, CriticalEpsilon_rndu, temp, MPFR_RNDU);
+
+        mpfr_clear(temp);
+    }
 };
 
 
