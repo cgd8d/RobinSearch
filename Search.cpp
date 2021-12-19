@@ -56,6 +56,19 @@ struct PrimeGroup
         mpfr_clear(CriticalEpsilon_rndd);
         mpfr_clear(CriticalEpsilon_rndu);
     }
+
+    /*
+    Compute the critical epsilon value that leads to
+    incrementing the exponent of PrimeLo from Exp to Exp+1.
+    This occurs when:
+        sigma(PrimeLo^Exp)/PrimeLo^(Exp*(1+eps)) =
+        sigma(PrimeLo^(Exp+1))/PrimeLo^((Exp+1)*(1+eps))
+    i.e., when:
+        PrimeLo^(Exp+2)-1 =
+        (PrimeLo^(Exp+1)-1)*PrimeLo^(1+eps)
+    i.e., when:
+        eps = ln[(PrimeLo^(Exp+2)-1)/(PrimeLo^(Exp+2)-PrimeLo)]/ln(PrimeLo)
+    */
 };
 
 
