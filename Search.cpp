@@ -64,10 +64,10 @@ struct PrimeGroup
         sigma(PrimeLo^Exp)/PrimeLo^(Exp*(1+eps)) =
         sigma(PrimeLo^(Exp+1))/PrimeLo^((Exp+1)*(1+eps))
     i.e., when:
-        PrimeLo^(Exp+2)-1 =
-        (PrimeLo^(Exp+1)-1)*PrimeLo^(1+eps)
-    i.e., when:
-        eps = ln[(PrimeLo^(Exp+2)-1)/(PrimeLo^(Exp+2)-PrimeLo)]/ln(PrimeLo)
+        PrimeLo^eps
+            = sigma(PrimeLo^(Exp+1))/(PrimeLo*sigma(PrimeLo^Exp))
+            = sigma(PrimeLo^(Exp+1))/(sigma(PrimeLo^(Exp+1))-1)
+            = 1 + 1/(PrimeLo^(Exp+1)+PrimeLo^Exp+...+PrimeLo)
     */
 };
 
