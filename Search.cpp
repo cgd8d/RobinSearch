@@ -151,8 +151,19 @@ struct PrimeGroup
     PrimeGroup& operator=(PrimeGroup && ) = delete;
 };
 
-// Store the current number.
-std::list<PrimeGroup> CurrentNumber;
+// Store the current number as an exact form (factorized)
+// and mpfr interval.
+std::list<PrimeGroup> Number_factors;
+mpfr_t Number_rndd;
+mpfr_t Number_rndu;
+
+// Store NloglogN.  We only maintain a lower bound on this.
+mpfr_t NloglogN_rndd;
+
+// Store sigma(N)/exp(gamma).
+// I just call it LHS since in my mind it is on the left.
+mpfr_t LHS_rndd;
+mpfr_t LHS_rndu;
 
 // Store a priority queue of PrimeGroups, where the top
 // is the next group to increment.
@@ -169,6 +180,12 @@ std::priority_queue<
 int main()
 {
     CheckTypes();
+    mpfr_init2(Number_rndd, Precision);
+    mpfr_init2(Number_rndu, Precision);
+    mpfr_init2(NloglogN_rndd, Precision);
+    mpfr_init2(LHS_rndd, Precision);
+    mpfr_init2(LHS_rndu, Precision);
+
     int ret;
     mpfr_t ExpGamma_rndu;
     mpfr_init2(ExpGamma_rndu, Precision);
@@ -176,4 +193,12 @@ int main()
     mpfr_exp(ExpGamma_rndu, ExpGamma_rndu, MPFR_RNDU);
     ret = mpfr_printf("ExpGamma <= %.20RgU\n", ExpGamma_rndu);
     if(ret < 0) throw std::runtime_error("failed output");
+
+
+
+    mpfr_clear(Number_rndd);
+    mpfr_clear(Number_rndu);
+    mpfr_clear(NloglogN_rndd);
+    mpfr_clear(LHS_rndd);
+    mpfr_clear(LHS_rndu);
 }
