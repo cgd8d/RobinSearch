@@ -163,7 +163,7 @@ auto PrimeGroupItComp =
 std::priority_queue<
     typename std::list<PrimeGroup>::iterator,
 //    std::vector<typename std::list<PrimeGroup>::iterator>,
-    std::vector<auto>,
+    std::vector<typename auto>,
     decltype(PrimeGroupItComp)>
     PrimeGroupQueue;
 
