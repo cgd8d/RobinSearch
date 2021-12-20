@@ -162,9 +162,14 @@ auto PrimeGroupItComp =
 
 std::priority_queue<
     typename std::list<PrimeGroup>::iterator,
-//    std::vector<typename std::list<PrimeGroup>::iterator>,
-    std::vector<typename auto>,
-    decltype(PrimeGroupItComp)>
+    std::vector<typename std::list<PrimeGroup>::iterator>,
+//    decltype(PrimeGroupItComp)>
+    decltype(
+        [](typename std::list<PrimeGroup>::iterator x,
+           typename std::list<PrimeGroup>::iterator y)
+        {
+            return *x < *y;
+        })>
     PrimeGroupQueue;
 
 
