@@ -159,9 +159,11 @@ std::list<PrimeGroup> CurrentNumber;
 auto PrimeGroupItComp =
     [](typename std::list<PrimeGroup>::iterator x,
        typename std::list<PrimeGroup>::iterator y){ return *x < *y; };
+
 std::priority_queue<
     typename std::list<PrimeGroup>::iterator,
-    std::vector<typename std::list<PrimeGroup>::iterator>,
+//    std::vector<typename std::list<PrimeGroup>::iterator>,
+    std::vector<auto>,
     decltype(PrimeGroupItComp)>
     PrimeGroupQueue;
 
