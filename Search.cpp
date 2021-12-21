@@ -195,7 +195,7 @@ int main()
     mpfr_ui_div(LHS_rndu, 1, LHS_rndu, MPFR_RNDU);
     mpfr_set_ui(Number_rndd, 1, MPFR_RNDD);
     mpfr_set_ui(Number_rndu, 1, MPFR_RNDU);
-
+    Number_factors.resize(1);
 
 
 
