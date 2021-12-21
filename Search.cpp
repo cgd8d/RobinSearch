@@ -188,6 +188,16 @@ int main()
 
     // Initialize everything to N = 1.
     mpfr_const_euler(LHS_rndd, MPFR_RNDU);
+    mpfr_exp(LHS_rndd, LHS_rndd, MPFR_RNDU);
+    mpfr_ui_div(LHS_rndd, 1, LHS_rndd, MPFR_RNDD);
+    mpfr_const_euler(LHS_rndu, MPFR_RNDD);
+    mpfr_exp(LHS_rndu, LHS_rndu, MPFR_RNDD);
+    mpfr_ui_div(LHS_rndu, 1, LHS_rndu, MPFR_RNDU);
+    mpfr_set_ui(Number_rndd, 1, MPFR_RNDD);
+    mpfr_set_ui(Number_rndu, 1, MPFR_RNDU);
+
+
+
 
 
 
