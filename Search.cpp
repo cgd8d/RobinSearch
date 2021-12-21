@@ -186,6 +186,11 @@ int main()
     mpfr_init2(LHS_rndd, Precision);
     mpfr_init2(LHS_rndu, Precision);
 
+    // Initialize everything to N = 1.
+    mpfr_const_euler(LHS_rndd, MPFR_RNDU);
+
+
+
     int ret;
     mpfr_t ExpGamma_rndu;
     mpfr_init2(ExpGamma_rndu, Precision);
