@@ -196,6 +196,13 @@ int main()
     mpfr_set_ui(Number_rndd, 1, MPFR_RNDD);
     mpfr_set_ui(Number_rndu, 1, MPFR_RNDU);
     Number_factors.resize(1);
+    Number_factors.front().PrimeLo =
+        Number_factors.front().PrimeIter.next_prime();
+    Number_factors.front().PrimeHi =
+        Number_factors.front().PrimeLo;
+    Number_factors.front().Exp = 0;
+    Number_factors.front().UpdateEpsilon();
+    PrimeGroupQueue.push(Number_factors.begin());
 
 
 
