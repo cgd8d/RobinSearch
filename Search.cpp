@@ -196,16 +196,22 @@ void IncrementExp()
         if(top_it->PrimeLo == top_it->PrimeHi)
         {
             top_it->Exp++;
-            top_it->UpdateEpsilon();
         }
         else
         {
             prev_it = Number_factors.emplace(top_it);
-            prev_it->PrimeLo = PrimeIter.next_prime();
+            prev_it->PrimeLo = prev_it->PrimeIter.next_prime();
             prev_it->PrimeHi = prev_it->PrimeLo;
             prev_it->Exp = top_it->Exp + 1;
             prev_it->UpdateEpsilon();
-// Still fix top.
+            top_it->PrimeLo = top_it->PrimeIter.next_prime();
+            PrimeGroupQueue.push(prev_it);
+        }
+        top_it->UpdateEpsilon();
+        PrimeGroupQueue.push(top_it);
+    }
+
+// Else, it's not at the beginning.
 
 
 
