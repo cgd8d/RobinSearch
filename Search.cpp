@@ -191,9 +191,9 @@ void IncrementExp()
     PrimeGroupQueue.pop();
 
     // Update numbers.
-    // For LHS, start by computing sigma(p^exp) with rounding down.
     mpfr_t tmp;
     mpfr_init2(tmp, Precision);
+    // For LHS, start by computing sigma(p^exp) with rounding down.
     mpfr_set_ui(tmp, 1, MPFR_RNDD);
     for(uint8_t i = 0; i < top_it->Exp; i++)
     {
@@ -204,7 +204,7 @@ void IncrementExp()
     mpfr_mul_ui(tmp, tmp, top_it->PrimeLo, MPFR_RNDD);
     mpfr_add_ui(tmp, tmp, 1, MPFR_RNDD);
     mpfr_mul(LHS_rndd, LHS_rndd, tmp, MPFR_RNDD);
-
+    // Then compute sigma((p^exp) with rounding up.
 
 
 
