@@ -152,6 +152,23 @@ struct PrimeGroup
     PrimeGroup& operator=(PrimeGroup && ) = delete;
 };
 
+std::ostream& operator<<(std::ostream& os, const PrimeGroup & pg)
+{
+    os << pg.PrimeLo;
+    if(pg.Exp > 1)
+    {
+        os << "^" << int(pg.Exp);
+    }
+    if(pg.PrimeLo < pg.PrimeHi)
+    {
+        os << "..." << pg.PrimeHi;
+        if(pg.Exp > 1)
+        {
+            os << "^" << int(pg.Exp);
+        }
+    }
+}
+
 // Store the current number as an exact form (factorized)
 // and mpfr interval.
 std::list<PrimeGroup> Number_factors;
