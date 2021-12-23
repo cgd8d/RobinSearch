@@ -205,7 +205,20 @@ void IncrementExp()
     mpfr_add_ui(tmp, tmp, 1, MPFR_RNDD);
     mpfr_mul(LHS_rndd, LHS_rndd, tmp, MPFR_RNDD);
     // Then compute sigma((p^exp) with rounding up.
-
+    mpfr_set_ui(tmp, 1, MPFR_RNDU);
+    for(uint8_t i = 0; i < top_it->Exp; i++)
+    {
+        mpfr_mul_ui(tmp, tmp, top_it->PrimeLo, MPFR_RNDU);
+        mpfr_add_ui(tmp, tmp, 1, MPFR_RNDU);
+    }
+    mpfr_div(LHS_rndd, LHS_rndd, tmp, MPFR_RNDD);
+    mpfr_mul_ui(tmp, tmp, top_it->PrimeLo, MPFR_RNDU);
+    mpfr_add_ui(tmp, tmp, 1, MPFR_RNDU);
+    mpfr_mul(LHS_rndu, LHS_rndu, tmp, MPFR_RNDU);
+    // Also update number.
+    mpfr_mul(Number_rndd, Number_rndd, top_it->PrimeLo, MPFR_RNDD);
+    mpfr_mul(Number_rndu, Number_rndu, top_it->PrimeLo, MPFR_RNDU);
+    mpfr_mul(NloglogN_rndd, NloglogN_rndd, top_it->PrimeLo, MPFR_RNDD);
 
 
     // This is the least likely case, but it's just easier
