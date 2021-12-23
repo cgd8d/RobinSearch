@@ -210,11 +210,36 @@ void IncrementExp()
         top_it->UpdateEpsilon();
         PrimeGroupQueue.push(top_it);
     }
+    else
+    {
+        prev_it = top_it;
+        prev_it--;
+        if(prev_it->Exp == top_it->Exp + 1)
+        {
+            prev_it->PrimeHi = top_it->PrimeLo;
+            if(top_it->PrimeLo == top_it->PrimeHi)
+            {
+                Number_factors->erase(top_it);
+            }
+            else
+            {
+                top_it->PrimeLo = top_it->PrimeIter.next_prime();
+                top_it->UpdateEpsilon();
+                PrimeGroupQueue.push(top_it);
+            }
+        }
+        elseif(top_it->PrimeLo == top_it->PrimeHi)
+        {
+            top_it->Exp++;
+            top_it->UpdateEpsilon();
+            PrimeGroupQueue.push(top_it);
+        }
+        else
+        {
+            prev_it = Number_factors.emplace(top_it);
 
-// Else, it's not at the beginning.
 
-
-
+// Remember to update numbers too.
 
 }
 
