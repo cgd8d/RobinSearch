@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <stdexcept>
+#include <cassert>
 #include <iostream>
 #include <list>
 #include <queue>
@@ -220,7 +221,7 @@ void IncrementExp()
             prev_it->PrimeHi = top_it->PrimeLo;
             if(top_it->PrimeLo == top_it->PrimeHi)
             {
-                Number_factors->erase(top_it);
+                Number_factors.erase(top_it);
             }
             else
             {
