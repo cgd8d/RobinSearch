@@ -176,6 +176,22 @@ std::priority_queue<
     decltype(PrimeGroupItComp)>
     PrimeGroupQueue;
 
+/*
+Assume it has already been shown that p_max should not be
+increased.  Instead, a nonzero exponent should be incremented
+by one.  Do that and update all relevant numbers.
+*/
+void IncrementExp()
+{
+    // Copy the top iterator, then pop it.
+    std::list<PrimeGroup>::iterator top_it =
+        PrimeGroupQueue.top();
+    PrimeGroupQueue.pop();
+
+    if(top_
+
+}
+
 
 int main()
 {
