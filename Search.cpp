@@ -228,7 +228,7 @@ void IncrementExp()
                 PrimeGroupQueue.push(top_it);
             }
         }
-        elseif(top_it->PrimeLo == top_it->PrimeHi)
+        else if(top_it->PrimeLo == top_it->PrimeHi)
         {
             top_it->Exp++;
             top_it->UpdateEpsilon();
@@ -237,7 +237,18 @@ void IncrementExp()
         else
         {
             prev_it = Number_factors.emplace(top_it);
-
+            prev_it->PrimeIter.skipto(top_it->PrimeLo-1);
+            prev_it->PrimeLo = prev_it->PrimeIter.next_prime();
+            assert(prev_it->PrimeLo == top_it->PrimeLo);
+            prev_it->PrimeHi = prev_it->PrimeLo;
+            prev_it->Exp = top_it->Exp + 1;
+            prev_it->UpdateEpsilon();
+            PrimeGroupQueue.push(prev_it);
+            top_it->PrimeLo = top_it->PrimeIter.next_prime();
+            top_it->UpdateEpsilon();
+            PrimeGroupQueue.push(top_it);
+        }
+    }
 
 // Remember to update numbers too.
 
