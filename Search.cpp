@@ -216,9 +216,9 @@ void IncrementExp()
     mpfr_add_ui(tmp, tmp, 1, MPFR_RNDU);
     mpfr_mul(LHS_rndu, LHS_rndu, tmp, MPFR_RNDU);
     // Also update number.
-    mpfr_mul(Number_rndd, Number_rndd, top_it->PrimeLo, MPFR_RNDD);
-    mpfr_mul(Number_rndu, Number_rndu, top_it->PrimeLo, MPFR_RNDU);
-    mpfr_mul(NloglogN_rndd, NloglogN_rndd, top_it->PrimeLo, MPFR_RNDD);
+    mpfr_mul_ui(Number_rndd, Number_rndd, top_it->PrimeLo, MPFR_RNDD);
+    mpfr_mul_ui(Number_rndu, Number_rndu, top_it->PrimeLo, MPFR_RNDU);
+    mpfr_mul_ui(NloglogN_rndd, NloglogN_rndd, top_it->PrimeLo, MPFR_RNDD);
 
 
     // This is the least likely case, but it's just easier
