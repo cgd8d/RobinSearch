@@ -186,6 +186,7 @@ void IncrementExp()
     // Copy the top iterator, then pop it.
     std::list<PrimeGroup>::iterator top_it =
         PrimeGroupQueue.top();
+    std::list<PrimeGroup>::iterator prev_it;
     PrimeGroupQueue.pop();
 
     // This is the least likely case, but it's just easier
