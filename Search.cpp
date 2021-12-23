@@ -188,7 +188,27 @@ void IncrementExp()
         PrimeGroupQueue.top();
     PrimeGroupQueue.pop();
 
-    if(top_
+    // This is the least likely case, but it's just easier
+    // to start by verifying whether there is a previous
+    // iterator or not.
+    if(top_it == Number_factors.begin())
+    {
+        if(top_it->PrimeLo == top_it->PrimeHi)
+        {
+            top_it->Exp++;
+            top_it->UpdateEpsilon();
+        }
+        else
+        {
+            prev_it = Number_factors.emplace(top_it);
+            prev_it->PrimeLo = PrimeIter.next_prime();
+            prev_it->PrimeHi = prev_it->PrimeLo;
+            prev_it->Exp = top_it->Exp + 1;
+            prev_it->UpdateEpsilon();
+// Still fix top.
+
+
+
 
 }
 
