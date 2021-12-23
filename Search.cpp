@@ -220,7 +220,6 @@ void IncrementExp()
     mpfr_mul_ui(Number_rndu, Number_rndu, top_it->PrimeLo, MPFR_RNDU);
     mpfr_mul_ui(NloglogN_rndd, NloglogN_rndd, top_it->PrimeLo, MPFR_RNDD);
 
-
     // This is the least likely case, but it's just easier
     // to start by verifying whether there is a previous
     // iterator or not.
@@ -282,9 +281,6 @@ void IncrementExp()
             PrimeGroupQueue.push(top_it);
         }
     }
-
-// Remember to update numbers too.
-
 }
 
 
