@@ -190,6 +190,24 @@ void IncrementExp()
     std::list<PrimeGroup>::iterator prev_it;
     PrimeGroupQueue.pop();
 
+    // Update numbers.
+    // For LHS, start by computing sigma(p^exp) with rounding down.
+    mpfr_t tmp;
+    mpfr_init2(tmp, Precision);
+    mpfr_set_ui(tmp, 1, MPFR_RNDD);
+    for(uint8_t i = 0; i < top_it->Exp; i++)
+    {
+        mpfr_mul_ui(tmp, tmp, top_it->PrimeLo, MPFR_RNDD);
+        mpfr_add_ui(tmp, tmp, 1, MPFR_RNDD);
+    }
+    mpfr_div(LHS_rndu, LHS_rndu, tmp, MPFR_RNDU);
+    mpfr_mul_ui(tmp, tmp, top_it->PrimeLo, MPFR_RNDD);
+    mpfr_add_ui(tmp, tmp, 1, MPFR_RNDD);
+    mpfr_mul(LHS_rndd, LHS_rndd, tmp, MPFR_RNDD);
+
+
+
+
     // This is the least likely case, but it's just easier
     // to start by verifying whether there is a previous
     // iterator or not.
