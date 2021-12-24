@@ -302,34 +302,6 @@ void IncrementExp()
     }
 }
 
-/*
-Add prime factors with exponent 1.
-Return the number of prime factors added.
-Repeat calls may add more factors until the return value is zero.
-*/
-boost::circular_buffer<uint64_t> PrimeQueue(1024);
-primesieve::iterator PrimeQueueProducer;
-uint64_t AddPrimeFactors()
-{
-    // Fill up PrimeQueue.
-    while(PrimeQueue.size() < PrimeQueue.capacity())
-    {
-        PrimeQueue.push_back(PrimeQueueProducer.next_prime());
-    }
-
-    // Find a safe number of primes to add.
-    uint64_t Ntoadd = PrimeQueue.size();
-    while
-
-}
-
-
-
-
-
-
-
-
 void CheckNumber()
 {
     if(mpfr_greaterequal_p(LHS_rndu, NloglogN_rndd))
@@ -393,6 +365,33 @@ void CheckNumber()
         }
     }
 }
+
+/*
+Add prime factors with exponent 1.
+Return the number of prime factors added.
+Repeat calls may add more factors until the return value is zero.
+*/
+boost::circular_buffer<uint64_t> PrimeQueue(128);
+primesieve::iterator PrimeQueueProducer;
+uint64_t AddPrimeFactors()
+{
+    // Fill up PrimeQueue.
+    while(PrimeQueue.size() < PrimeQueue.capacity())
+    {
+        PrimeQueue.push_back(PrimeQueueProducer.next_prime());
+    }
+
+    // Find a safe number of primes to add.
+    uint64_t Ntoadd = PrimeQueue.size();
+    while(Ntoadd != 0)
+    {
+        uint64_t TestPrime = PrimeQueue[Ntoadd-1];
+
+}
+
+
+
+
 
 
 int main()
