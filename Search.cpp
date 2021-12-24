@@ -302,7 +302,7 @@ void IncrementExp()
 
 void CheckNumber()
 {
-    if(mpfr_greaterequal_p(LHS_rndu, NloglogN_rndd)
+    if(mpfr_greaterequal_p(LHS_rndu, NloglogN_rndd))
     {
         // First, update values.
         mpfr_set(NloglogN_rndd, Number_rndd, MPFR_RNDD);
@@ -356,7 +356,7 @@ void CheckNumber()
         mpfr_clear(tmp_mpfr);
 
         // Finally, check if violation persists.
-        if(mpfr_greaterequal_p(LHS_rndu, NloglogN_rndd)
+        if(mpfr_greaterequal_p(LHS_rndu, NloglogN_rndd))
         {
             std::cout << "Maybe the bound is violated?" << std::endl;
             exit(0);
