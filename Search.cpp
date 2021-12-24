@@ -326,8 +326,42 @@ void CheckNumber()
         }
         std::cout << std::endl;
         std::cout << "  = ";
+        char* tmp_str;
+        int ret;
+        ret = mpfr_asprintf(
+            &tmp_str,
+            "(%10RDg, %10RUg)",
+            Number_rndd,
+            Number_rndu);
+        if(ret < 0)
+        {
+            throw std::runtime_error("mpfr_asprintf failed");
+        }
+        std::cout << tmp_str << std::endl;
+        mpfr_free_str(tmp_str);
+        std::cout << "N loglogN - sigma(N)/exp(gamma) > ";
+        mpfr_t tmp_mpfr;
+        mpfr_init2(tmp_mpfr, Precision);
+        mpfr_sub(tmp_mpfr, NloglogN_rndd, LHS_rndu, MPFR_RNDD);
+        ret = mpfr_asprintf(
+            &tmp_str,
+            "%10RDg",
+            tmp_mpfr);
+        if(ret < 0)
+        {
+            throw std::runtime_error("mpfr_asprintf failed");
+        }
+        std::cout << tmp_str << std::endl;
+        mpfr_free_str(tmp_str);
+        mpfr_clear(tmp_mpfr);
 
-
+        // Finally, check if violation persists.
+        if(mpfr_greaterequal_p(LHS_rndu, NloglogN_rndd)
+        {
+            std::cout << "Maybe the bound is violated?" << std::endl;
+            exit(0);
+        }
+    }
 }
 
 
@@ -359,6 +393,12 @@ int main()
     Number_factors.front().UpdateEpsilon();
     PrimeGroupQueue.push(Number_factors.begin());
 
+    // Skip ahead to 2^5;
+    for(uint8_t i = 0; i < 5; i++)
+    {
+        IncrementExp();
+    }
+    CheckNumber();
 
 
 
