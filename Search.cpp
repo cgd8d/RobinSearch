@@ -382,11 +382,26 @@ uint64_t AddPrimeFactors()
     }
 
     // Find a safe number of primes to add.
+    // When Exp=1 the critical epsilon is when
+    // sigma(p)/p^(1+eps)==1,
+    // i.e., p+1 == p^(1+eps),
+    // i.e., 1+1/p == p^eps.
     uint64_t Ntoadd = PrimeQueue.size();
+    mpfr_t tmp_mpfr1, tmp_mpfr2;
+    mpfr_init2(tmp_mpfr1, Precision);
+    mpfr_init2(tmp_mpfr2, Precision);
     while(Ntoadd != 0)
     {
         uint64_t TestPrime = PrimeQueue[Ntoadd-1];
+        mpfr_set_ui(tmp_mpfr1, TestPrime, MPFR_RNDD);
+        mpfr_ui_div(tmp_mpfr1, 1, tmp_mpfr1, MPFR_RNDU);
+        mpfr_log1p(tmp_mpfr1, tmp_mpfr1, MPFR_RNDU);
+        mpfr_log_ui(tmp_mpfr2, TestPrime, MPFR_RNDD);
+        mpfr_div(tmp_mpfr1, tmp_mpfr1, tmp_mpfr2, MPFR_RNDU);
 
+
+    mpfr_clear(tmp_mpfr1);
+    mpfr_clear(tmp_mpfr2);
 }
 
 
