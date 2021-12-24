@@ -167,6 +167,7 @@ std::ostream& operator<<(std::ostream& os, const PrimeGroup & pg)
             os << "^" << int(pg.Exp);
         }
     }
+    return os;
 }
 
 // Store the current number as an exact form (factorized)
