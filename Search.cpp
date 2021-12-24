@@ -300,6 +300,36 @@ void IncrementExp()
     }
 }
 
+void CheckNumber()
+{
+    if(mpfr_greaterequal_p(LHS_rndu, NloglogN_rndd)
+    {
+        // First, update values.
+        mpfr_set(NloglogN_rndd, Number_rndd, MPFR_RNDD);
+        mpfr_log(NloglogN_rndd, NloglogN_rndd, MPFR_RNDD);
+        mpfr_log(NloglogN_rndd, NloglogN_rndd, MPFR_RNDD);
+        mpfr_mul(NloglogN_rndd, NloglogN_rndd, Number_rndd, MPFR_RNDD);
+
+        // Go ahead and print information.
+        std::cout << "Updating logs on:" << std::endl;
+        std::cout << "N = ";
+        auto it = Number_factors.begin();
+        while(true)
+        {
+            std::cout << *it;
+            it++;
+            if(it == Number_factors.end())
+            {
+                break;
+            }
+            std::cout << " * ";
+        }
+        std::cout << std::endl;
+        std::cout << "  = ";
+
+
+}
+
 
 int main()
 {
@@ -319,6 +349,7 @@ int main()
     mpfr_ui_div(LHS_rndu, 1, LHS_rndu, MPFR_RNDU);
     mpfr_set_ui(Number_rndd, 1, MPFR_RNDD);
     mpfr_set_ui(Number_rndu, 1, MPFR_RNDU);
+    mpfr_set_ui(NloglogN_rndd, 0, MPFR_RNDD);
     Number_factors.resize(1);
     Number_factors.front().PrimeLo =
         Number_factors.front().PrimeIter.next_prime();
