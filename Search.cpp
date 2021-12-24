@@ -307,13 +307,19 @@ Add prime factors with exponent 1.
 Return the number of prime factors added.
 Repeat calls may add more factors until the return value is zero.
 */
-boost::circular_buffer<uint64_t> PrimeQueue(1000);
+boost::circular_buffer<uint64_t> PrimeQueue(1024);
 primesieve::iterator PrimeQueueProducer;
 uint64_t AddPrimeFactors()
 {
+    // Fill up PrimeQueue.
+    while(PrimeQueue.size() < PrimeQueue.capacity())
+    {
+        PrimeQueue.push_back(PrimeQueueProducer.next_prime());
+    }
 
-
-
+    // Find a safe number of primes to add.
+    uint64_t Ntoadd = PrimeQueue.size();
+    while
 
 }
 
