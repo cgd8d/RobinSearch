@@ -7,6 +7,7 @@
 #include <queue>
 #include <mpfr.h>
 #include <primesieve.hpp>
+#include <boost/circular_buffer.hpp>
 
 const mpfr_prec_t Precision = 128;
 
@@ -300,6 +301,28 @@ void IncrementExp()
         }
     }
 }
+
+/*
+Add prime factors with exponent 1.
+Return the number of prime factors added.
+Repeat calls may add more factors until the return value is zero.
+*/
+boost::circular_buffer PrimeQueue(1000);
+primesieve::iterator PrimeQueueProducer;
+uint64_t AddPrimeFactors()
+{
+
+
+
+
+}
+
+
+
+
+
+
+
 
 void CheckNumber()
 {
