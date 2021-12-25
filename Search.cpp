@@ -408,6 +408,13 @@ uint64_t AddPrimeFactors()
     // sigma(p)/p^(1+eps)==1,
     // i.e., p+1 == p^(1+eps),
     // i.e., 1+1/p == p^eps.
+
+
+
+
+
+
+
     uint64_t Ntoadd = PrimeQueue.size();
     mpfr_t tmp_mpfr1, tmp_mpfr2;
     mpfr_init2(tmp_mpfr1, Precision);
