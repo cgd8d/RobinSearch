@@ -446,7 +446,11 @@ uint64_t AddPrimeFactors()
             PrimeGroupQueue.top()->CriticalEpsilon_rndd))
         {
             mpfr_t eps_rndd;
-            mpfr_init2(
+            mpfr_init2(eps_rndd, Precision);
+            ComputeEpsilon.Do_rndd(
+                eps_rndd,
+                PrimeQueue[PrimeQueueEpsilonStack.top().index],
+                0);
 
 
 
