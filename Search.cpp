@@ -540,12 +540,20 @@ int main()
     Number_factors.front().UpdateEpsilon();
     PrimeGroupQueue.push(Number_factors.begin());
 
-    // Skip ahead to 2^5;
-    for(uint8_t i = 0; i < 5; i++)
+    // Step forward to N=2 to initiate processing.
+    IncrementExp();
+    PrimeQueueProducer.next_prime(); // discard value.
+
+    // Continue processing.
+    while(Number_factors.front().Exp < 3)
     {
+        while(true)
+        {
+            uint64_t NumFactors = AddPrimeFactors();
+            if(NumFactors == 0) break;
+        }
         IncrementExp();
     }
-    CheckNumber();
 
 
 
