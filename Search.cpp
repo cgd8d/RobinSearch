@@ -31,6 +31,29 @@ void CheckTypes()
         "Unsigned long int is not 64 bits.");
 }
 
+// Helper function to print mpfr_t with error checking.
+std::ostream& operator<<(std::ostream& os, mpfr_t op)
+{
+    char* tmp_str;
+    int ret;
+    ret = mpfr_asprintf(
+        &tmp_str,
+        "(%10RDg, %10RUg)",
+        Number_rndd,
+            Number_rndu);
+        if(ret < 0)
+        {
+            throw std::runtime_error("mpfr_asprintf failed");
+        }
+        std::cout << tmp_str << std::endl;
+
+
+
+
+
+
+
+
 /*
 Struct to compute critical epsilon values and
 hold temporary mpft_t values.
