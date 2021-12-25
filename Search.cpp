@@ -5,6 +5,7 @@
 #include <iostream>
 #include <list>
 #include <queue>
+#include <stack>
 #include <mpfr.h>
 #include <primesieve.hpp>
 #include <boost/circular_buffer.hpp>
@@ -487,7 +488,7 @@ uint64_t AddPrimeFactors()
                 mpfr_mul_ui(NloglogN_rndd, NloglogN_rndd, this_p, MPFR_RNDD);
                 mpfr_mul_ui(LHS_rndd, LHS_rndd, this_p+1, MPFR_RNDD);
                 mpfr_mul_ui(LHS_rndu, LHS_rndu, this_p+1, MPFR_RNDU);
-                Number_factors.back().PrimeHi = this_p
+                Number_factors.back().PrimeHi = this_p;
                 CheckNumber();
             }
 
