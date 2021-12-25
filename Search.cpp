@@ -433,12 +433,8 @@ uint64_t AddPrimeFactors()
     if(Number_factors.empty() or Number_factors.back().Exp != 1)
     {
         std::cerr << "AddPrimeFactors called with bad Number_factors." << std::endl;
-        throw std::invalid_argument
-
-
-
-
-
+        throw std::invalid_argument("AddPrimeFactors called with bad Number_factors.");
+    }
 
     // Fill up PrimeQueue.
     assert(PrimeQueueEpsilonStack.empty() == PrimeQueue.empty());
@@ -480,14 +476,6 @@ uint64_t AddPrimeFactors()
                 throw std::runtime_error("Insufficient accuracy for epsilon.");
             }
             mpfr_clear(eps_rndd);
-            if(
-
-
-
-
-
-
-
 
             uint64_t this_idx = PrimeQueue.size();
             while(this_idx > PrimeQueueEpsilonStack.top().index)
