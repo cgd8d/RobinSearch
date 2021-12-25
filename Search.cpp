@@ -430,7 +430,10 @@ uint64_t AddPrimeFactors()
     // Basic requirement - the last prime group should
     // have exp of one. It just makes things much simpler
     // and ought to be true.
-    if(Number_factors.empty() or
+    if(Number_factors.empty() or Number_factors.back().Exp != 1)
+    {
+        std::cerr << "AddPrimeFactors called with bad Number_factors." << std::endl;
+        throw std::invalid_argument
 
 
 
