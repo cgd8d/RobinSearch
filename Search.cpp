@@ -410,9 +410,14 @@ struct PrimeQueueEpsilonGroup
 {
     uint64_t index;
     mpfr_t Epsilon_rndu;
-    PrimeQueueEpsilonGroup()
+    PrimeQueueEpsilonGroup(uint64_t idx)
+    : index(idx)
     {
         mpfr_init2(Epsilon_rndu, Precision);
+        ComputeEpsilon.Do_rndu(
+            Epsilon_rndu,
+            PrimeQueue[idx],
+            0);
     }
     ~PrimeQueueEpsilonGroup()
     {
@@ -430,9 +435,20 @@ uint64_t AddPrimeFactors()
         {
             PrimeQueue.push_front(PrimeQueueProducer.next_prime());
         }
+        PrimeQueueEpsilonStack.emplace(0);
     }
 
     // Find a safe number of primes to add.
+    while(true)
+    {
+        if(mpfr_greaterequal_p(
+            PrimeQueueEpsilonStack.top().Epsilon_rndu,
+            PrimeGroupQueue.top()->CriticalEpsilon_rndd))
+        {
+
+
+
+
     // When Exp=1 the critical epsilon is when
     // sigma(p)/p^(1+eps)==1,
     // i.e., p+1 == p^(1+eps),
