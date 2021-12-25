@@ -427,7 +427,10 @@ struct PrimeQueueEpsilonGroup
 std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
 uint64_t AddPrimeFactors()
 {
-    // Basic
+    // Basic requirement - the last prime group should
+    // have exp of one. It just makes things much simpler
+    // and ought to be true.
+    if(Number_factors.empty() or
 
 
 
