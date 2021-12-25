@@ -148,9 +148,9 @@ struct PrimeGroup
         else
         {
             std::cerr << "Unable to compare epsilon for "
-                      << PrimeLo << "^" << Exp
+                      << PrimeLo << "^" << int(Exp)
                       << " and "
-                      << b.PrimeLo << "^" << b.Exp
+                      << b.PrimeLo << "^" << int(b.Exp)
                       << std::endl;
             throw std::runtime_error("Insufficient accuracy for epsilon.");
         }
@@ -451,6 +451,31 @@ uint64_t AddPrimeFactors()
                 eps_rndd,
                 PrimeQueue[PrimeQueueEpsilonStack.top().index],
                 0);
+            if(mpfr_lessequal_p(
+                eps_rndd,
+                PrimeGroupQueue.top()->CriticalEpsilon_rndu))
+            {
+                std::cerr << "Unable to compare epsilon for "
+                          << PrimeQueue[PrimeQueueEpsilonStack.top().index] << "^0"
+                          << " and "
+                          << PrimeGroupQueue.top()->PrimeLo << "^" << int(PrimeGroupQueue.top()->Exp)
+                          << std::endl;
+                throw std::runtime_error("Insufficient accuracy for epsilon.");
+            }
+            mpfr_clear(eps_rndd);
+            uint64_t this_idx = PrimeQueue.size();
+            while(this_idx > PrimeQueueEpsilonStack.top().index)
+            {
+                this_idx--;
+                uint64_t this_p = PrimeQueue[this_idx];
+                mpfr_mul_ui(Number_rndd, Number_rndd, this_p, MPFR_RNDD);
+                mpfr_mul_ui(Number_rndu, Number_rndu, this_p, MPFR_RNDU);
+                mpfr_mul_ui(NloglogN_rndd, NloglogN_rndd, this_p, MPFR_RNDD);
+                mpfr_mul_ui(LHS_rndd, LHS_rndd, this_p+1, MPFR_RNDD);
+                mpfr_mul_ui(LHS_rndu, LHS_rndu, this_p+1, MPFR_RNDU);
+                CheckNumber();
+            }
+
 
 
 
