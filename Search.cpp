@@ -427,6 +427,13 @@ struct PrimeQueueEpsilonGroup
 std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
 uint64_t AddPrimeFactors()
 {
+    // Basic
+
+
+
+
+
+
     // Fill up PrimeQueue.
     assert(PrimeQueueEpsilonStack.empty() == PrimeQueue.empty());
     if(PrimeQueueEpsilonStack.empty())
@@ -467,6 +474,15 @@ uint64_t AddPrimeFactors()
                 throw std::runtime_error("Insufficient accuracy for epsilon.");
             }
             mpfr_clear(eps_rndd);
+            if(
+
+
+
+
+
+
+
+
             uint64_t this_idx = PrimeQueue.size();
             while(this_idx > PrimeQueueEpsilonStack.top().index)
             {
@@ -479,6 +495,12 @@ uint64_t AddPrimeFactors()
                 mpfr_mul_ui(LHS_rndu, LHS_rndu, this_p+1, MPFR_RNDU);
                 CheckNumber();
             }
+
+
+
+
+
+
             uint64_t retval = PrimeQueue.size() - this_idx;
             PrimeQueue.erase_end(retval);
             PrimeQueueEpsilonStack.pop();
