@@ -369,16 +369,38 @@ void CheckNumber()
 /*
 Add prime factors with exponent 1.
 Return the number of prime factors added.
-Repeat calls may add more factors until the return value is zero.
+Repeat calls may add more factors until the
+return value is zero.
+Internally we record calculations of the critical
+epsilon, since the goal is to compute it for a very
+small subset of factors.
 */
 boost::circular_buffer<uint64_t> PrimeQueue(128);
 primesieve::iterator PrimeQueueProducer;
+struct PrimeQueueEpsilonGroup
+{
+    uint64_t index;
+    mpfr_t Epsilon_rndu;
+    PrimeQueueEpsilonGroup()
+    {
+        mpfr_init2(Epsilon_rndu, Precision);
+    }
+    ~PrimeQueueEpsilonGroup()
+    {
+        mpfr_clear(Epsilon_rndu);
+    }
+};
+std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
 uint64_t AddPrimeFactors()
 {
     // Fill up PrimeQueue.
-    while(PrimeQueue.size() < PrimeQueue.capacity())
+    assert(PrimeQueueEpsilonStack.empty() == PrimeQueue.empty());
+    if(PrimeQueueEpsilonStack.empty())
     {
-        PrimeQueue.push_back(PrimeQueueProducer.next_prime());
+        while(not PrimeQueue.full())
+        {
+            PrimeQueue.push_front(PrimeQueueProducer.next_prime());
+        }
     }
 
     // Find a safe number of primes to add.
