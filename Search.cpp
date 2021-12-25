@@ -31,6 +31,68 @@ void CheckTypes()
 }
 
 /*
+Struct to compute critical epsilon values and
+hold temporary mpft_t values.
+*/
+struct ComputeEpsilonStruct
+{
+    mpfr_t tmp_mpfr;
+
+    ComputeEpsilonStruct()
+    {
+        mpfr_init2(tmp_mpfr, Precision);
+    }
+
+    ~ComputeEpsilonStruct()
+    {
+        mpfr_clear(tmp_mpfr);
+    }
+
+    /*
+    Critical epsilon for transition from
+    p^e to p^(e+1), rounded down and up resp.
+    This occurs when:
+        sigma(p^e)/p^(e*(1+eps)) =
+        sigma(p^(e+1))/p^((e+1)*(1+eps))
+    i.e., when:
+        p^eps
+            = sigma(p^(e+1))/(p*sigma(p^e))
+            = sigma(p^(e+1))/(sigma(p^(e+1))-1)
+            = 1 + 1/(p^(e+1)+p^e+...+p)
+    I think it is hard to rule out overflow if
+    sigma(p^(e+1)) is computed in uint64_t, so to
+    avoid any risk just do it all in mpfr_t.
+    */
+    void Do_rndd(mpfr_t rop, uint64_t p, uint8_t e)
+    {
+        mpfr_set_ui(tmp_mpfr, p, MPFR_RNDU);
+        for(uint8_t i = 0; i < e; i++)
+        {
+            mpfr_add_ui(tmp_mpfr, tmp_mpfr, 1, MPFR_RNDU);
+            mpfr_mul_ui(tmp_mpfr, tmp_mpfr, p, MPFR_RNDU);
+        }
+        mpfr_ui_div(rop, 1, tmp_mpfr, MPFR_RNDD);
+        mpfr_log1p(rop, rop, MPFR_RNDD);
+        mpfr_log_ui(tmp_mpfr, p, MPFR_RNDU);
+        mpfr_div(rop, rop, tmp_mpfr, MPFR_RNDD);
+    }
+    void Do_rndu(mpfr_t rop, uint64_t p, uint8_t e)
+    {
+        mpfr_set_ui(tmp_mpfr, p, MPFR_RNDD);
+        for(uint8_t i = 0; i < e; i++)
+        {
+            mpfr_add_ui(tmp_mpfr, tmp_mpfr, 1, MPFR_RNDD);
+            mpfr_mul_ui(tmp_mpfr, tmp_mpfr, p, MPFR_RNDD);
+        }
+        mpfr_ui_div(rop, 1, tmp_mpfr, MPFR_RNDU);
+        mpfr_log1p(rop, rop, MPFR_RNDU);
+        mpfr_log_ui(tmp_mpfr, p, MPFR_RNDD);
+        mpfr_div(rop, rop, tmp_mpfr, MPFR_RNDU);
+    }
+}
+ComputeEpsilon;
+
+/*
 Structure to store a group of prime factors with
 the same exponent.  The range PrimeLo to PrimeHi
 is inclusive.
@@ -101,50 +163,17 @@ struct PrimeGroup
     /*
     Compute the critical epsilon value that leads to
     incrementing the exponent of PrimeLo from Exp to Exp+1.
-    This occurs when:
-        sigma(PrimeLo^Exp)/PrimeLo^(Exp*(1+eps)) =
-        sigma(PrimeLo^(Exp+1))/PrimeLo^((Exp+1)*(1+eps))
-    i.e., when:
-        PrimeLo^eps
-            = sigma(PrimeLo^(Exp+1))/(PrimeLo*sigma(PrimeLo^Exp))
-            = sigma(PrimeLo^(Exp+1))/(sigma(PrimeLo^(Exp+1))-1)
-            = 1 + 1/(PrimeLo^(Exp+1)+PrimeLo^Exp+...+PrimeLo)
-    I think it is hard to rule out overflow if
-    sigma(PrimeLo^(Exp+1)) is computed in uint64_t, so to
-    avoid any risk just do it all in mpfr_t.
     */
     void UpdateEpsilon()
     {
-        mpfr_t temp;
-        mpfr_init2(temp, Precision);
-
-        // First compute CriticalEpsilon_rndd.
-        mpfr_set_ui(temp, PrimeLo, MPFR_RNDU);
-        for(uint8_t i = 0; i < Exp; i++)
-        {
-            mpfr_add_ui(temp, temp, 1, MPFR_RNDU);
-            mpfr_mul_ui(temp, temp, 1, MPFR_RNDU);
-        }
-        mpfr_ui_div(CriticalEpsilon_rndd, 1, temp, MPFR_RNDD);
-        mpfr_log1p(CriticalEpsilon_rndd, CriticalEpsilon_rndd, MPFR_RNDD);
-        mpfr_set_ui(temp, PrimeLo, MPFR_RNDU);
-        mpfr_log(temp, temp, MPFR_RNDU);
-        mpfr_div(CriticalEpsilon_rndd, CriticalEpsilon_rndd, temp, MPFR_RNDD);
-
-        // Then compute CriticalEpsilon_rndu.
-        mpfr_set_ui(temp, PrimeLo, MPFR_RNDD);
-        for(uint8_t i = 0; i < Exp; i++)
-        {
-            mpfr_add_ui(temp, temp, 1, MPFR_RNDD);
-            mpfr_mul_ui(temp, temp, 1, MPFR_RNDD);
-        }
-        mpfr_ui_div(CriticalEpsilon_rndu, 1, temp, MPFR_RNDU);
-        mpfr_log1p(CriticalEpsilon_rndu, CriticalEpsilon_rndu, MPFR_RNDU);
-        mpfr_set_ui(temp, PrimeLo, MPFR_RNDD);
-        mpfr_log(temp, temp, MPFR_RNDD);
-        mpfr_div(CriticalEpsilon_rndu, CriticalEpsilon_rndu, temp, MPFR_RNDU);
-
-        mpfr_clear(temp);
+        ComputeEpsilon.Do_rndd(
+            CriticalEpsilon_rndd,
+            PrimeLo,
+            Exp);
+        ComputeEpsilon.Do_rndu(
+            CriticalEpsilon_rndu,
+            PrimeLo,
+            Exp);
     }
 
     PrimeGroup(const PrimeGroup  & ) = delete;
