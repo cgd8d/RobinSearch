@@ -445,7 +445,8 @@ uint64_t AddPrimeFactors()
             PrimeQueueEpsilonStack.top().Epsilon_rndu,
             PrimeGroupQueue.top()->CriticalEpsilon_rndd))
         {
-
+            mpfr_t eps_rndd;
+            mpfr_init2(
 
 
 
