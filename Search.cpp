@@ -354,9 +354,19 @@ void CheckNumber()
     if(mpfr_greaterequal_p(LHS_rndu, NloglogN_rndd))
     {
         // First, update values.
+
+std::cout << "n = " << Number_rndd << std::endl;
+
         mpfr_set(NloglogN_rndd, Number_rndd, MPFR_RNDD);
         mpfr_log(NloglogN_rndd, NloglogN_rndd, MPFR_RNDD);
+
+std::cout << "log(n) = " << NloglogN_rndd << std::endl;
+
+
         mpfr_log(NloglogN_rndd, NloglogN_rndd, MPFR_RNDD);
+
+std::cout << "loglog(n) = " << NloglogN_rndd << std::endl;
+
         mpfr_mul(NloglogN_rndd, NloglogN_rndd, Number_rndd, MPFR_RNDD);
 
         // Go ahead and print information.
