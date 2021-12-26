@@ -52,6 +52,7 @@ std::ostream& operator<<(std::ostream& os, mpfr_t op)
 /*
 Struct to produce plot of deltas.
 */
+double exp_gamma;
 PlotDeltaStruct PlotDelta;
 
 /*
@@ -363,6 +364,7 @@ void CheckNumber()
         mpfr_set(NloglogN_rndd, Number_rndd, MPFR_RNDD);
         mpfr_log(NloglogN_rndd, NloglogN_rndd, MPFR_RNDD);
         mpfr_log(NloglogN_rndd, NloglogN_rndd, MPFR_RNDD);
+        double LogLogN_d = mpfr_get_d(NloglogN_rndd, MPFR_RNDD);
         mpfr_mul(NloglogN_rndd, NloglogN_rndd, Number_rndd, MPFR_RNDD);
 
         // Go ahead and print information.
@@ -387,7 +389,10 @@ void CheckNumber()
         mpfr_init2(tmp_mpfr, Precision);
         mpfr_sub(tmp_mpfr, NloglogN_rndd, LHS_rndu, MPFR_RNDD);
         std::cout << tmp_mpfr << std::endl;
+        mpfr_div(tmp_mpfr, tmp_mpfr, Number_rndu, MPFR_RNDD);
+        double delta_div_expgamma = mpfr_get_d(tmp_mpfr, MPFR_RNDD);
         mpfr_clear(tmp_mpfr);
+        PlotDelta.AddPoint(LogLogN_d, exp_gamma*delta_div_expgamma);
 
         // Finally, check if violation persists.
         if(mpfr_greaterequal_p(LHS_rndu, NloglogN_rndd))
@@ -538,6 +543,7 @@ int main()
     mpfr_ui_div(LHS_rndd, 1, LHS_rndd, MPFR_RNDD);
     mpfr_const_euler(LHS_rndu, MPFR_RNDD);
     mpfr_exp(LHS_rndu, LHS_rndu, MPFR_RNDD);
+    exp_gamma = mpfr_get_d(LHS_rndu, MPFR_RNDD);
     mpfr_ui_div(LHS_rndu, 1, LHS_rndu, MPFR_RNDU);
     mpfr_set_ui(Number_rndd, 1, MPFR_RNDD);
     mpfr_set_ui(Number_rndu, 1, MPFR_RNDU);
