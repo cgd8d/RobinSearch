@@ -387,6 +387,8 @@ void CheckNumber()
         if(mpfr_greaterequal_p(LHS_rndu, NloglogN_rndd))
         {
             std::cout << "Maybe the bound is violated?" << std::endl;
+            std::cout << "NloglogN > " << NloglogN_rndd << std::endl;
+            std::cout << "sigma(N)/exp(gamma) = (" << LHS_rndd << ", " << LHS_rndu << ")" << std::endl;
             exit(0);
         }
     }
