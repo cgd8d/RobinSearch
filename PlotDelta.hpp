@@ -21,8 +21,13 @@ struct PlotDeltaStruct
             throw std::runtime_error("Failed to open gnuplot pipe.");
         }
         fprintf(plotpipe, "set xlabel 'log(log(N))'\n");
-        fprintf(plotpipe, "set ylabel '\\delta(N)\n");
+        fprintf(plotpipe, "set ylabel 'log \\delta(N)\n");
         fprintf(plotpipe, "plot '-'\n");
+    }
+
+    void AddPoint(double loglogn, double logdelta)
+    {
+        fprintf(plotpipe, "%.5g %.5g\n", loglogn, logdelta);
     }
 
     ~PlotDeltaStruct()
