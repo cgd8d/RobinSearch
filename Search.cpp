@@ -374,34 +374,13 @@ void CheckNumber()
             std::cout << " * ";
         }
         std::cout << std::endl;
-        std::cout << "  = ";
-        char* tmp_str;
-        int ret;
-        ret = mpfr_asprintf(
-            &tmp_str,
-            "(%10RDg, %10RUg)",
-            Number_rndd,
-            Number_rndu);
-        if(ret < 0)
-        {
-            throw std::runtime_error("mpfr_asprintf failed");
-        }
-        std::cout << tmp_str << std::endl;
-        mpfr_free_str(tmp_str);
+        std::cout << "  = (" << Number_rndd
+                  << ", " << Number_rndu << ")" << std::endl;
         std::cout << "N loglogN - sigma(N)/exp(gamma) > ";
         mpfr_t tmp_mpfr;
         mpfr_init2(tmp_mpfr, Precision);
         mpfr_sub(tmp_mpfr, NloglogN_rndd, LHS_rndu, MPFR_RNDD);
-        ret = mpfr_asprintf(
-            &tmp_str,
-            "%10RDg",
-            tmp_mpfr);
-        if(ret < 0)
-        {
-            throw std::runtime_error("mpfr_asprintf failed");
-        }
-        std::cout << tmp_str << std::endl;
-        mpfr_free_str(tmp_str);
+        std::cout << tmp_mpfr << std::endl;
         mpfr_clear(tmp_mpfr);
 
         // Finally, check if violation persists.
@@ -571,17 +550,6 @@ int main()
         }
         IncrementExp();
     }
-
-
-
-
-    int ret;
-    mpfr_t ExpGamma_rndu;
-    mpfr_init2(ExpGamma_rndu, Precision);
-    mpfr_const_euler(ExpGamma_rndu, MPFR_RNDU);
-    mpfr_exp(ExpGamma_rndu, ExpGamma_rndu, MPFR_RNDU);
-    ret = mpfr_printf("ExpGamma <= %.20RgU\n", ExpGamma_rndu);
-    if(ret < 0) throw std::runtime_error("failed output");
 
 
 
