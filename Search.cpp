@@ -9,6 +9,7 @@
 #include <mpfr.h>
 #include <primesieve.hpp>
 #include <boost/circular_buffer.hpp>
+#include "PlotDelta.hpp"
 
 const mpfr_prec_t Precision = 128;
 
