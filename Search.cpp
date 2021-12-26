@@ -392,7 +392,10 @@ void CheckNumber()
         mpfr_div(tmp_mpfr, tmp_mpfr, Number_rndu, MPFR_RNDD);
         double delta_div_expgamma = mpfr_get_d(tmp_mpfr, MPFR_RNDD);
         mpfr_clear(tmp_mpfr);
-        PlotDelta.AddPoint(LogLogN_d, exp_gamma*delta_div_expgamma);
+        if(LogLogN_d > 2.5)
+        {
+            PlotDelta.AddPoint(LogLogN_d, std::log(exp_gamma*delta_div_expgamma));
+        }
 
         // Finally, check if violation persists.
         if(mpfr_greaterequal_p(LHS_rndu, NloglogN_rndd))
