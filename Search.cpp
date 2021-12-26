@@ -50,6 +50,11 @@ std::ostream& operator<<(std::ostream& os, mpfr_t op)
 }
 
 /*
+Struct to produce plot of deltas.
+*/
+PlotDeltaStruct PlotDelta;
+
+/*
 Struct to compute critical epsilon values and
 hold temporary mpft_t values.
 */
