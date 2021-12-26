@@ -389,7 +389,14 @@ void CheckNumber()
             std::cout << "Maybe the bound is violated?" << std::endl;
             std::cout << "NloglogN > " << NloglogN_rndd << std::endl;
             std::cout << "sigma(N)/exp(gamma) = (" << LHS_rndd << ", " << LHS_rndu << ")" << std::endl;
-            exit(0);
+            if(mpfr_cmp_ui(Number_rndu, 5040) > 0)
+            {
+                exit(0);
+            }
+            else
+            {
+                std::cout << "But N is small so this is expected." << std::endl;
+            }
         }
     }
 }
