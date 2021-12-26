@@ -38,21 +38,15 @@ std::ostream& operator<<(std::ostream& os, mpfr_t op)
     int ret;
     ret = mpfr_asprintf(
         &tmp_str,
-        "(%10RDg, %10RUg)",
-        Number_rndd,
-            Number_rndu);
-        if(ret < 0)
-        {
-            throw std::runtime_error("mpfr_asprintf failed");
-        }
-        std::cout << tmp_str << std::endl;
-
-
-
-
-
-
-
+        "%.10RDg",
+        op);
+    if(ret < 0)
+    {
+        throw std::runtime_error("mpfr_asprintf failed");
+    }
+    os << tmp_str;
+    return os;
+}
 
 /*
 Struct to compute critical epsilon values and
