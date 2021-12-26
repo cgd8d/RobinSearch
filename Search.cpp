@@ -550,7 +550,7 @@ int main()
     PrimeQueueProducer.next_prime(); // discard value.
 
     // Continue processing.
-    while(Number_factors.front().Exp < 3)
+    while(Number_factors.front().Exp < 5)
     {
         while(true)
         {
