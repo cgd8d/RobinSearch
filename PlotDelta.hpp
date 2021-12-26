@@ -20,6 +20,7 @@ struct PlotDeltaStruct
             std::cerr << "Failed to open gnuplot pipe." << std::endl;
             throw std::runtime_error("Failed to open gnuplot pipe.");
         }
+        fprintf(plotpipe, "set term pngcairo\n");
         fprintf(plotpipe, "set output 'DeltaPlot.png'\n");
         fprintf(plotpipe, "set xlabel 'log(log(N))'\n");
         fprintf(plotpipe, "set ylabel 'log \\delta(N)\n");
