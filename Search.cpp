@@ -392,7 +392,7 @@ void CheckNumber()
         mpfr_div(tmp_mpfr, tmp_mpfr, Number_rndu, MPFR_RNDD);
         double delta_div_expgamma = mpfr_get_d(tmp_mpfr, MPFR_RNDD);
         mpfr_clear(tmp_mpfr);
-        if(LogLogN_d > 2.5)
+        if(LogLogN_d > 2.5 and delta_div_expgamma > 0)
         {
             PlotDelta.AddPoint(LogLogN_d, std::log(exp_gamma*delta_div_expgamma));
         }
