@@ -388,7 +388,7 @@ void CheckNumber()
         mpfr_clear(tmp_mpfr);
 
         // Go ahead and print information.
-        if(delta <= NextPrintDelta)
+        if(LogLogN_d > 2.5 and delta <= NextPrintDelta)
         {
             std::cout << "Updating logs on:" << std::endl;
             std::cout << "N = ";
