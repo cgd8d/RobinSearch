@@ -25,7 +25,7 @@ struct PlotDeltaStruct
         fprintf(plotpipe, "set xlabel 'log(log(N))'\n");
         fprintf(plotpipe, "set ylabel 'log \\delta(N)\n");
         fprintf(plotpipe, "plot '-'\n");
-fprintf(plotpipe, "%.5g %.5g\n", loglogn, logdelta);
+fprintf(plotpipe, "0 0\n");
     }
 
     void AddPoint(double loglogn, double logdelta)
