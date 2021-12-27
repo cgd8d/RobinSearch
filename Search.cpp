@@ -565,7 +565,7 @@ int main()
     PrimeQueueProducer.next_prime(); // discard value.
 
     // Continue processing.
-    while(Number_factors.front().Exp < 29)
+    while(Number_factors.front().Exp < 30)
     {
         while(true)
         {
