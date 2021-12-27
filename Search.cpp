@@ -56,6 +56,14 @@ double exp_gamma;
 PlotDeltaStruct PlotDelta;
 
 /*
+Counters for optimization.
+*/
+uint64_t cnt_NumPrimeFactors = 0;
+uint64_t cnt_NumUniquePrimeFactors = 0;
+uint64_t cnt_EpsEvalForExpZero = 0;
+uint64_t cnt_LogLogNUpdates = 0;
+
+/*
 Struct to compute critical epsilon values and
 hold temporary mpft_t values.
 */
@@ -358,6 +366,7 @@ void IncrementExp()
 
 void CheckNumber()
 {
+    cnt_NumPrimeFactors++;
     if(mpfr_greaterequal_p(LHS_rndu, NloglogN_rndd))
     {
         // First, update values.
@@ -366,29 +375,36 @@ void CheckNumber()
         mpfr_log(NloglogN_rndd, NloglogN_rndd, MPFR_RNDD);
         double LogLogN_d = mpfr_get_d(NloglogN_rndd, MPFR_RNDD);
         mpfr_mul(NloglogN_rndd, NloglogN_rndd, Number_rndd, MPFR_RNDD);
+        cnt_LogLogNUpdates++;
 
         // Go ahead and print information.
-        std::cout << "Updating logs on:" << std::endl;
-        std::cout << "N = ";
-        auto it = Number_factors.begin();
-        while(true)
+        if(false)
         {
-            std::cout << *it;
-            it++;
-            if(it == Number_factors.end())
+            std::cout << "Updating logs on:" << std::endl;
+            std::cout << "N = ";
+            auto it = Number_factors.begin();
+            while(true)
             {
-                break;
+                std::cout << *it;
+                it++;
+                if(it == Number_factors.end())
+                {
+                    break;
+                }
+                std::cout << " * ";
             }
-            std::cout << " * ";
+            std::cout << std::endl;
+            std::cout << "  = (" << Number_rndd
+                      << ", " << Number_rndu << ")" << std::endl;
+            std::cout << "N loglogN - sigma(N)/exp(gamma) > ";
         }
-        std::cout << std::endl;
-        std::cout << "  = (" << Number_rndd
-                  << ", " << Number_rndu << ")" << std::endl;
-        std::cout << "N loglogN - sigma(N)/exp(gamma) > ";
         mpfr_t tmp_mpfr;
         mpfr_init2(tmp_mpfr, Precision);
         mpfr_sub(tmp_mpfr, NloglogN_rndd, LHS_rndu, MPFR_RNDD);
-        std::cout << tmp_mpfr << std::endl;
+        if(false)
+        {
+            std::cout << tmp_mpfr << std::endl;
+        }
         mpfr_div(tmp_mpfr, tmp_mpfr, Number_rndu, MPFR_RNDD);
         double delta_div_expgamma = mpfr_get_d(tmp_mpfr, MPFR_RNDD);
         mpfr_clear(tmp_mpfr);
@@ -465,6 +481,7 @@ uint64_t AddPrimeFactors()
             PrimeQueue.push_front(PrimeQueueProducer.next_prime());
         }
         PrimeQueueEpsilonStack.emplace(0);
+        cnt_EpsEvalForExpZero++;
     }
 
     // Find a safe number of primes to add.
@@ -508,6 +525,7 @@ uint64_t AddPrimeFactors()
                 mpfr_mul_ui(LHS_rndd, LHS_rndd, this_p+1, MPFR_RNDD);
                 mpfr_mul_ui(LHS_rndu, LHS_rndu, this_p+1, MPFR_RNDU);
                 Number_factors.back().PrimeHi = this_p;
+                cnt_NumUniquePrimeFactors++;
                 CheckNumber();
             }
 
@@ -528,6 +546,7 @@ uint64_t AddPrimeFactors()
         // another epsilon.
         uint64_t new_idx = (PrimeQueueEpsilonStack.top().index + PrimeQueue.size())/2;
         PrimeQueueEpsilonStack.emplace(new_idx);
+        cnt_EpsEvalForExpZero++;
     }
 }
 
@@ -563,6 +582,8 @@ int main()
     // Step forward to N=2 to initiate processing.
     IncrementExp();
     PrimeQueueProducer.next_prime(); // discard value.
+    cnt_NumPrimeFactors++;
+    cnt_NumUniquePrimeFactors++;
 
     // Continue processing.
     while(Number_factors.front().Exp < 31)
@@ -573,9 +594,14 @@ int main()
             if(NumFactors == 0) break;
         }
         IncrementExp();
+        CheckNumber();
     }
 
-
+    // Print counters.
+    std::cout << "cnt_NumPrimeFactors = " << cnt_NumPrimeFactors << std::endl;
+    std::cout << "cnt_NumUniquePrimeFactors = " << cnt_NumUniquePrimeFactors << std::endl;
+    std::cout << "cnt_EpsEvalForExpZero = " << cnt_EpsEvalForExpZero << std::endl;
+    std::cout << "cnt_LogLogNUpdates = " << cnt_LogLogNUpdates << std::endl;
 
     mpfr_clear(Number_rndd);
     mpfr_clear(Number_rndu);
