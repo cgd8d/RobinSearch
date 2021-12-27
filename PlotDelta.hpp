@@ -11,6 +11,8 @@ as in figure 3 (top) of Briggs 2006.
 struct PlotDeltaStruct
 {
     FILE* plotpipe;
+    double loglogn_step;
+    double loglogn_next;
 
     PlotDeltaStruct()
     {
@@ -25,12 +27,17 @@ struct PlotDeltaStruct
         fprintf(plotpipe, "set xlabel 'log(log(N))'\n");
         fprintf(plotpipe, "set ylabel 'log \\delta(N)\n");
         fprintf(plotpipe, "plot '-'\n");
-fprintf(plotpipe, "0 0\n");
+        loglogn_step = 0.001;
+        loglogn_next = 0;
     }
 
     void AddPoint(double loglogn, double logdelta)
     {
-        //fprintf(plotpipe, "%.5g %.5g\n", loglogn, logdelta);
+        if(loglogn >= loglogn_next)
+        {
+            fprintf(plotpipe, "%.5g %.5g\n", loglogn, logdelta);
+            loglogn_next = loglogn + loglogn_step;
+        }
     }
 
     ~PlotDeltaStruct()
