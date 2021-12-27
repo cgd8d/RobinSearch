@@ -413,7 +413,7 @@ void CheckNumber()
 
         if(LogLogN_d > 2.5 and delta > 0)
         {
-            PlotDelta.AddPoint(LogLogN_d, std::log(delta_div_expgamma));
+            PlotDelta.AddPoint(LogLogN_d, std::log(delta));
         }
 
         // Finally, check if violation persists.
