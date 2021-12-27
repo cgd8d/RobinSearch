@@ -411,9 +411,9 @@ void CheckNumber()
             NextPrintDelta = delta/PrintNum_DeltaRatio;
         }
 
-        if(LogLogN_d > 2.5 and delta_div_expgamma > 0)
+        if(LogLogN_d > 2.5 and delta > 0)
         {
-            PlotDelta.AddPoint(LogLogN_d, std::log(exp_gamma*delta_div_expgamma));
+            PlotDelta.AddPoint(LogLogN_d, std::log(delta_div_expgamma));
         }
 
         // Finally, check if violation persists.
