@@ -29,10 +29,7 @@ jobs:
       - name: Setup
         run: |
           sudo apt-get update
-          sudo apt-get install libmpfr-dev
-          sudo apt-get install libprimesieve-dev
-          sudo apt-get install libboost-dev
-          sudo apt-get install gnuplot
+          sudo apt-get install libmpfr-dev libprimesieve-dev libboost-dev gnuplot
 
       # Compile code
       - name: Compile
