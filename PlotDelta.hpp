@@ -29,7 +29,7 @@ struct PlotDeltaStruct
 
     void AddPoint(double loglogn, double logdelta)
     {
-        fprintf(plotpipe, "%.5g %.5g\n", loglogn, logdelta);
+        //fprintf(plotpipe, "%.5g %.5g\n", loglogn, logdelta);
     }
 
     ~PlotDeltaStruct()
