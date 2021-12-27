@@ -364,6 +364,8 @@ void IncrementExp()
     }
 }
 
+double PrintNum_DeltaRatio = 2;
+double NextPrintDelta = 1;
 void CheckNumber()
 {
     cnt_NumPrimeFactors++;
@@ -377,8 +379,16 @@ void CheckNumber()
         mpfr_mul(NloglogN_rndd, NloglogN_rndd, Number_rndd, MPFR_RNDD);
         cnt_LogLogNUpdates++;
 
+        // Compute delta = exp(gamma) loglogN - sigma(N)/N.
+        mpfr_t tmp_mpfr;
+        mpfr_init2(tmp_mpfr, Precision);
+        mpfr_sub(tmp_mpfr, NloglogN_rndd, LHS_rndu, MPFR_RNDD);
+        mpfr_div(tmp_mpfr, tmp_mpfr, Number_rndu, MPFR_RNDD);
+        double delta = exp_gamma*mpfr_get_d(tmp_mpfr, MPFR_RNDD);
+        mpfr_clear(tmp_mpfr);
+
         // Go ahead and print information.
-        if(false)
+        if(delta <= NextPrintDelta)
         {
             std::cout << "Updating logs on:" << std::endl;
             std::cout << "N = ";
@@ -396,18 +406,11 @@ void CheckNumber()
             std::cout << std::endl;
             std::cout << "  = (" << Number_rndd
                       << ", " << Number_rndu << ")" << std::endl;
-            std::cout << "N loglogN - sigma(N)/exp(gamma) > ";
+            std::cout << "exp(gamma)*loglogN - sigma(N)/N > ";
+            std::cout << delta << std::endl;
+            NextPrintDelta = delta/PrintNum_DeltaRatio;
         }
-        mpfr_t tmp_mpfr;
-        mpfr_init2(tmp_mpfr, Precision);
-        mpfr_sub(tmp_mpfr, NloglogN_rndd, LHS_rndu, MPFR_RNDD);
-        if(false)
-        {
-            std::cout << tmp_mpfr << std::endl;
-        }
-        mpfr_div(tmp_mpfr, tmp_mpfr, Number_rndu, MPFR_RNDD);
-        double delta_div_expgamma = mpfr_get_d(tmp_mpfr, MPFR_RNDD);
-        mpfr_clear(tmp_mpfr);
+
         if(LogLogN_d > 2.5 and delta_div_expgamma > 0)
         {
             PlotDelta.AddPoint(LogLogN_d, std::log(exp_gamma*delta_div_expgamma));
