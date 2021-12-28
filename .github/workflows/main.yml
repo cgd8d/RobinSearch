@@ -43,7 +43,7 @@ jobs:
 
       # Print perf report.
       - name: Report from perf
-        run: perf report -i perf.data
+        run: sudo perf report -i perf.data
 
       # Run code
       - name: Run
