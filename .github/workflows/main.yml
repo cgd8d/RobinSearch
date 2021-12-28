@@ -39,11 +39,11 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record -g -F 1000 ./Search
+        run: sudo perf record -g -F 1000 -o perf.data ./Search
 
       # Print perf report.
       - name: Report from perf
-        run: perf report
+        run: perf report -i perf.data
 
       # Run code
       - name: Run
