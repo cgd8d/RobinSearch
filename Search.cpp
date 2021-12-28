@@ -589,7 +589,7 @@ int main()
     cnt_NumUniquePrimeFactors++;
 
     // Continue processing.
-    while(Number_factors.front().Exp < 28) // 36)
+    while(Number_factors.front().Exp < 30) // 36)
     {
         while(true)
         {
