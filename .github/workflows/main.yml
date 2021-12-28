@@ -37,6 +37,14 @@ jobs:
           clang++ --version
           clang++ -std=c++20 -Wall -O3 -lmpfr -lprimesieve Search.cpp -o Search
 
+      # Run code (perf)
+      - name: Run (perf)
+        run: perf record -g -F 10 ./Search
+
+      # Print perf report.
+      - name: Report from perf
+        run: perf report
+
       # Run code
       - name: Run
         run: ./Search
