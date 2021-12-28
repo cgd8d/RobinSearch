@@ -39,7 +39,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: perf record -g -F 10 ./Search
+        run: sudo perf record -g -F 10 ./Search
 
       # Print perf report.
       - name: Report from perf
