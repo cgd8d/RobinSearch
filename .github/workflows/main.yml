@@ -46,8 +46,8 @@ jobs:
         run: sudo perf report -i perf.data
 
       # Run code
-      - name: Run
-        run: ./Search
+      # - name: Run
+      #   run: ./Search
 
       # Save plot of deltas.
       - name: Save delta plot
