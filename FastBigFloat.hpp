@@ -19,5 +19,16 @@ struct FastBigFloat
     int64_t exp;
     std::array<uint64_t, N> sig;
 
+    void set_ui(uint64_t x)
+    {
+        sig.fill(0);
+        sig[N-1] = x;
+        exp = 1-N;
+    }
+
+    void set_mpfr_rndd(mpfr_t x)
+    {
+        
+
 
 #endif
