@@ -30,6 +30,9 @@ void CheckTypes()
 
     static_assert(sizeof(unsigned long int) == sizeof(uint64_t),
         "Unsigned long int is not 64 bits.");
+
+    static_assert(sizeof(mp_limb_t) == sizeof(uint64_t),
+        "mp_limb_t is not 64 bits.");
 }
 
 // Helper function to print mpfr_t with error checking.
