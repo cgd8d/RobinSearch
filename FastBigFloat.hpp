@@ -26,6 +26,17 @@ struct FastBigFloat
         exp = 1-N;
     }
 
+    void mul_ui_rndd(uint64_t x)
+    {
+        std::array<uint64_t, N+1> tmp;
+        tmp[0] = _mulx_u64(sig[0], x, &tmp[1]);
+        for(size_t i = 0; i < N; i++)
+        {
+            unit lo 
+
+
+
+
     void set_mpfr_rndd(mpfr_t x)
     {
         size_t mpfr_numwords = (x->_mpfr_prec-1)/64+1;
