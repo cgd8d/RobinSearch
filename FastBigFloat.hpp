@@ -28,7 +28,16 @@ struct FastBigFloat
 
     void set_mpfr_rndd(mpfr_t x)
     {
-        
+        size_t mpfr_numwords = (x->_mpfr_prec-1)/64+1;
+        set_ui(0);
+        size_t numwords_both = std::min(N, mpfr_numwords);
+        for(size_t i = N - numwords_both;
+            i < N;
+            i++)
+        {
+            sig[i] = x->_mpfr_d[mpfr_numwords-numwords_both+i];
+        ]
+        exp = ...
 
 
 #endif
