@@ -28,7 +28,10 @@ struct FastBigFloat
 
     void mul_ui_rndd(uint64_t x)
     {
-
+        // In a majority of cases the highest word is
+        // nonzero because x > 2^32.  So, we store the
+        // lowest word separately and only shift it in
+        // for the minority of cases when it is needed.
         uint64_t carry = 0;
         uint64_t lo = _mulx_u64(sig[0], x, &sig[0]);
         for(size_t i = 1; i < N; i++)
@@ -36,7 +39,7 @@ struct FastBigFloat
             tmp = _mulx_u64(sig[i], x, &sig[i]);
             sig[i-1] = __builtin_addcll(tmp, sig[i-1], carry, &carry);
         }
-        sig[N-1] += carry;
+        sig[N-1] += carry; // Will not overflow.
 
         // Note that now we need to conditionally move.
         // It is probably most efficient to use a branch
