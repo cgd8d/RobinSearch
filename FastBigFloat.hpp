@@ -52,9 +52,14 @@ struct FastBigFloat
         // will harm the critical path.
         if(sig[N-1] == 0)
         {
-            for(size_t i = N-1; i > 0; i++)
+            for(size_t i = N-1; i > 0; i--)
             {
-                sig[
+                sig[i] = sig[i-1];
+            }
+            sig[0] = lo;
+        }
+
+// Need to set exp.
 
 
 
