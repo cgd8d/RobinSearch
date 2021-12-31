@@ -28,6 +28,14 @@ struct FastBigFloat
 
     void mul_ui_rndd(uint64_t x)
     {
+
+        uint64_t carry = 0;
+        uint64_t lo = _mulx_u64(sig[0], x, &sig[0]);
+        for(size_t i = 1; i < N-1; i++)
+        {
+            tmp = _mulx_u64(sig[i], x, &sig[i+1]);
+
+
         std::array<uint64_t, N+1> tmp;
         tmp[0] = _mulx_u64(sig[0], x, &tmp[1]);
         for(size_t i = 0; i < N; i++)
