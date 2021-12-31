@@ -31,16 +31,33 @@ struct FastBigFloat
 
         uint64_t carry = 0;
         uint64_t lo = _mulx_u64(sig[0], x, &sig[0]);
-        for(size_t i = 1; i < N-1; i++)
+        for(size_t i = 1; i < N; i++)
         {
-            tmp = _mulx_u64(sig[i], x, &sig[i+1]);
+            tmp = _mulx_u64(sig[i], x, &sig[i]);
+            sig[i-1] = __builtin_addcll(tmp, sig[i-1], carry, &carry);
+        }
+        sig[N-1] += carry;
+
+        // Note that now we need to conditionally move.
+        // It is probably most efficient to use a branch
+        // and rely on CPU branch prediction.  Overall
+        // sig[N-1] will typically be zero in early parts
+        // if execution because primes are small, and
+        // nonzero later. Branch prediction should handle
+        // this fine. By contrast, conditional moves
+        // introduce a dependency (and delay) which
+        // will harm the critical path.
+        if(sig[N-1] == 0)
+        {
+            for(size_t i = N-1; i > 0; i++)
+            {
+                sig[
 
 
-        std::array<uint64_t, N+1> tmp;
-        tmp[0] = _mulx_u64(sig[0], x, &tmp[1]);
-        for(size_t i = 0; i < N; i++)
-        {
-            unit lo 
+
+
+
+
 
 
 
