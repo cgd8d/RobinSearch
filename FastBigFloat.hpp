@@ -40,7 +40,6 @@ struct FastBigFloat
             sig[i-1] = __builtin_addcll(sig[i-1], tmp, carry, &carry);
         }
         sig[N-1] += carry; // Will not overflow.
-        exp++;
 
         // Note that now we need to conditionally move.
         // It is probably most efficient to use a branch
@@ -58,10 +57,13 @@ struct FastBigFloat
                 sig[i] = sig[i-1];
             }
             sig[0] = lo;
-            exp--;
         }
+        else
+        {
+            exp++;
+        }
+    }
 
-// Need to set exp.
 
 
 
