@@ -41,15 +41,24 @@ struct FastBigFloat
         }
         sig[N-1] += carry; // Will not overflow.
 
-        // Note that now we need to conditionally move.
-        // It is probably most efficient to use a branch
-        // and rely on CPU branch prediction.  Overall
-        // sig[N-1] will typically be zero in early parts
-        // if execution because primes are small, and
-        // nonzero later. Branch prediction should handle
-        // this fine. By contrast, conditional moves
-        // introduce a dependency (and delay) which
-        // will harm the critical path.
+        /*
+        Note that now we need to conditionally move.
+        When x is sufficiently large, using a branch and
+        letting branch prediction work is probably best,
+        but when x occupies not much more than 32 bits
+        then the branch prediction won't be very reliable
+        and a conditional move will probably be better.
+        (We can hide the latency by running multiple
+        multiplies together, since we need four per
+        iteration.)
+        Plausibly we could put the words into a vector
+        register and shuffle, conditionally.
+        Another option would be to manage sig in a circular
+        buffer with capacity N+1, and rather than shifting
+        words we can shift the start pointer.
+
+        Anyway, come back and experiment with this one.
+        */
         if(sig[N-1] == 0)
         {
             for(size_t i = N-1; i > 0; i--)
