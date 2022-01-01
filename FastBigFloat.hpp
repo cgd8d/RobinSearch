@@ -73,28 +73,41 @@ struct FastBigFloat
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-    void set_mpfr_rndd(mpfr_t x)
+    void mul_ui_rndu(uint64_t x)
     {
-        size_t mpfr_numwords = (x->_mpfr_prec-1)/64+1;
-        set_ui(0);
-        size_t numwords_both = std::min(N, mpfr_numwords);
-        for(size_t i = N - numwords_both;
-            i < N;
-            i++)
+        mul_ui_rndd(x);
+
+        // Then increment by one.
+        sig[0]++;
+        if(sig[0] == 0) // Very unlikely.
         {
-            sig[i] = x->_mpfr_d[mpfr_numwords-numwords_both+i];
-        ]
-        exp = ...
+            bool inc_exp = true;
+            for(size_t i = 1; i < N; i++)
+            {
+                sig[i]++;
+                if(sig[i] != 0)
+                {
+                    inc_exp = false;
+                    break;
+                }
+            }
+            if(inc_exp)
+            {
+                sig[N-1] = 1;
+                exp++;
+            }
+        }
+    }
+
+    void get(mpfr_t x)
+    {
+
+
+
+
+
+
+
 
 
 #endif
