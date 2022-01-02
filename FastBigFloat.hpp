@@ -111,7 +111,6 @@ struct FastBigFloat
         mpfr_mul_2ui(x, x, 64*exp, MPFR_RNDD);
     }
 
-
     // X should already be initialized.
     void get_rndu(mpfr_t x)
     {
@@ -123,8 +122,5 @@ struct FastBigFloat
         }
         mpfr_mul_2ui(x, x, 64*exp, MPFR_RNDU);
     }
-
-
-
-
+};
 #endif
