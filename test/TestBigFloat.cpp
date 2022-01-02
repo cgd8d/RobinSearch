@@ -9,7 +9,16 @@ std::vector<uint64_t> factors;
 
 void PrintFactors()
 {
-    if(factors.size()>0) std::cerr << factors[0];
+    if(factors.size()>0)
+    {
+        std::cerr << factors[0];
+    }
+    for(size_t i = 1; i < factors.size(); i++)
+    {
+        std::cerr << "*" << factors[i];
+    }
+    std::cerr << std::endl;
+}
 
 void CheckIntervals(FastBigFloat<3>& bf1, FastBigFloat<3>& bf2,
                     mpfr_t mp1, mpfr_t mp2)
@@ -19,6 +28,7 @@ void CheckIntervals(FastBigFloat<3>& bf1, FastBigFloat<3>& bf2,
     bf1.get_rndd(t1);
     if(mpfr_greater_p(t1, mp2))
     {
+        PrintFactors();
         throw std::runtime_error("Intervals do not overlap.");
     }
     mpfr_t t2;
@@ -26,6 +36,7 @@ void CheckIntervals(FastBigFloat<3>& bf1, FastBigFloat<3>& bf2,
     bf2.get_rndu(t2);
     if(mpfr_less_p(t2, mp1))
     {
+        PrintFactors();
         throw std::runtime_error("Intervals do not overlap.");
     }
     mpfr_sub(t1, t2, t1, MPFR_RNDD);
@@ -33,6 +44,7 @@ void CheckIntervals(FastBigFloat<3>& bf1, FastBigFloat<3>& bf2,
     mpfr_div(t1, t1, t2, MPFR_RNDD);
     if(mpfr_less_p(mp1, mp2) and mpfr_cmp_ui(t1, 10) > 0)
     {
+        PrintFactors();
         throw std::runtime_error("FastBigFloat interval is too big.");
     }
 }
