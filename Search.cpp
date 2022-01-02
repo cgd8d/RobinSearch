@@ -28,8 +28,14 @@ void CheckTypes()
         throw std::logic_error("mpfr_get_emax is unexpected");
     }
 
+    static_assert(8 == sizeof(uint64_t),
+        "uint64_t is not 8 bytes.");
+
     static_assert(sizeof(unsigned long int) == sizeof(uint64_t),
         "Unsigned long int is not 64 bits.");
+
+    static_assert(sizeof(unsigned long long int) == sizeof(uint64_t),
+        "Unsigned long long int is not 64 bits.");
 
     static_assert(sizeof(mp_limb_t) == sizeof(uint64_t),
         "mp_limb_t is not 64 bits.");
