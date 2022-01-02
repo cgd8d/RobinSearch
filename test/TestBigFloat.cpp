@@ -1,8 +1,15 @@
 #include <random>
 #include <iostream>
 #include <exception>
+#include <vector>
 #include <mpfr.h>
 #include "../FastBigFloat.hpp"
+
+std::vector<uint64_t> factors;
+
+void PrintFactors()
+{
+    if(factors.size()>0) std::cerr << factors[0];
 
 void CheckIntervals(FastBigFloat<3>& bf1, FastBigFloat<3>& bf2,
                     mpfr_t mp1, mpfr_t mp2)
@@ -46,6 +53,8 @@ int main()
         mpfr_init2(mp2, 128);
         mpfr_set_ui(mp1, 1, MPFR_RNDD);
         mpfr_set_ui(mp2, 1, MPFR_RNDU);
+        factors.resize(0);
+        factors.push_back(1);
         CheckIntervals(bf1, bf2, mp1, mp2);
         for(size_t j = 0; j < 1000; j++)
         {
@@ -54,6 +63,7 @@ int main()
             bf2.mul_ui_rndu(x);
             mpfr_mul_ui(mp1, mp1, x, MPFR_RNDD);
             mpfr_mul_ui(mp2, mp2, x, MPFR_RNDU);
+            factors.push_back(x);
             CheckIntervals(bf1, bf2, mp1, mp2);
         }
     }
