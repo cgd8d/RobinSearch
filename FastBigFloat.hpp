@@ -46,10 +46,10 @@ struct FastBigFloat
         // lowest word separately and only shift it in
         // for the minority of cases when it is needed.
         uint64_t carry = 0;
-        uint64_t lo = _mulx_u64(sig[0], x, &sig[0]);
+        uint64_t lo = _mulx_u64(sig[0], x, reinterpret_cast<unsigned long long*>(&sig[0]));
         for(size_t i = 1; i < N; i++)
         {
-            uint64_t tmp = _mulx_u64(sig[i], x, &sig[i]);
+            uint64_t tmp = _mulx_u64(sig[i], x, reinterpret_cast<unsigned long long*>(&sig[i]));
             sig[i-1] = __builtin_addcl(sig[i-1], tmp, carry, &carry);
         }
         sig[N-1] += carry; // Will not overflow.
