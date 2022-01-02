@@ -31,6 +31,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install libmpfr-dev libprimesieve-dev libboost-dev gnuplot
 
+      # Compile test segments to assembly
+      - name: CompileAsmTest
+        run: |
+          llc -O3 -march=native CheckAssembly/LLVM_WideInt.ll
+
       # Compile code
       - name: Compile
         run: |
