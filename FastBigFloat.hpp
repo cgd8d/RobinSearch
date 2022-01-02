@@ -3,6 +3,7 @@
 
 #include <array>
 #include <mpfr.h>
+#include <immintrin.h>
 
 /*
 Support fast multiplication with multi-word precision.
