@@ -1,6 +1,9 @@
 #ifndef FastBigFloat_hpp
 #define FastBigFloat_hpp
 
+#include <array>
+#include <mpfr.h>
+
 /*
 Support fast multiplication with multi-word precision.
 The trade-off is that we don't guarantee the MSB to be
@@ -36,7 +39,7 @@ struct FastBigFloat
         uint64_t lo = _mulx_u64(sig[0], x, &sig[0]);
         for(size_t i = 1; i < N; i++)
         {
-            tmp = _mulx_u64(sig[i], x, &sig[i]);
+            uint64_t tmp = _mulx_u64(sig[i], x, &sig[i]);
             sig[i-1] = __builtin_addcll(sig[i-1], tmp, carry, &carry);
         }
         sig[N-1] += carry; // Will not overflow.
