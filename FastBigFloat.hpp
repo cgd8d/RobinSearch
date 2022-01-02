@@ -50,7 +50,7 @@ struct FastBigFloat
         for(size_t i = 1; i < N; i++)
         {
             uint64_t tmp = _mulx_u64(sig[i], x, &sig[i]);
-            sig[i-1] = __builtin_addcll(sig[i-1], tmp, carry, &carry);
+            sig[i-1] = __builtin_addcl(sig[i-1], tmp, carry, &carry);
         }
         sig[N-1] += carry; // Will not overflow.
 
