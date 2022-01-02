@@ -17,6 +17,15 @@ The struct represents:
 We guarantee sig[N-1] is non-zero unless the value is zero.
 */
 
+static_assert(8 == sizeof(uint64_t),
+    "uint64_t is not 8 bytes.");
+
+static_assert(sizeof(unsigned long int) == sizeof(uint64_t),
+    "Unsigned long int is not 64 bits.");
+
+static_assert(sizeof(unsigned long long int) == sizeof(uint64_t),
+    "Unsigned long long int is not 64 bits.");
+
 template <size_t N>
 struct FastBigFloat
 {
