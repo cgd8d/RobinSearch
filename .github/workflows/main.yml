@@ -34,7 +34,7 @@ jobs:
       # Compile test segments to assembly
       - name: CompileAsmTest
         run: |
-          llc -O3 CheckAssembly/LLVM_WideInt.ll
+          llc -O3 -o - CheckAssembly/LLVM_WideInt.ll
 
       # Compile code
       - name: Compile
