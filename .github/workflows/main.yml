@@ -36,6 +36,12 @@ jobs:
         run: |
           llc -O3 -o - CheckAssembly/LLVM_WideInt.ll
 
+      # Run tests.
+      - name: RunTests
+        run: |
+          clang++ -std=c++20 -Wall -O3 -flto -march=native -lmpfr test/TestBigFloat.cpp -o TestBigFloat
+          ./TestBigFloat
+
       # Compile code
       - name: Compile
         run: |
