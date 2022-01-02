@@ -20,6 +20,15 @@ void PrintFactors()
     std::cerr << std::endl;
 }
 
+void PrintInterval (mpfr_t mp1, mpfr_t mp2)
+{
+    std::cerr << "("
+              << mpfr_get_d (mp1, MPFR_RNDD)
+              << ", "
+              << mpfr_get_d (mp1, MPFR_RNDD)
+
+
+
 void CheckIntervals(FastBigFloat<3>& bf1, FastBigFloat<3>& bf2,
                     mpfr_t mp1, mpfr_t mp2)
 {
