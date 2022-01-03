@@ -57,7 +57,7 @@ void CheckIntervals(FastBigFloat<3>& bf1, FastBigFloat<3>& bf2,
     mpfr_sub(t1, t2, t1, MPFR_RNDD);
     mpfr_sub(t2, mp2, mp1, MPFR_RNDD);
     mpfr_div(t1, t1, t2, MPFR_RNDD);
-    if(mpfr_less_p(mp1, mp2) and mpfr_cmp_ui(t1, 10) > 0)
+    if(mpfr_less_p(mp1, mp2) and mpfr_get_prec(mp1) <= 128 and mpfr_cmp_ui(t1, 10) > 0)
     {
         PrintFactors();
         throw std::runtime_error("FastBigFloat interval is too big.");
@@ -95,6 +95,32 @@ int main()
         }
     }
 
-// Next, should test starting from arbitrary.
+    // Test starting at arbitrary value.
+    for(size_t i = 0; i < 1000; i++)
+    {
+        FastBigFloat<3> bf1, bf2;
+        mpfr_t mp1, mp2;
+        uint64_t x = mt();
+        bf1.set_ui(x);
+        bf2.set_ui(x);
+        mpfr_init2(mp1, 1024);
+        mpfr_init2(mp2, 1024);
+        mpfr_set_ui(mp1, x, MPFR_RNDD);
+        mpfr_set_ui(mp2, x, MPFR_RNDU);
+        factors.resize(0);
+        factors.push_back(x);
+        CheckIntervals(bf1, bf2, mp1, mp2);
+        for(size_t j = 0; j < 1000; j++)
+        {
+            x = mt();
+            bf1.mul_ui_rndd(x);
+            bf2.mul_ui_rndu(x);
+            mpfr_mul_ui(mp1, mp1, x, MPFR_RNDD);
+            mpfr_mul_ui(mp2, mp2, x, MPFR_RNDU);
+            factors.push_back(x);
+            CheckIntervals(bf1, bf2, mp1, mp2);
+        }
+    }
+
     std::cout << "passed test of FastBigFloat." << std::endl;
 }
