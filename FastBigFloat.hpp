@@ -2,6 +2,7 @@
 #define FastBigFloat_hpp
 
 #include <array>
+#include <ostream>
 #include <mpfr.h>
 #include <immintrin.h>
 
@@ -136,4 +137,16 @@ struct FastBigFloat
         mpfr_mul_2ui(x, x, 64*exp, MPFR_RNDU);
     }
 };
+
+template<size_t N>
+std::ostream& operator<<(std::ostream& os, const FastBigFloat<N>& x)
+{
+    for(size_t i = N; i > 0; i--)
+    {
+        os << x.sig[i-1] << " ";
+    }
+    os << "x (2^64)^" << x.exp;
+    return os;
+}
+
 #endif
