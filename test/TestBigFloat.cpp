@@ -25,9 +25,9 @@ void PrintInterval (mpfr_t mp1, mpfr_t mp2)
     std::cerr << "("
               << mpfr_get_d (mp1, MPFR_RNDD)
               << ", "
-              << mpfr_get_d (mp1, MPFR_RNDD)
-
-
+              << mpfr_get_d (mp2, MPFR_RNDD)
+              << ")" << std::endl;
+}
 
 void CheckIntervals(FastBigFloat<3>& bf1, FastBigFloat<3>& bf2,
                     mpfr_t mp1, mpfr_t mp2)
@@ -35,17 +35,21 @@ void CheckIntervals(FastBigFloat<3>& bf1, FastBigFloat<3>& bf2,
     mpfr_t t1;
     mpfr_init2(t1, 1024);
     bf1.get_rndd(t1);
-    if(mpfr_greater_p(t1, mp2))
-    {
-        PrintFactors();
-        throw std::runtime_error("Intervals do not overlap.");
-    }
     mpfr_t t2;
     mpfr_init2(t2, 1024);
     bf2.get_rndu(t2);
+    if(mpfr_greater_p(t1, mp2))
+    {
+        PrintFactors();
+        PrintInterval(mp1, mp2);
+        PrintInterval(t1, t2);
+        throw std::runtime_error("Intervals do not overlap.");
+    }
     if(mpfr_less_p(t2, mp1))
     {
         PrintFactors();
+        PrintInterval(mp1, mp2);
+        PrintInterval(t1, t2);
         throw std::runtime_error("Intervals do not overlap.");
     }
     mpfr_sub(t1, t2, t1, MPFR_RNDD);
