@@ -119,10 +119,10 @@ struct FastBigFloat
         mpfr_set_ui(x, sig[N-1], MPFR_RNDD);
         for(size_t i = N-1; i > 0; i--)
         {
-            mpfr_mul_2ui(x, x, 64, MPFR_RNDD);
+            mpfr_mul_2si(x, x, 64, MPFR_RNDD);
             mpfr_add_ui(x, x, sig[i-1], MPFR_RNDD);
         }
-        mpfr_mul_2ui(x, x, 64*exp, MPFR_RNDD);
+        mpfr_mul_2si(x, x, 64*exp, MPFR_RNDD);
     }
 
     // X should already be initialized.
@@ -131,10 +131,10 @@ struct FastBigFloat
         mpfr_set_ui(x, sig[N-1], MPFR_RNDU);
         for(size_t i = N-1; i > 0; i--)
         {
-            mpfr_mul_2ui(x, x, 64, MPFR_RNDU);
+            mpfr_mul_2si(x, x, 64, MPFR_RNDU);
             mpfr_add_ui(x, x, sig[i-1], MPFR_RNDU);
         }
-        mpfr_mul_2ui(x, x, 64*exp, MPFR_RNDU);
+        mpfr_mul_2si(x, x, 64*exp, MPFR_RNDU);
     }
 };
 
