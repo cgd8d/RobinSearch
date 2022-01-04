@@ -545,7 +545,7 @@ uint64_t AddPrimeFactors()
                     rhs_update_rndu.set_ui(1);
 
                     for(size_t i = this_idx - 16;
-                        i < this_index;
+                        i < this_idx;
                         i++)
                     {
                         lhs_update_rndd.mul_ui_rndd(PrimeQueue[i]+1);
@@ -553,6 +553,10 @@ uint64_t AddPrimeFactors()
                         rhs_update_rndd.mul_ui_rndd(PrimeQueue[i]);
                         rhs_update_rndu.mul_ui_rndu(PrimeQueue[i]);
                     }
+                    lhs_update_rndu.get_rndu(mpfr_temp1);
+                    mpfr_mul(mpfr_temp1, mpfr_temp1, LHS_rndu, MPFR_RNDU);
+                    rhs_update_rndd.get_rndd(mpfr_temp2);
+                    mpfr_mul(mpfr_temp2, mpfr_temp2, NloglogN_rndd, MPFR_RNDD);
 
 
 
