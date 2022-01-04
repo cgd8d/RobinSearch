@@ -10,6 +10,7 @@
 #include <primesieve.hpp>
 #include <boost/circular_buffer.hpp>
 #include "PlotDelta.hpp"
+#include "FastBigFloat.hpp"
 
 const mpfr_prec_t Precision = 128;
 
@@ -527,8 +528,32 @@ uint64_t AddPrimeFactors()
             mpfr_clear(eps_rndd);
 
             uint64_t this_idx = PrimeQueue.size();
+            mpfr_t mpfr_temp1, mpfr_temp2;
+            mpfr_init2(mpfr_temp1, Precision);
+            mpfr_init2(mpfr_temp2, Precision);
             while(this_idx > PrimeQueueEpsilonStack.top().index)
             {
+                if(this_idx - PrimeQueueEpsilonStack.top().index >= 16)
+                {
+                    FastBigFloat<3> lhs_update_rndd;
+                    lhs_update_rndd.set_ui(1);
+                    FastBigFloat<3> lhs_update_rndu;
+                    lhs_update_rndu.set_ui(1);
+                    FastBigFloat<3> rhs_update_rndd;
+                    rhs_update_rndd.set_ui(1);
+                    FastBigFloat<3> rhs_update_rndu;
+                    rhs_update_rndu.set_ui(1);
+
+
+
+
+
+
+
+
+
+
+                }
                 this_idx--;
                 uint64_t this_p = PrimeQueue[this_idx];
                 mpfr_mul_ui(Number_rndd, Number_rndd, this_p, MPFR_RNDD);
