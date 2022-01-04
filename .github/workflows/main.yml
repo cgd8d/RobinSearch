@@ -56,6 +56,10 @@ jobs:
       - name: Report from perf
         run: sudo perf report -i perf.data
 
+      # Print perf source annotations.
+      - name: Source annotations from perf
+        run: sudo perf annotate -i perf.data Search
+
       # Run code
       # - name: Run
       #   run: ./Search
