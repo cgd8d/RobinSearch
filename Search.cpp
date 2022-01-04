@@ -565,6 +565,8 @@ uint64_t AddPrimeFactors()
                 cnt_NumUniquePrimeFactors++;
                 CheckNumber();
             }
+            mpfr_clear(mpfr_temp1);
+            mpfr_clear(mpfr_temp2);
 
             uint64_t retval = PrimeQueue.size() - this_idx;
             PrimeQueue.erase_end(retval);
