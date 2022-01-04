@@ -557,14 +557,22 @@ uint64_t AddPrimeFactors()
                     mpfr_mul(mpfr_temp1, mpfr_temp1, LHS_rndu, MPFR_RNDU);
                     rhs_update_rndd.get_rndd(mpfr_temp2);
                     mpfr_mul(mpfr_temp2, mpfr_temp2, NloglogN_rndd, MPFR_RNDD);
-
-
-
-
-
-
-
-
+                    if(mpfr_less_p(mpfr_temp1, mpfr_temp2))
+                    {
+                        mpfr_swap(mpfr_temp1, LHS_rndu);
+                        mpfr_swap(mpfr_temp2, NloglogN_rndd);
+                        lhs_update_rndd.get_rndd(mpfr_temp1);
+                        mpfr_mul(LHS_rndd, mpfr_temp1, LHS_rndd, MPFR_RNDD);
+                        rhs_update_rndd.get_rndd(mpfr_temp2);
+                        mpfr_mul(Number_rndd, Number_rndd, mpfr_temp2, MPFR_RNDD);
+                        rhs_update_rndu.get_rndu(mpfr_temp1);
+                        mpfr_mul(Number_rndu, Number_rndu, mpfr_temp1, MPFR_RNDU);
+                        this_idx -= 16;
+                        cnt_NumUniquePrimeFactors += 16;
+                        Number_factors.back().PrimeHi = PrimeQueue[this_idx];
+                        cnt_NumPrimeFactors += 16;
+                        continue; // Jumps back to start of loop.
+                    }
                 }
                 this_idx--;
                 uint64_t this_p = PrimeQueue[this_idx];
