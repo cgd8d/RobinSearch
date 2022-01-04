@@ -544,7 +544,15 @@ uint64_t AddPrimeFactors()
                     FastBigFloat<3> rhs_update_rndu;
                     rhs_update_rndu.set_ui(1);
 
-
+                    for(size_t i = this_idx - 16;
+                        i < this_index;
+                        i++)
+                    {
+                        lhs_update_rndd.mul_ui_rndd(PrimeQueue[i]+1);
+                        lhs_update_rndu.mul_ui_rndu(PrimeQueue[i]+1);
+                        rhs_update_rndd.mul_ui_rndd(PrimeQueue[i]);
+                        rhs_update_rndu.mul_ui_rndu(PrimeQueue[i]);
+                    }
 
 
 
