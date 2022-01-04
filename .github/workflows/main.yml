@@ -58,7 +58,7 @@ jobs:
 
       # Print perf source annotations.
       - name: Source annotations from perf
-        run: sudo perf annotate -i perf.data Search
+        run: sudo perf annotate -i perf.data
 
       # Run code
       # - name: Run
