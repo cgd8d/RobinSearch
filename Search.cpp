@@ -533,7 +533,8 @@ uint64_t AddPrimeFactors()
             mpfr_init2(mpfr_temp2, Precision);
             while(this_idx > PrimeQueueEpsilonStack.top().index)
             {
-                if(this_idx - PrimeQueueEpsilonStack.top().index >= 16)
+                const uint64_t BunchSize = 32;
+                if(this_idx - PrimeQueueEpsilonStack.top().index >= BunchSize)
                 {
                     FastBigFloat<3> lhs_update_rndd;
                     lhs_update_rndd.set_ui(1);
@@ -544,7 +545,7 @@ uint64_t AddPrimeFactors()
                     FastBigFloat<3> rhs_update_rndu;
                     rhs_update_rndu.set_ui(1);
 
-                    for(size_t i = this_idx - 16;
+                    for(size_t i = this_idx - BunchSize;
                         i < this_idx;
                         i++)
                     {
@@ -567,10 +568,10 @@ uint64_t AddPrimeFactors()
                         mpfr_mul(Number_rndd, Number_rndd, mpfr_temp2, MPFR_RNDD);
                         rhs_update_rndu.get_rndu(mpfr_temp1);
                         mpfr_mul(Number_rndu, Number_rndu, mpfr_temp1, MPFR_RNDU);
-                        this_idx -= 16;
-                        cnt_NumUniquePrimeFactors += 16;
+                        this_idx -= BunchSize;
+                        cnt_NumUniquePrimeFactors += BunchSize;
                         Number_factors.back().PrimeHi = PrimeQueue[this_idx];
-                        cnt_NumPrimeFactors += 16;
+                        cnt_NumPrimeFactors += BunchSize;
                         continue; // Jumps back to start of loop.
                     }
                 }
