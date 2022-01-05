@@ -533,7 +533,7 @@ uint64_t AddPrimeFactors()
             mpfr_init2(mpfr_temp2, Precision);
             while(this_idx > PrimeQueueEpsilonStack.top().index)
             {
-                const uint64_t BunchSize = 32;
+                const uint64_t BunchSize = 64;
                 if(this_idx - PrimeQueueEpsilonStack.top().index >= BunchSize)
                 {
                     FastBigFloat<3> lhs_update_rndd;
