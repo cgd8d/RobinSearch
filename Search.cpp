@@ -538,6 +538,7 @@ uint64_t AddPrimeFactors()
                 const uint64_t BunchSize = 64;
                 if(this_idx - PrimeQueueEpsilonStack.top().index >= BunchSize)
                 {
+                    cnt_FastBunchMul++;
                     FastBigFloat<3> lhs_update_rndd;
                     lhs_update_rndd.set_ui(1);
                     FastBigFloat<3> lhs_update_rndu;
@@ -574,6 +575,7 @@ uint64_t AddPrimeFactors()
                         cnt_NumUniquePrimeFactors += BunchSize;
                         Number_factors.back().PrimeHi = PrimeQueue[this_idx];
                         cnt_NumPrimeFactors += BunchSize;
+                        cnt_FastBunchMul_keep++;
                         continue; // Jumps back to start of loop.
                     }
                 }
@@ -664,6 +666,8 @@ int main()
     std::cout << "cnt_NumUniquePrimeFactors = " << cnt_NumUniquePrimeFactors << std::endl;
     std::cout << "cnt_EpsEvalForExpZero = " << cnt_EpsEvalForExpZero << std::endl;
     std::cout << "cnt_LogLogNUpdates = " << cnt_LogLogNUpdates << std::endl;
+    std::cout << "cnt_FastBunchMul = " << cnt_FastBunchMul << std::endl;
+    std::cout << "cnt_FastBunchMul_drop = " << cnt_FastBunchMul-cnt_FastBunchMul_keep << std::endl;
 
     mpfr_clear(Number_rndd);
     mpfr_clear(Number_rndu);
