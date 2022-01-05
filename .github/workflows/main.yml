@@ -50,7 +50,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph lbr -F 10 -o perf.data ./Search
+        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search
 
       # Print perf report.
       - name: Report from perf
