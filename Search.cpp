@@ -376,9 +376,13 @@ void IncrementExp()
     }
 }
 
+// Deal with checking the values and logging as appropriate.
+// Return true when the logarithms are recomputed,
+// false otherwise; this helps other parts of the code
+// know when certain work is appropriate to redo.
 double PrintNum_DeltaRatio = 2;
 double NextPrintDelta = 1;
-void CheckNumber()
+bool CheckNumber()
 {
     cnt_NumPrimeFactors++;
     if(mpfr_greaterequal_p(LHS_rndu, NloglogN_rndd))
@@ -443,6 +447,12 @@ void CheckNumber()
                 std::cout << "But N is small so this is expected." << std::endl;
             }
         }
+        return true;
+    }
+    else
+    {
+        // No update to logarithms, so return false.
+        return false;
     }
 }
 
@@ -533,10 +543,12 @@ uint64_t AddPrimeFactors()
             mpfr_t mpfr_temp1, mpfr_temp2;
             mpfr_init2(mpfr_temp1, Precision);
             mpfr_init2(mpfr_temp2, Precision);
+            bool TryFastGroup = true;
             while(this_idx > PrimeQueueEpsilonStack.top().index)
             {
                 const uint64_t BunchSize = 64;
-                if(this_idx - PrimeQueueEpsilonStack.top().index >= BunchSize)
+                if(TryFastGroup and
+                   this_idx - PrimeQueueEpsilonStack.top().index >= BunchSize)
                 {
                     cnt_FastBunchMul++;
                     FastBigFloat<3> lhs_update_rndd;
@@ -578,6 +590,12 @@ uint64_t AddPrimeFactors()
                         cnt_FastBunchMul_keep++;
                         continue; // Jumps back to start of loop.
                     }
+                    else
+                    {
+                        // Would be wasteful to try again before
+                        // logarithms are updated.
+                        TryFastGroup = false;
+                    }
                 }
                 this_idx--;
                 uint64_t this_p = PrimeQueue[this_idx];
@@ -588,7 +606,8 @@ uint64_t AddPrimeFactors()
                 mpfr_mul_ui(LHS_rndu, LHS_rndu, this_p+1, MPFR_RNDU);
                 Number_factors.back().PrimeHi = this_p;
                 cnt_NumUniquePrimeFactors++;
-                CheckNumber();
+                bool LogsWereRecomputed =  CheckNumber();
+                TryFastGroup = TryFastGroup or LogsWereRecomputed;
             }
             mpfr_clear(mpfr_temp1);
             mpfr_clear(mpfr_temp2);
