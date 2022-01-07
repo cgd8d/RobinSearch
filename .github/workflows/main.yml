@@ -46,7 +46,7 @@ jobs:
       - name: Compile
         run: |
           clang++ --version
-          clang++ -std=c++20 -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
+          clang++ -std=c++20 -g -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
 
       # Run code (perf)
       - name: Run (perf)
