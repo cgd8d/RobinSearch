@@ -39,7 +39,7 @@ jobs:
       # Run tests.
       - name: RunTests
         run: |
-          clang++ -std=c++20 -Wall -O3 -flto -march=native -lmpfr test/TestBigFloat.cpp -o TestBigFloat
+          clang++ -std=c++20 -g -Wall -O3 -flto -march=native -lmpfr test/TestBigFloat.cpp -o TestBigFloat
           ./TestBigFloat
 
       # Compile code
