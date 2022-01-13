@@ -51,7 +51,7 @@ jobs:
 
       # Run code (perf stat)
       - name: Run (perf stat)
-        run: perf stat -d ./Search
+        run: sudo perf stat -d ./Search
 
       # Run code (perf)
       - name: Run (perf)
