@@ -30,6 +30,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libmpfr-dev libprimesieve-dev libboost-dev gnuplot llvm
+          perf list
 
       # Compile test segments to assembly
       - name: CompileAsmTest
@@ -51,7 +52,7 @@ jobs:
 
       # Run code (perf stat)
       - name: Run (perf stat)
-        run: sudo perf stat -d ./Search
+        run: sudo perf stat -d -e cycles:u ./Search
 
       # Run code (perf)
       - name: Run (perf)
