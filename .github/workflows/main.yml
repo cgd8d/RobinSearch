@@ -52,7 +52,7 @@ jobs:
 
       # Run code (perf stat)
       - name: Run (perf stat)
-        run: sudo perf stat -d -e cycles:u ./Search
+        run: sudo perf stat -d -e cycles:G ./Search
 
       # Run code (perf)
       - name: Run (perf)
