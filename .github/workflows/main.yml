@@ -49,10 +49,17 @@ jobs:
           clang++ --version
           lscpu
           clang++ -std=c++20 -g -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
+          clang++ -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search_ndebug
 
       # Run code straight, no profiling.
-      - name: Run
-        run: ./Search
+      # Skip this - experience shows that the overhead from
+      # running perf record (at low frequency) is small.
+      #- name: Run
+      #  run: ./Search
+
+      # Run code straight, no profiling, ndebug version.
+      - name: Run (ndebug)
+        run: ./Search_ndebug
 
       # Run code (perf)
       - name: Run (perf)
