@@ -30,12 +30,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libmpfr-dev libprimesieve-dev libboost-dev gnuplot llvm
-          perf list
+          # perf list
 
       # Compile test segments to assembly
-      - name: CompileAsmTest
-        run: |
-          llc -O3 -o - CheckAssembly/LLVM_WideInt.ll
+      #- name: CompileAsmTest
+      #  run: |
+      #    llc -O3 -o - CheckAssembly/LLVM_WideInt.ll
 
       # Run tests.
       - name: RunTests
@@ -50,9 +50,9 @@ jobs:
           lscpu
           clang++ -std=c++20 -g -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
 
-      # Run code (perf stat)
-      - name: Run (perf stat)
-        run: sudo perf stat -d -e cycles:G ./Search
+      # Run code straight, no profiling.
+      - name: Run
+        run: ./Search
 
       # Run code (perf)
       - name: Run (perf)
