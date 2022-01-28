@@ -81,5 +81,7 @@ jobs:
       - name: Save delta plot
         uses: actions/upload-artifact@v2
         with:
-          name: delta_plot
-          path: DeltaPlot.png
+          name: delta_plots
+          path: |
+            DeltaPlot.png
+            DeltaPlotScaled.png
