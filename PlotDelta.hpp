@@ -43,7 +43,7 @@ struct PlotDeltaStruct
 
 
         loglogn_step = 0.001;
-        loglogn_next = 0;
+        loglogn_next = 5;
     }
 
     void AddPoint(double loglogn, double logdelta)
