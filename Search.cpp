@@ -540,9 +540,10 @@ uint64_t AddPrimeFactors()
             mpfr_clear(eps_rndd);
 
             uint64_t this_idx = PrimeQueue.size();
-            mpfr_t mpfr_temp1, mpfr_temp2;
+            mpfr_t mpfr_temp1, mpfr_temp2, mpfr_temp3;
             mpfr_init2(mpfr_temp1, Precision);
             mpfr_init2(mpfr_temp2, Precision);
+            mpfr_init2(mpfr_temp3, Precision);
             bool TryFastGroup = true;
             while(this_idx > PrimeQueueEpsilonStack.top().index)
             {
@@ -571,16 +572,15 @@ uint64_t AddPrimeFactors()
                     }
                     lhs_update_rndu.get_rndu(mpfr_temp1);
                     mpfr_mul(mpfr_temp1, mpfr_temp1, LHS_rndu, MPFR_RNDU);
-                    rhs_update_rndd.get_rndd(mpfr_temp2);
-                    mpfr_mul(mpfr_temp2, mpfr_temp2, NloglogN_rndd, MPFR_RNDD);
+                    rhs_update_rndd.get_rndd(mpfr_temp3);
+                    mpfr_mul(mpfr_temp2, mpfr_temp3, NloglogN_rndd, MPFR_RNDD);
                     if(mpfr_less_p(mpfr_temp1, mpfr_temp2))
                     {
                         mpfr_swap(mpfr_temp1, LHS_rndu);
                         mpfr_swap(mpfr_temp2, NloglogN_rndd);
+                        mpfr_mul(Number_rndd, Number_rndd, mpfr_temp3, MPFR_RNDD);
                         lhs_update_rndd.get_rndd(mpfr_temp1);
                         mpfr_mul(LHS_rndd, mpfr_temp1, LHS_rndd, MPFR_RNDD);
-                        rhs_update_rndd.get_rndd(mpfr_temp2);
-                        mpfr_mul(Number_rndd, Number_rndd, mpfr_temp2, MPFR_RNDD);
                         rhs_update_rndu.get_rndu(mpfr_temp1);
                         mpfr_mul(Number_rndu, Number_rndu, mpfr_temp1, MPFR_RNDU);
                         this_idx -= BunchSize;
@@ -611,6 +611,7 @@ uint64_t AddPrimeFactors()
             }
             mpfr_clear(mpfr_temp1);
             mpfr_clear(mpfr_temp2);
+            mpfr_clear(mpfr_temp3);
 
             uint64_t retval = PrimeQueue.size() - this_idx;
             PrimeQueue.erase_end(retval);
