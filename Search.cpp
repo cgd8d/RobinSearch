@@ -670,7 +670,7 @@ int main()
     cnt_NumUniquePrimeFactors++;
 
     // Continue processing.
-    while(Number_factors.front().Exp < 40)
+    while(Number_factors.front().Exp < 42)
     {
         while(true)
         {
