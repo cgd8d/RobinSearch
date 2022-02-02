@@ -612,7 +612,7 @@ uint64_t AddPrimeFactors()
                     }
                 }
 
-                // Lock in the updates
+                // Lock in the updates from bunches.
                 lhs_update_rndu.get_rndu(mpfr_temp1);
                 mpfr_mul(LHS_rndu, mpfr_temp1, LHS_rndu, MPFR_RNDU);
                 rhs_update_rndd.get_rndd(mpfr_temp3);
@@ -623,35 +623,25 @@ uint64_t AddPrimeFactors()
                 rhs_update_rndu.get_rndu(mpfr_temp1);
                 mpfr_mul(Number_rndu, Number_rndu, mpfr_temp1, MPFR_RNDU);
                         
-
-
-
-Then the next loop is while no logs are recomputed.
-
-
-
-
-     
-                        continue; // Jumps back to start of loop.
-                    }
-                    else
+                // Iterate factor by factor until we update logs.
+                while(this_idx > PrimeQueueEpsilonStack.top().index)
+                {
+                    this_idx--;
+                    uint64_t this_p = PrimeQueue[this_idx];
+                    mpfr_mul_ui(Number_rndd, Number_rndd, this_p, MPFR_RNDD);
+                    mpfr_mul_ui(Number_rndu, Number_rndu, this_p, MPFR_RNDU);
+                    mpfr_mul_ui(NloglogN_rndd, NloglogN_rndd, this_p, MPFR_RNDD);
+                    mpfr_mul_ui(LHS_rndd, LHS_rndd, this_p+1, MPFR_RNDD);
+                    mpfr_mul_ui(LHS_rndu, LHS_rndu, this_p+1, MPFR_RNDU);
+                    Number_factors.back().PrimeHi = this_p;
+                    cnt_NumUniquePrimeFactors++;
+                    bool LogsWereRecomputed =  CheckNumber();
+                    if(LogsWereRecomputed)
                     {
-                        // Would be wasteful to try again before
-                        // logarithms are updated.
-                        TryFastGroup = false;
+                        // Maybe we can do more fast bunches.
+                        break;
                     }
                 }
-                this_idx--;
-                uint64_t this_p = PrimeQueue[this_idx];
-                mpfr_mul_ui(Number_rndd, Number_rndd, this_p, MPFR_RNDD);
-                mpfr_mul_ui(Number_rndu, Number_rndu, this_p, MPFR_RNDU);
-                mpfr_mul_ui(NloglogN_rndd, NloglogN_rndd, this_p, MPFR_RNDD);
-                mpfr_mul_ui(LHS_rndd, LHS_rndd, this_p+1, MPFR_RNDD);
-                mpfr_mul_ui(LHS_rndu, LHS_rndu, this_p+1, MPFR_RNDU);
-                Number_factors.back().PrimeHi = this_p;
-                cnt_NumUniquePrimeFactors++;
-                bool LogsWereRecomputed =  CheckNumber();
-                TryFastGroup = TryFastGroup or LogsWereRecomputed;
             }
             mpfr_clear(mpfr_temp1);
             mpfr_clear(mpfr_temp2);
