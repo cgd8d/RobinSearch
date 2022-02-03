@@ -548,7 +548,6 @@ uint64_t AddPrimeFactors()
             while(this_idx > PrimeQueueEpsilonStack.top().index)
             {
                 // Iterate
-                const uint64_t BunchSize = 128;
                 FastBigFloat<3> lhs_update_rndd;
                 lhs_update_rndd.set_ui(1);
                 FastBigFloat<3> lhs_update_rndu;
@@ -558,50 +557,55 @@ uint64_t AddPrimeFactors()
                 FastBigFloat<3> rhs_update_rndu;
                 rhs_update_rndu.set_ui(1);
 
-                FastBigFloat<3> lhs_update_rndd_test = lhs_update_rndd;
-                FastBigFloat<3> lhs_update_rndu_test = lhs_update_rndu;
-                FastBigFloat<3> rhs_update_rndd_test = rhs_update_rndd;
-                FastBigFloat<3> rhs_update_rndu_test = rhs_update_rndu;
-
-                while(this_idx - PrimeQueueEpsilonStack.top().index >= BunchSize)
+                // Run with sequence bunch sizes.
+                for(uint64_t BunchSize : {128})
                 {
-                    cnt_FastBunchMul++;
 
-                    for(size_t i = this_idx - BunchSize;
-                        i < this_idx;
-                        i++)
-                    {
-                        lhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]+1);
-                        lhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]+1);
-                        rhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]);
-                        rhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]);
-                    }
+                    FastBigFloat<3> lhs_update_rndd_test = lhs_update_rndd;
+                    FastBigFloat<3> lhs_update_rndu_test = lhs_update_rndu;
+                    FastBigFloat<3> rhs_update_rndd_test = rhs_update_rndd;
+                    FastBigFloat<3> rhs_update_rndu_test = rhs_update_rndu;
 
-                    // Check if test values indicate possible violation of bound.
-                    lhs_update_rndu_test.get_rndu(mpfr_temp1);
-                    mpfr_mul(mpfr_temp1, mpfr_temp1, LHS_rndu, MPFR_RNDU);
-                    rhs_update_rndd_test.get_rndd(mpfr_temp3);
-                    mpfr_mul(mpfr_temp2, mpfr_temp3, NloglogN_rndd, MPFR_RNDD);
+                    while(this_idx - PrimeQueueEpsilonStack.top().index >= BunchSize)
+                    {
+                        cnt_FastBunchMul++;
 
-                    if(mpfr_less_p(mpfr_temp1, mpfr_temp2))
-                    {
-                        // LHS < RHS is guaranteed.
-                        // Save current progress and keep going.
-                        lhs_update_rndd = lhs_update_rndd_test;
-                        lhs_update_rndu = lhs_update_rndu_test;
-                        rhs_update_rndd = rhs_update_rndd_test;
-                        rhs_update_rndu = rhs_update_rndu_test;
-                        this_idx -= BunchSize;
-                        cnt_NumUniquePrimeFactors += BunchSize;
-                        Number_factors.back().PrimeHi = PrimeQueue[this_idx];
-                        cnt_NumPrimeFactors += BunchSize;
-                        cnt_FastBunchMul_keep++;
-                    }
-                    else
-                    {
-                        // Possibly LHS >= RHS.
-                        // We need to drop that last bunch and go more carefully.
-                        break;
+                        for(size_t i = this_idx - BunchSize;
+                            i < this_idx;
+                            i++)
+                        {
+                            lhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]+1);
+                            lhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]+1);
+                            rhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]);
+                            rhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]);
+                        }
+
+                        // Check if test values indicate possible violation of bound.
+                        lhs_update_rndu_test.get_rndu(mpfr_temp1);
+                        mpfr_mul(mpfr_temp1, mpfr_temp1, LHS_rndu, MPFR_RNDU);
+                        rhs_update_rndd_test.get_rndd(mpfr_temp3);
+                        mpfr_mul(mpfr_temp2, mpfr_temp3, NloglogN_rndd, MPFR_RNDD);
+
+                        if(mpfr_less_p(mpfr_temp1, mpfr_temp2))
+                        {
+                            // LHS < RHS is guaranteed.
+                            // Save current progress and keep going.
+                            lhs_update_rndd = lhs_update_rndd_test;
+                            lhs_update_rndu = lhs_update_rndu_test;
+                            rhs_update_rndd = rhs_update_rndd_test;
+                            rhs_update_rndu = rhs_update_rndu_test;
+                            this_idx -= BunchSize;
+                            cnt_NumUniquePrimeFactors += BunchSize;
+                            Number_factors.back().PrimeHi = PrimeQueue[this_idx];
+                            cnt_NumPrimeFactors += BunchSize;
+                            cnt_FastBunchMul_keep++;
+                        }
+                        else
+                        {
+                            // Possibly LHS >= RHS.
+                            // We need to drop that last bunch and go more carefully.
+                            break;
+                        }
                     }
                 }
 
