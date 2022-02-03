@@ -548,7 +548,7 @@ uint64_t AddPrimeFactors()
             while(this_idx > PrimeQueueEpsilonStack.top().index)
             {
                 // Iterate
-                const uint64_t BunchSize = 64;
+                const uint64_t BunchSize = 128;
                 FastBigFloat<3> lhs_update_rndd;
                 lhs_update_rndd.set_ui(1);
                 FastBigFloat<3> lhs_update_rndu;
