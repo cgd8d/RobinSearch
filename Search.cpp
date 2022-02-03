@@ -545,13 +545,8 @@ uint64_t AddPrimeFactors()
             mpfr_init2(mpfr_temp2, Precision);
             mpfr_init2(mpfr_temp3, Precision);
 
-
-            // bool TryFastGroup = true;
-
-
             while(this_idx > PrimeQueueEpsilonStack.top().index)
             {
-
                 // Iterate
                 const uint64_t BunchSize = 64;
                 FastBigFloat<3> lhs_update_rndd;
@@ -568,9 +563,7 @@ uint64_t AddPrimeFactors()
                 FastBigFloat<3> rhs_update_rndd_test = rhs_update_rndd;
                 FastBigFloat<3> rhs_update_rndu_test = rhs_update_rndu;
 
-                while(
-///TryFastGroup and
-                   this_idx - PrimeQueueEpsilonStack.top().index >= BunchSize)
+                while(this_idx - PrimeQueueEpsilonStack.top().index >= BunchSize)
                 {
                     cnt_FastBunchMul++;
 
