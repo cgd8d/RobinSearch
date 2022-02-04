@@ -558,7 +558,7 @@ uint64_t AddPrimeFactors()
                 rhs_update_rndu.set_ui(1);
 
                 // Run with sequence bunch sizes.
-                for(uint64_t BunchSize : {128, 16})
+                for(uint64_t BunchSize : {256, 16})
                 {
 
                     FastBigFloat<3> lhs_update_rndd_test = lhs_update_rndd;
