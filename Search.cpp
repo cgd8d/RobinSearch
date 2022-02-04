@@ -118,7 +118,8 @@ struct ComputeEpsilonStruct
         }
         mpfr_ui_div(rop, 1, tmp_mpfr, MPFR_RNDD);
         mpfr_log1p(rop, rop, MPFR_RNDD);
-        mpfr_log_ui(tmp_mpfr, p, MPFR_RNDU);
+        mpfr_set_ui(tmp_mpfr, p, MPFR_RNDU);
+        mpfr_log(tmp_mpfr, tmp_mpfr, MPFR_RNDU);
         mpfr_div(rop, rop, tmp_mpfr, MPFR_RNDD);
     }
     void Do_rndu(mpfr_t rop, uint64_t p, uint8_t e)
@@ -131,7 +132,8 @@ struct ComputeEpsilonStruct
         }
         mpfr_ui_div(rop, 1, tmp_mpfr, MPFR_RNDU);
         mpfr_log1p(rop, rop, MPFR_RNDU);
-        mpfr_log_ui(tmp_mpfr, p, MPFR_RNDD);
+        mpfr_set_ui(tmp_mpfr, p, MPFR_RNDD);
+        mpfr_log(tmp_mpfr, tmp_mpfr, MPFR_RNDD);
         mpfr_div(rop, rop, tmp_mpfr, MPFR_RNDU);
     }
 }
