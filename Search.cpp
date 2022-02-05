@@ -8,7 +8,6 @@
 #include <stack>
 #include <mpfr.h>
 #include <primesieve.hpp>
-#include <boost/circular_buffer.hpp>
 #include "PlotDelta.hpp"
 #include "FastBigFloat.hpp"
 
@@ -467,7 +466,8 @@ Internally we record calculations of the critical
 epsilon, since the goal is to compute it for a very
 small subset of factors.
 */
-boost::circular_buffer<uint64_t> PrimeQueue(8192);
+std::vector<uint64_t> PrimeQueue(8192);
+size_t NextPrimeIdx = PrimeQueue.size();
 primesieve::iterator PrimeQueueProducer;
 struct PrimeQueueEpsilonGroup
 {
@@ -499,19 +499,21 @@ uint64_t AddPrimeFactors()
         throw std::invalid_argument("AddPrimeFactors called with bad Number_factors.");
     }
 
-    // Fill up PrimeQueue.
-    assert(PrimeQueueEpsilonStack.empty() == PrimeQueue.empty());
+    // Fill up PrimeQueue if it's empty.
+    assert(PrimeQueueEpsilonStack.empty() == (NextPrimeIdx == PrimeQueue.size()));
     if(PrimeQueueEpsilonStack.empty())
     {
-        while(not PrimeQueue.full())
+        for(size_t i = 0; i < PrimeQueue.size(); i++)
         {
-            PrimeQueue.push_front(PrimeQueueProducer.next_prime());
+            PrimeQueue[i] = PrimeQueueProducer.next_prime();
         }
-        PrimeQueueEpsilonStack.emplace(0);
+        NextPrimeIdx = 0;
+        PrimeQueueEpsilonStack.emplace(PrimeQueue.size() - 1);
         cnt_EpsEvalForExpZero++;
     }
 
     // Find a safe number of primes to add.
+    uint64_t NextPrimeIdx_init = NextPrimeIdx;
     while(true)
     {
 
@@ -541,13 +543,12 @@ uint64_t AddPrimeFactors()
             }
             mpfr_clear(eps_rndd);
 
-            uint64_t this_idx = PrimeQueue.size();
             mpfr_t mpfr_temp1, mpfr_temp2, mpfr_temp3;
             mpfr_init2(mpfr_temp1, Precision);
             mpfr_init2(mpfr_temp2, Precision);
             mpfr_init2(mpfr_temp3, Precision);
 
-            while(this_idx > PrimeQueueEpsilonStack.top().index)
+            while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
             {
                 // Iterate
                 FastBigFloat<3> lhs_update_rndd;
@@ -568,12 +569,12 @@ uint64_t AddPrimeFactors()
                     FastBigFloat<3> rhs_update_rndd_test = rhs_update_rndd;
                     FastBigFloat<3> rhs_update_rndu_test = rhs_update_rndu;
 
-                    while(this_idx - PrimeQueueEpsilonStack.top().index >= BunchSize)
+                    while(NextPrimeIdx + BunchSize - 1 <= PrimeQueueEpsilonStack.top().index)
                     {
                         cnt_FastBunchMul++;
 
-                        for(size_t i = this_idx - BunchSize;
-                            i < this_idx;
+                        for(size_t i = NextPrimeIdx;
+                            i < NextPrimeIdx + BunchSize;
                             i++)
                         {
                             lhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]+1);
@@ -596,9 +597,9 @@ uint64_t AddPrimeFactors()
                             lhs_update_rndu = lhs_update_rndu_test;
                             rhs_update_rndd = rhs_update_rndd_test;
                             rhs_update_rndu = rhs_update_rndu_test;
-                            this_idx -= BunchSize;
+                            NextPrimeIdx += BunchSize;
                             cnt_NumUniquePrimeFactors += BunchSize;
-                            Number_factors.back().PrimeHi = PrimeQueue[this_idx];
+                            Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx-1];
                             cnt_NumPrimeFactors += BunchSize;
                             cnt_FastBunchMul_keep++;
                         }
@@ -623,16 +624,16 @@ uint64_t AddPrimeFactors()
                 mpfr_mul(Number_rndu, Number_rndu, mpfr_temp1, MPFR_RNDU);
                         
                 // Iterate factor by factor until we update logs.
-                while(this_idx > PrimeQueueEpsilonStack.top().index)
+                while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
                 {
-                    this_idx--;
-                    uint64_t this_p = PrimeQueue[this_idx];
+                    uint64_t this_p = PrimeQueue[NextPrimeIdx];
                     mpfr_mul_ui(Number_rndd, Number_rndd, this_p, MPFR_RNDD);
                     mpfr_mul_ui(Number_rndu, Number_rndu, this_p, MPFR_RNDU);
                     mpfr_mul_ui(NloglogN_rndd, NloglogN_rndd, this_p, MPFR_RNDD);
                     mpfr_mul_ui(LHS_rndd, LHS_rndd, this_p+1, MPFR_RNDD);
                     mpfr_mul_ui(LHS_rndu, LHS_rndu, this_p+1, MPFR_RNDU);
                     Number_factors.back().PrimeHi = this_p;
+                    NextPrimeIdx++;
                     cnt_NumUniquePrimeFactors++;
                     bool LogsWereRecomputed =  CheckNumber();
                     if(LogsWereRecomputed)
@@ -646,22 +647,21 @@ uint64_t AddPrimeFactors()
             mpfr_clear(mpfr_temp2);
             mpfr_clear(mpfr_temp3);
 
-            uint64_t retval = PrimeQueue.size() - this_idx;
-            PrimeQueue.erase_end(retval);
+            uint64_t retval = NextPrimeIdx - NextPrimeIdx_init;
             PrimeQueueEpsilonStack.pop();
             return retval;
         }
 
         // Have we already shown that no primes can be
         // safely added?
-        if(PrimeQueueEpsilonStack.top().index + 1 == PrimeQueue.size())
+        if(PrimeQueueEpsilonStack.top().index == NextPrimeIdx)
         {
             return 0;
         }
 
         // The last possibility is that we should compute
         // another epsilon.
-        uint64_t new_idx = (PrimeQueueEpsilonStack.top().index + PrimeQueue.size())/2;
+        uint64_t new_idx = (NextPrimeIdx + PrimeQueueEpsilonStack.top().index)/2;
         PrimeQueueEpsilonStack.emplace(new_idx);
         cnt_EpsEvalForExpZero++;
     }
