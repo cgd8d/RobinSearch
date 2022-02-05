@@ -514,7 +514,7 @@ uint64_t AddPrimeFactors()
     }
 
     // Find a safe number of primes to add.
-    NextPrimeIdx_init = NextPrimeIdx;
+    uint64_t NextPrimeIdx_init = NextPrimeIdx;
     while(true)
     {
 
@@ -649,7 +649,6 @@ uint64_t AddPrimeFactors()
             mpfr_clear(mpfr_temp3);
 
             uint64_t retval = NextPrimeIdx - NextPrimeIdx_init;
-            PrimeQueue.erase_end(retval);
             PrimeQueueEpsilonStack.pop();
             return retval;
         }
