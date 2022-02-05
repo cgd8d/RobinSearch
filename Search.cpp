@@ -8,7 +8,6 @@
 #include <stack>
 #include <mpfr.h>
 #include <primesieve.hpp>
-#include <boost/circular_buffer.hpp>
 #include "PlotDelta.hpp"
 #include "FastBigFloat.hpp"
 
