@@ -48,7 +48,7 @@ std::ostream& operator<<(std::ostream& os, mpfr_t op)
     int ret;
     ret = mpfr_asprintf(
         &tmp_str,
-        "%.25RNg",
+        "%.40RNg",
         op);
     if(ret < 0)
     {
