@@ -11,7 +11,7 @@
 #include "PlotDelta.hpp"
 #include "FastBigFloat.hpp"
 
-const mpfr_prec_t Precision = 128;
+const mpfr_prec_t Precision = 100;
 
 /*
 Convention: All mpfr_t values should have their rounding
