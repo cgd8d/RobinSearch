@@ -73,7 +73,7 @@ struct FastBigFloat
 
         Anyway, come back and experiment with this one.
         */
-        if(sig[N-1] == 0)
+        if(__builtin_unpredictable(sig[N-1] == 0))
         {
             for(size_t i = N-1; i > 0; i--)
             {
