@@ -93,7 +93,7 @@ struct FastBigFloat
 
         // Then increment by one.
         sig[0]++;
-        if(sig[0] == 0) // Very unlikely.
+        if(sig[0] == 0) [[unlikely]]
         {
             bool inc_exp = true;
             for(size_t i = 1; i < N; i++)
