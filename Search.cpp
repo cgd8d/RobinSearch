@@ -466,7 +466,7 @@ Internally we record calculations of the critical
 epsilon, since the goal is to compute it for a very
 small subset of factors.
 */
-std::vector<uint64_t> PrimeQueue(1 << 15);
+std::vector<uint64_t> PrimeQueue(1 << 14);
 size_t NextPrimeIdx = PrimeQueue.size();
 primesieve::iterator PrimeQueueProducer;
 struct PrimeQueueEpsilonGroup
