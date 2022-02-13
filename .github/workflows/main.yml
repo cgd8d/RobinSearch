@@ -67,7 +67,7 @@ jobs:
 
       # Print perf report.
       - name: Report from perf
-        run: sudo perf report -i perf.data
+        run: sudo perf report -i perf.data --call-graph=graph,0.1
 
       # Print perf source annotations.
       - name: Source annotations from perf
