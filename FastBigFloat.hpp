@@ -73,18 +73,13 @@ struct FastBigFloat
 
         Anyway, come back and experiment with this one.
         */
-        if(sig[N-1] == 0)
+        bool DoMove = (sig[N-1] == 0);
+        for(size_t i = N-1; i > 0; i--)
         {
-            for(size_t i = N-1; i > 0; i--)
-            {
-                sig[i] = sig[i-1];
-            }
-            sig[0] = lo;
+            if(__builtin_unpredictable(DoMove)) sig[i] = sig[i-1];
         }
-        else
-        {
-            exp++;
-        }
+        if(__builtin_unpredictable(DoMove)) sig[0] = lo;
+        if(__builtin_unpredictable(not DoMove)) exp++;
     }
 
     void mul_ui_rndu(uint64_t x)
