@@ -420,12 +420,11 @@ bool CheckNumber()
         cnt_LogLogNUpdates++;
 
         // Compute delta = exp(gamma) loglogN - sigma(N)/N.
-        mpfr_t tmp_mpfr;
-        mpfr_init2(tmp_mpfr, Precision);
-        mpfr_sub(tmp_mpfr, NloglogN_rndd, LHS_rndu, MPFR_RNDD);
-        mpfr_div(tmp_mpfr, tmp_mpfr, Number_rndu, MPFR_RNDD);
-        double delta = exp_gamma*mpfr_get_d(tmp_mpfr, MPFR_RNDD);
-        mpfr_clear(tmp_mpfr);
+        // Acquire mpfr_helper.a.
+        mpfr_sub(mpfr_helper.a, NloglogN_rndd, LHS_rndu, MPFR_RNDD);
+        mpfr_div(mpfr_helper.a, mpfr_helper.a, Number_rndu, MPFR_RNDD);
+        double delta = exp_gamma*mpfr_get_d(mpfr_helper.a, MPFR_RNDD);
+        // Release mpfr_helper.a.
 
         // Go ahead and print information.
         if(LogLogN_d > 2.5 and delta <= NextPrintDelta)
