@@ -41,6 +41,29 @@ void CheckTypes()
         "mp_limb_t is not 64 bits.");
 }
 
+// Helper object to store initialized mpfr objects.
+struct mpfr_helper_t
+{
+    mpfr_t a;
+    mpfr_t b;
+    mpfr_t c;
+
+    mpfr_helper_t()
+    {
+        mpfr_init2(a, Precision);
+        mpfr_init2(b, Precision);
+        mpfr_init2(c, Precision);
+    }
+
+    ~mpfr_helper_t()
+    {
+        mpfr_clear(a);
+        mpfr_clear(b);
+        mpfr_clear(c);
+    }
+}
+mpfr_helper;
+
 // Helper function to print mpfr_t with error checking.
 std::ostream& operator<<(std::ostream& os, mpfr_t op)
 {
@@ -397,12 +420,11 @@ bool CheckNumber()
         cnt_LogLogNUpdates++;
 
         // Compute delta = exp(gamma) loglogN - sigma(N)/N.
-        mpfr_t tmp_mpfr;
-        mpfr_init2(tmp_mpfr, Precision);
-        mpfr_sub(tmp_mpfr, NloglogN_rndd, LHS_rndu, MPFR_RNDD);
-        mpfr_div(tmp_mpfr, tmp_mpfr, Number_rndu, MPFR_RNDD);
-        double delta = exp_gamma*mpfr_get_d(tmp_mpfr, MPFR_RNDD);
-        mpfr_clear(tmp_mpfr);
+        // Acquire mpfr_helper.a.
+        mpfr_sub(mpfr_helper.a, NloglogN_rndd, LHS_rndu, MPFR_RNDD);
+        mpfr_div(mpfr_helper.a, mpfr_helper.a, Number_rndu, MPFR_RNDD);
+        double delta = exp_gamma*mpfr_get_d(mpfr_helper.a, MPFR_RNDD);
+        // Release mpfr_helper.a.
 
         // Go ahead and print information.
         if(LogLogN_d > 2.5 and delta <= NextPrintDelta)
@@ -524,14 +546,13 @@ uint64_t AddPrimeFactors()
             PrimeQueueEpsilonStack.top().Epsilon_rndu,
             PrimeGroupQueue.top()->CriticalEpsilon_rndd))
         {
-            mpfr_t eps_rndd;
-            mpfr_init2(eps_rndd, Precision);
+            // Acquire mpfr_helper.a (holds eps_rndd)
             ComputeEpsilon.Do_rndd(
-                eps_rndd,
+                mpfr_helper.a,
                 PrimeQueue[PrimeQueueEpsilonStack.top().index],
                 0);
             if(mpfr_lessequal_p(
-                eps_rndd,
+                mpfr_helper.a,
                 PrimeGroupQueue.top()->CriticalEpsilon_rndu))
             {
                 std::cerr << "Unable to compare epsilon for "
@@ -541,13 +562,11 @@ uint64_t AddPrimeFactors()
                           << std::endl;
                 throw std::runtime_error("Insufficient accuracy for epsilon.");
             }
-            mpfr_clear(eps_rndd);
+            // Release mpfr_helper.a
 
-            mpfr_t mpfr_temp1, mpfr_temp2, mpfr_temp3;
-            mpfr_init2(mpfr_temp1, Precision);
-            mpfr_init2(mpfr_temp2, Precision);
-            mpfr_init2(mpfr_temp3, Precision);
-
+            // Acquire mpfr_helper.a.
+            // Acquire mpfr_helper.b.
+            // Acquire mpfr_helper.c.
             while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
             {
                 // Iterate
@@ -590,12 +609,12 @@ uint64_t AddPrimeFactors()
                         }
 
                         // Check if test values indicate possible violation of bound.
-                        lhs_update_rndu_test.get_rndu(mpfr_temp1);
-                        mpfr_mul(mpfr_temp1, mpfr_temp1, LHS_rndu, MPFR_RNDU);
-                        rhs_update_rndd_test.get_rndd(mpfr_temp3);
-                        mpfr_mul(mpfr_temp2, mpfr_temp3, NloglogN_rndd, MPFR_RNDD);
+                        lhs_update_rndu_test.get_rndu(mpfr_helper.a);
+                        mpfr_mul(mpfr_helper.a, mpfr_helper.a, LHS_rndu, MPFR_RNDU);
+                        rhs_update_rndd_test.get_rndd(mpfr_helper.c);
+                        mpfr_mul(mpfr_helper.b, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
 
-                        if(mpfr_less_p(mpfr_temp1, mpfr_temp2))
+                        if(mpfr_less_p(mpfr_helper.a, mpfr_helper.b))
                         {
                             // LHS < RHS is guaranteed.
                             // Save current progress and keep going.
@@ -621,15 +640,15 @@ uint64_t AddPrimeFactors()
                 }
 
                 // Lock in the updates from bunches.
-                lhs_update_rndu.get_rndu(mpfr_temp1);
-                mpfr_mul(LHS_rndu, mpfr_temp1, LHS_rndu, MPFR_RNDU);
-                rhs_update_rndd.get_rndd(mpfr_temp3);
-                mpfr_mul(NloglogN_rndd, mpfr_temp3, NloglogN_rndd, MPFR_RNDD);
-                mpfr_mul(Number_rndd, Number_rndd, mpfr_temp3, MPFR_RNDD);
-                lhs_update_rndd.get_rndd(mpfr_temp1);
-                mpfr_mul(LHS_rndd, mpfr_temp1, LHS_rndd, MPFR_RNDD);
-                rhs_update_rndu.get_rndu(mpfr_temp1);
-                mpfr_mul(Number_rndu, Number_rndu, mpfr_temp1, MPFR_RNDU);
+                lhs_update_rndu.get_rndu(mpfr_helper.a);
+                mpfr_mul(LHS_rndu, mpfr_helper.a, LHS_rndu, MPFR_RNDU);
+                rhs_update_rndd.get_rndd(mpfr_helper.c);
+                mpfr_mul(NloglogN_rndd, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
+                mpfr_mul(Number_rndd, Number_rndd, mpfr_helper.c, MPFR_RNDD);
+                lhs_update_rndd.get_rndd(mpfr_helper.a);
+                mpfr_mul(LHS_rndd, mpfr_helper.a, LHS_rndd, MPFR_RNDD);
+                rhs_update_rndu.get_rndu(mpfr_helper.a);
+                mpfr_mul(Number_rndu, Number_rndu, mpfr_helper.a, MPFR_RNDU);
                         
                 // Iterate factor by factor until we update logs.
                 while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
@@ -651,9 +670,9 @@ uint64_t AddPrimeFactors()
                     }
                 }
             }
-            mpfr_clear(mpfr_temp1);
-            mpfr_clear(mpfr_temp2);
-            mpfr_clear(mpfr_temp3);
+            // Release mpfr_helper.a
+            // Release mpfr_helper.b
+            // Release mpfr_helper.c
 
             uint64_t retval = NextPrimeIdx - NextPrimeIdx_init;
             PrimeQueueEpsilonStack.pop();
