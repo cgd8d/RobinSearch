@@ -560,8 +560,14 @@ uint64_t AddPrimeFactors()
                 FastBigFloat<3> rhs_update_rndu;
                 rhs_update_rndu.set_ui(1);
 
+                // Fast bunches have to throw away work when they
+                // advance too far, rather than just updating
+                // logarithms.  So we separately talk new bounds
+                // on how far we can advance with bunches.
+                size_t MaxBunchIdx = PrimeQueueEpsilonStack.top().index;
+
                 // Run with sequence bunch sizes.
-                for(uint64_t BunchSize : {256, 16})
+                for(uint64_t BunchSize : {512, 64, 32, 16, 8, 4})
                 {
 
                     FastBigFloat<3> lhs_update_rndd_test = lhs_update_rndd;
@@ -569,7 +575,7 @@ uint64_t AddPrimeFactors()
                     FastBigFloat<3> rhs_update_rndd_test = rhs_update_rndd;
                     FastBigFloat<3> rhs_update_rndu_test = rhs_update_rndu;
 
-                    while(NextPrimeIdx + BunchSize - 1 <= PrimeQueueEpsilonStack.top().index)
+                    while(NextPrimeIdx + BunchSize - 1 <= MaxBunchIdx)
                     {
                         cnt_FastBunchMul++;
 
@@ -607,6 +613,8 @@ uint64_t AddPrimeFactors()
                         {
                             // Possibly LHS >= RHS.
                             // We need to drop that last bunch and go more carefully.
+                            // Reduce MaxBunchIdx so we won't try the same thing again.
+                            MaxBunchIdx = NextPrimeIdx + BunchSize - 2;
                             break;
                         }
                     }
