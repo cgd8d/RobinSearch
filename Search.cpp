@@ -567,7 +567,7 @@ uint64_t AddPrimeFactors()
                 size_t MaxBunchIdx = PrimeQueueEpsilonStack.top().index;
 
                 // Run with sequence bunch sizes.
-                for(uint64_t BunchSize : {512, 64, 8})
+                for(uint64_t BunchSize : {512, 64, 32, 16, 8, 4})
                 {
 
                     FastBigFloat<3> lhs_update_rndd_test = lhs_update_rndd;
