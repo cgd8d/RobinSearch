@@ -603,11 +603,6 @@ uint64_t AddPrimeFactors()
                             i++)
                         {
                             lhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]+1);
-                        }
-                        for(size_t i = NextPrimeIdx;
-                            i < NextPrimeIdx + BunchSize;
-                            i++)
-                        {
                             lhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]+1);
                         }
                         for(size_t i = NextPrimeIdx;
@@ -615,11 +610,6 @@ uint64_t AddPrimeFactors()
                             i++)
                         {
                             rhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]);
-                        }
-                        for(size_t i = NextPrimeIdx;
-                            i < NextPrimeIdx + BunchSize;
-                            i++)
-                        {
                             rhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]);
                         }
 
