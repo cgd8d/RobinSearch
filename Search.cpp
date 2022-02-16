@@ -586,6 +586,7 @@ uint64_t AddPrimeFactors()
                 size_t MaxBunchIdx = PrimeQueueEpsilonStack.top().index;
 
                 // Run with sequence bunch sizes.
+                #pragma clang loop unroll(full)
                 for(uint64_t BunchSize : {512, 64, 32, 16, 8, 4})
                 {
 
@@ -598,6 +599,7 @@ uint64_t AddPrimeFactors()
                     {
                         cnt_FastBunchMul++;
 
+                        #pragma clang loop unroll(full)
                         for(size_t i = NextPrimeIdx;
                             i < NextPrimeIdx + BunchSize;
                             i++)
