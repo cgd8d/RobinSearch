@@ -35,7 +35,7 @@ jobs:
 
       # Run code straight, no profiling.
       - name: Run
-        run: ./Search
+        run: ./Search 43
 
      # Compile code from main branch
       - name: Compile main
@@ -46,4 +46,4 @@ jobs:
 
       # Run main code straight, no profiling.
       - name: Run main
-        run: ./Search
+        run: ./Search 43
