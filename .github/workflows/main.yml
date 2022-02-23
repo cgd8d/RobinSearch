@@ -41,12 +41,23 @@ jobs:
           clang++ -std=c++20 -g -Wall -O3 -flto -march=native -lmpfr test/TestBigFloat.cpp -o TestBigFloat
           ./TestBigFloat
 
+      # Compile instrumented code
+      - name: Compile (instrumented)
+        run: |
+          clang++ --version
+          lscpu
+          clang++ -fprofile-instr-generate -std=c++20 -g -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
+
+      # Run instrumented code
+      - name: Run (instrumented)
+        run: ./Search 38
+
       # Compile code
       - name: Compile
         run: |
           clang++ --version
           lscpu
-          clang++ -std=c++20 -g -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
+          clang++ -fprofile-instr-use -std=c++20 -g -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
           #clang++ -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search_ndebug
 
       # Run code straight, no profiling.
