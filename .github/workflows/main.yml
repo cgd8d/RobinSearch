@@ -46,7 +46,7 @@ jobs:
         run: |
           clang++ --version
           lscpu
-          clang++ -fprofile-instr-generate -std=c++20 -g -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
+          clang++ -fprofile-instr-generate=code.profdata -std=c++20 -g -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
 
       # Run instrumented code
       - name: Run (instrumented)
@@ -57,7 +57,7 @@ jobs:
         run: |
           clang++ --version
           lscpu
-          clang++ -fprofile-instr-use -std=c++20 -g -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
+          clang++ -fprofile-instr-use=code.profdata -std=c++20 -g -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
           #clang++ -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search_ndebug
 
       # Run code straight, no profiling.
