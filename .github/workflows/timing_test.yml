@@ -31,7 +31,10 @@ jobs:
       - name: Compile
         run: |
           git rev-parse --short HEAD
-          clang++ -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
+          clang++ -fprofile-instr-generate=code.profraw -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
+          ./Search 38
+          llvm-profdata merge -output=code.profdata code.profraw
+          clang++ -fprofile-instr-use=code.profdata -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
 
       # Run code straight, no profiling.
       - name: Run
