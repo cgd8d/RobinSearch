@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>
 #include <stdexcept>
 #include <cassert>
 #include <iostream>
@@ -696,8 +697,25 @@ uint64_t AddPrimeFactors()
     }
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+    if(argc != 2)
+    {
+        std::cerr << "Incorrect number of command-line arguments: "
+                  << argc
+                  << std::endl;
+        return 1;
+    }
+    unsigned long MaxExp = std::strtoul(argv[1], nullptr, 0);
+    if(MaxExp >= 64)
+    {
+        std::cerr << "MaxExp is too large ("
+                  << MaxExp
+                  << ")"
+                  << std::endl;
+        return 1;
+    }
+
     CheckTypes();
     mpfr_init2(Number_rndd, Precision);
     mpfr_init2(Number_rndu, Precision);
@@ -732,7 +750,7 @@ int main()
     cnt_NumUniquePrimeFactors++;
 
     // Continue processing.
-    while(Number_factors.front().Exp < 43)
+    while(Number_factors.front().Exp < MaxExp)
     {
         while(true)
         {
