@@ -27,7 +27,7 @@ jobs:
       - name: Setup
         run: |
           sudo apt-get update
-          sudo apt-get install libmpfr-dev libprimesieve-dev gnuplot llvm
+          sudo apt-get install libmpfr-dev libprimesieve-dev gnuplot llvm-11
           # perf list
 
       # Compile test segments to assembly
@@ -54,7 +54,7 @@ jobs:
 
       # Postprocess instrumentation file
       - name: Postprocess instrumentation
-        run: llvm-profdata merge -output=code.profdata code.profraw
+        run: llvm-profdata-11 merge -output=code.profdata code.profraw
 
       # Compile code
       - name: Compile
