@@ -511,6 +511,67 @@ struct PrimeQueueEpsilonGroup
     }
 };
 std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
+
+// Helper function to enable repeated looping of fast
+// Multiply with iteratively smaller loop size.
+void DoMulLoop_helper(
+    uint64_t BunchSize,
+    size_t MaxBunchIdx,
+    FastBigFloat<3>& lhs_update_rndd,
+    FastBigFloat<3>& lhs_update_rndu,
+    FastBigFloat<3>& rhs_update_rndd,
+    FastBigFloat<3>& rhs_update_rndu)
+{
+    FastBigFloat<3> lhs_update_rndd_test = lhs_update_rndd;
+    FastBigFloat<3> lhs_update_rndu_test = lhs_update_rndu;
+    FastBigFloat<3> rhs_update_rndd_test = rhs_update_rndd;
+    FastBigFloat<3> rhs_update_rndu_test = rhs_update_rndu;
+
+    while(NextPrimeIdx + BunchSize - 1 <= MaxBunchIdx)
+    {
+        cnt_FastBunchMul++;
+
+        for(size_t i = NextPrimeIdx;
+            i < NextPrimeIdx + BunchSize;
+            i++)
+        {
+            lhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]+1);
+            lhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]+1);
+            rhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]);
+            rhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]);
+        }
+
+        // Check if test values indicate possible violation of bound.
+        lhs_update_rndu_test.get_rndu(mpfr_helper.a);
+        mpfr_mul(mpfr_helper.a, mpfr_helper.a, LHS_rndu, MPFR_RNDU);
+        rhs_update_rndd_test.get_rndd(mpfr_helper.c);
+        mpfr_mul(mpfr_helper.b, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
+
+        if(mpfr_less_p(mpfr_helper.a, mpfr_helper.b))
+        {
+            // LHS < RHS is guaranteed.
+            // Save current progress and keep going.
+            lhs_update_rndd = lhs_update_rndd_test;
+            lhs_update_rndu = lhs_update_rndu_test;
+            rhs_update_rndd = rhs_update_rndd_test;
+            rhs_update_rndu = rhs_update_rndu_test;
+            NextPrimeIdx += BunchSize;
+            cnt_NumUniquePrimeFactors += BunchSize;
+            Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx-1];
+            cnt_NumPrimeFactors += BunchSize;
+            cnt_FastBunchMul_keep++;
+        }
+        else
+        {
+            // Possibly LHS >= RHS.
+            // We need to drop that last bunch and go more carefully.
+            // Reduce MaxBunchIdx so we won't try the same thing again.
+            MaxBunchIdx = NextPrimeIdx + BunchSize - 2;
+            break;
+        }
+    }
+}
+
 uint64_t AddPrimeFactors()
 {
     // Basic requirement - the last prime group should
@@ -587,60 +648,48 @@ uint64_t AddPrimeFactors()
                 size_t MaxBunchIdx = PrimeQueueEpsilonStack.top().index;
 
                 // Run with sequence bunch sizes.
-                // #pragma clang loop unroll(full)
-                for(uint64_t BunchSize : {512, 64, 32, 16, 8, 4})
-                {
-
-                    FastBigFloat<3> lhs_update_rndd_test = lhs_update_rndd;
-                    FastBigFloat<3> lhs_update_rndu_test = lhs_update_rndu;
-                    FastBigFloat<3> rhs_update_rndd_test = rhs_update_rndd;
-                    FastBigFloat<3> rhs_update_rndu_test = rhs_update_rndu;
-
-                    while(NextPrimeIdx + BunchSize - 1 <= MaxBunchIdx)
-                    {
-                        cnt_FastBunchMul++;
-
-                        #pragma clang loop unroll_count(4)
-                        for(size_t i = NextPrimeIdx;
-                            i < NextPrimeIdx + BunchSize;
-                            i++)
-                        {
-                            lhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]+1);
-                            lhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]+1);
-                            rhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]);
-                            rhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]);
-                        }
-
-                        // Check if test values indicate possible violation of bound.
-                        lhs_update_rndu_test.get_rndu(mpfr_helper.a);
-                        mpfr_mul(mpfr_helper.a, mpfr_helper.a, LHS_rndu, MPFR_RNDU);
-                        rhs_update_rndd_test.get_rndd(mpfr_helper.c);
-                        mpfr_mul(mpfr_helper.b, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
-
-                        if(mpfr_less_p(mpfr_helper.a, mpfr_helper.b))
-                        {
-                            // LHS < RHS is guaranteed.
-                            // Save current progress and keep going.
-                            lhs_update_rndd = lhs_update_rndd_test;
-                            lhs_update_rndu = lhs_update_rndu_test;
-                            rhs_update_rndd = rhs_update_rndd_test;
-                            rhs_update_rndu = rhs_update_rndu_test;
-                            NextPrimeIdx += BunchSize;
-                            cnt_NumUniquePrimeFactors += BunchSize;
-                            Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx-1];
-                            cnt_NumPrimeFactors += BunchSize;
-                            cnt_FastBunchMul_keep++;
-                        }
-                        else
-                        {
-                            // Possibly LHS >= RHS.
-                            // We need to drop that last bunch and go more carefully.
-                            // Reduce MaxBunchIdx so we won't try the same thing again.
-                            MaxBunchIdx = NextPrimeIdx + BunchSize - 2;
-                            break;
-                        }
-                    }
-                }
+                DoMulLoop_helper(
+                    512,
+                    MaxBunchIdx,
+                    lhs_update_rndd,
+                    lhs_update_rndu,
+                    rhs_update_rndd,
+                    rhs_update_rndu);
+                DoMulLoop_helper(
+                    64,
+                    MaxBunchIdx,
+                    lhs_update_rndd,
+                    lhs_update_rndu,
+                    rhs_update_rndd,
+                    rhs_update_rndu);
+                DoMulLoop_helper(
+                    32,
+                    MaxBunchIdx,
+                    lhs_update_rndd,
+                    lhs_update_rndu,
+                    rhs_update_rndd,
+                    rhs_update_rndu);
+                DoMulLoop_helper(
+                    16,
+                    MaxBunchIdx,
+                    lhs_update_rndd,
+                    lhs_update_rndu,
+                    rhs_update_rndd,
+                    rhs_update_rndu);
+                DoMulLoop_helper(
+                    8,
+                    MaxBunchIdx,
+                    lhs_update_rndd,
+                    lhs_update_rndu,
+                    rhs_update_rndd,
+                    rhs_update_rndu);
+                DoMulLoop_helper(
+                    4,
+                    MaxBunchIdx,
+                    lhs_update_rndd,
+                    lhs_update_rndu,
+                    rhs_update_rndd,
+                    rhs_update_rndu);
 
                 // Lock in the updates from bunches.
                 lhs_update_rndu.get_rndu(mpfr_helper.a);
