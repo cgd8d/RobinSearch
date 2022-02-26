@@ -515,8 +515,8 @@ std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
 // Helper function to enable repeated looping of fast
 // Multiply with iteratively smaller loop size.
 void DoMulLoop_helper(
-    uint64_t BunchSize,
-    size_t MaxBunchIdx,
+    const uint64_t BunchSize,
+    size_t& MaxBunchIdx,
     FastBigFloat<3>& lhs_update_rndd,
     FastBigFloat<3>& lhs_update_rndu,
     FastBigFloat<3>& rhs_update_rndd,
