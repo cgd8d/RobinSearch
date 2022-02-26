@@ -532,14 +532,14 @@ void DoMulLoop_helper(
         cnt_FastBunchMul++;
 
         #pragma clang loop unroll_count(4)
-        for(size_t i = NextPrimeIdx;
-            i < NextPrimeIdx + BunchSize;
+        for(size_t i = 0;
+            i < BunchSize;
             i++)
         {
-            lhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]+1);
-            lhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]+1);
-            rhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]);
-            rhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]);
+            lhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i+NextPrimeIdx]+1);
+            lhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i+NextPrimeIdx]+1);
+            rhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i+NextPrimeIdx]);
+            rhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i+NextPrimeIdx]);
         }
 
         // Check if test values indicate possible violation of bound.
