@@ -531,6 +531,7 @@ void DoMulLoop_helper(
     {
         cnt_FastBunchMul++;
 
+        #pragma clang loop unroll_count(4)
         for(size_t i = 0;
             i < BunchSize;
             i++)
