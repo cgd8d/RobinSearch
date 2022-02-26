@@ -54,7 +54,7 @@ jobs:
 
       # Postprocess instrumentation file
       - name: Postprocess instrumentation
-        run: llvm-profdata merge -output=code.profdata code.profraw
+        run: llvm-profdata-11 merge -output=code.profdata code.profraw
 
       # Compile code
       - name: Compile
