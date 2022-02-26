@@ -514,8 +514,7 @@ std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
 
 // Helper function to enable repeated looping of fast
 // Multiply with iteratively smaller loop size.
-void DoMulLoop_helper(
-    const uint64_t BunchSize,
+void DoMulLoop_helper<uint64_t BunchSize>(
     size_t& MaxBunchIdx,
     FastBigFloat<3>& lhs_update_rndd,
     FastBigFloat<3>& lhs_update_rndu,
@@ -648,43 +647,37 @@ uint64_t AddPrimeFactors()
                 size_t MaxBunchIdx = PrimeQueueEpsilonStack.top().index;
 
                 // Run with sequence bunch sizes.
-                DoMulLoop_helper(
-                    512,
+                DoMulLoop_helper<512>(
                     MaxBunchIdx,
                     lhs_update_rndd,
                     lhs_update_rndu,
                     rhs_update_rndd,
                     rhs_update_rndu);
-                DoMulLoop_helper(
-                    64,
+                DoMulLoop_helper<64>(
                     MaxBunchIdx,
                     lhs_update_rndd,
                     lhs_update_rndu,
                     rhs_update_rndd,
                     rhs_update_rndu);
-                DoMulLoop_helper(
-                    32,
+                DoMulLoop_helper<32>(
                     MaxBunchIdx,
                     lhs_update_rndd,
                     lhs_update_rndu,
                     rhs_update_rndd,
                     rhs_update_rndu);
-                DoMulLoop_helper(
-                    16,
+                DoMulLoop_helper<16>(
                     MaxBunchIdx,
                     lhs_update_rndd,
                     lhs_update_rndu,
                     rhs_update_rndd,
                     rhs_update_rndu);
-                DoMulLoop_helper(
-                    8,
+                DoMulLoop_helper<8>(
                     MaxBunchIdx,
                     lhs_update_rndd,
                     lhs_update_rndu,
                     rhs_update_rndd,
                     rhs_update_rndu);
-                DoMulLoop_helper(
-                    4,
+                DoMulLoop_helper<4>(
                     MaxBunchIdx,
                     lhs_update_rndd,
                     lhs_update_rndu,
