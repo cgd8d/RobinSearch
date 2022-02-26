@@ -27,7 +27,7 @@ jobs:
       - name: Setup
         run: |
           sudo apt-get update
-          sudo apt-get install libmpfr-dev libprimesieve-dev gnuplot llvm
+          sudo apt-get install libmpfr-dev libprimesieve-dev gnuplot llvm-11
           # perf list
 
       # Compile test segments to assembly
