@@ -43,7 +43,7 @@ jobs:
           rm Search
           git checkout main
           git rev-parse --short HEAD
-          clang++-11 -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
+          clang++-12 -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search
 
       # Run main code straight, no profiling.
       - name: Run main
