@@ -2,10 +2,6 @@
 // a critical loop to be optimized separately for hot and
 // cold instantiations.
 
-#define ROBINSEARCH_STRINGIFY(str) #str
-#define ROBINSEARCH_MAKEPRAGMA(arg) \
-    _Pragma( ROBINSEARCH_STRINGIFY( arg ) )
-
 FastBigFloat<3> lhs_update_rndd_test = lhs_update_rndd;
 FastBigFloat<3> lhs_update_rndu_test = lhs_update_rndu;
 FastBigFloat<3> rhs_update_rndd_test = rhs_update_rndd;
@@ -15,8 +11,6 @@ while(NextPrimeIdx + BunchSize - 1 <= MaxBunchIdx)
 {
     cnt_FastBunchMul++;
 
-    // _Pragma(ROBINSEARCH_STRINGIFY(ROBINSEARCH_PRAGMA_HINT))
-    // ROBINSEARCH_MAKEPRAGMA(ROBINSEARCH_PRAGMA_HINT)
     ROBINSEARCH_PRAGMA_HINT
     for(size_t i = NextPrimeIdx;
         i < NextPrimeIdx + BunchSize;
