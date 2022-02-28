@@ -588,14 +588,14 @@ uint64_t AddPrimeFactors()
 
                 // Run with sequence bunch sizes.
                 {
-                    const uint64_t Bunch size = 512;
+                    const uint64_t BunchSize = 512;
 
                     // Grab code from helper file.
                     #define ROBINSEARCH_PRAGMA_HINT
                     #include "PrimeLoopHelper.hpp"
                     #undef ROBINSEARCH_PRAGMA_HINT
                 }
-                for(uint64_t BunchSize : {512, 64, 32, 16, 8, 4})
+                for(uint64_t BunchSize : {64, 32, 16, 8, 4})
                 {
                     // Grab code from helper file.
                     #define ROBINSEARCH_PRAGMA_HINT
