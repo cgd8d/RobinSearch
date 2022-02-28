@@ -16,7 +16,8 @@ while(NextPrimeIdx + BunchSize - 1 <= MaxBunchIdx)
     cnt_FastBunchMul++;
 
     // _Pragma(ROBINSEARCH_STRINGIFY(ROBINSEARCH_PRAGMA_HINT))
-    ROBINSEARCH_MAKEPRAGMA(ROBINSEARCH_PRAGMA_HINT)
+    // ROBINSEARCH_MAKEPRAGMA(ROBINSEARCH_PRAGMA_HINT)
+    ROBINSEARCH_PRAGMA_HINT
     for(size_t i = NextPrimeIdx;
         i < NextPrimeIdx + BunchSize;
         i++)
