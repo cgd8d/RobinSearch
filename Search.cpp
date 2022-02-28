@@ -591,14 +591,14 @@ uint64_t AddPrimeFactors()
                     const uint64_t BunchSize = 512;
 
                     // Grab code from helper file.
-                    #define ROBINSEARCH_PRAGMA_HINT ""
+                    #define ROBINSEARCH_PRAGMA_HINT "clang loop unroll_count(4)"
                     #include "PrimeLoopHelper.hpp"
                     #undef ROBINSEARCH_PRAGMA_HINT
                 }
                 for(uint64_t BunchSize : {64, 32, 16, 8, 4})
                 {
                     // Grab code from helper file.
-                    #define ROBINSEARCH_PRAGMA_HINT ""
+                    #define ROBINSEARCH_PRAGMA_HINT "clang loop unroll_count(4)"
                     #include "PrimeLoopHelper.hpp"
                     #undef ROBINSEARCH_PRAGMA_HINT
                 }
