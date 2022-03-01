@@ -42,29 +42,37 @@ struct FastBigInterval
         exp = 1-N;
     }
 
-
-
-
-
-
-
-    void mul_ui_rndd(uint64_t x)
+    void mul_ui(uint64_t x)
     {
         // In a majority of cases the highest word is
         // nonzero because x > 2^32.  So, we store the
         // lowest word separately and only shift it in
         // for the minority of cases when it is needed.
-        uint64_t carry = 0;
-        uint64_t lo = _mulx_u64(sig[0], x, reinterpret_cast<unsigned long long*>(&sig[0]));
+
+        // Start with the hi value, since its msw determines
+        // whether we need to shift.
+        uint64_t carry_hi = 0;
+        uint64_t lsw_hi = _mulx_u64(sig_hi[0], x, reinterpret_cast<unsigned long long*>(&sig_hi[0]));
         for(size_t i = 1; i < N; i++)
         {
-            uint64_t tmp = _mulx_u64(sig[i], x, reinterpret_cast<unsigned long long*>(&sig[i]));
-            sig[i-1] = __builtin_addcl(sig[i-1], tmp, carry, &carry);
+            uint64_t tmp = _mulx_u64(sig_hi[i], x, reinterpret_cast<unsigned long long*>(&sig_hi[i]));
+            sig_hi[i-1] = __builtin_addcl(sig_hi[i-1], tmp, carry_hi, &carry_hi);
         }
-        sig[N-1] += carry; // Will not overflow.
+        sig_hi[N-1] += carry_hi; // Will not overflow.
+
+        // Follow with lo value while we wait for hi compute
+        // to settle.
+        uint64_t carry_lo = 0;
+        uint64_t lsw_lo = _mulx_u64(sig_lo[0], x, reinterpret_cast<unsigned long long*>(&sig_lo[0]));
+        for(size_t i = 1; i < N; i++)
+        {
+            uint64_t tmp = _mulx_u64(sig_lo[i], x, reinterpret_cast<unsigned long long*>(&sig_lo[i]));
+            sig_lo[i-1] = __builtin_addcl(sig_lo[i-1], tmp, carry_lo, &carry_lo);
+        }
+        sig_lo[N-1] += carry_lo; // Will not overflow.
 
         /*
-        Note that now we need to conditionally move.
+        Now we need to conditionally move.
         When x is sufficiently large, using a branch and
         letting branch prediction work is probably best,
         but when x occupies not much more than 32 bits
@@ -80,79 +88,82 @@ struct FastBigInterval
         words we can shift the start pointer.
         Anyway, come back and experiment with this one.
         */
-        if(sig[N-1] == 0)
+        if(sig_hi[N-1] == 0)
         {
             for(size_t i = N-1; i > 0; i--)
             {
-                sig[i] = sig[i-1];
+                sig_hi[i] = sig_hi[i-1];
+                sig_lo[i] = sig_lo[i-1];
             }
-            sig[0] = lo;
+            sig_hi[0] = lsw_hi;
+            sig_lo[0] = lsw_lo;
         }
         else
         {
+            assert(sig_lo[N-1] == 0);
             exp++;
-        }
-    }
 
-    void mul_ui_rndu(uint64_t x)
-    {
-        mul_ui_rndd(x);
+            // The calculation is not exact.
+            // By default sig_lo is rounded down.
+            // We need to explicitly round sig_hi up.
+            sig_hi[0]++;
 
-        // Then increment by one.
-        sig[0]++;
-        if(__builtin_expect(sig[0] == 0, 0)) // [[unlikely]]
-        {
-            bool inc_exp = true;
-            for(size_t i = 1; i < N; i++)
+            if(sig_hi[0] == 0) [[unlikely]]
             {
-                sig[i]++;
-                if(sig[i] != 0)
+                bool inc_exp = true;
+                for(size_t i = 1; i < N; i++)
                 {
-                    inc_exp = false;
-                    break;
+                    sig_hi[i]++;
+                    if(sig_hi[i] != 0)
+                    {
+                        inc_exp = false;
+                        break;
+                    }
+                }
+                if(inc_exp)
+                {
+                    sig_hi[N-1] = 1;
+                    exp++;
                 }
             }
-            if(inc_exp)
-            {
-                sig[N-1] = 1;
-                exp++;
-            }
         }
     }
 
-    // X should already be initialized.
-    void get_rndd(mpfr_t x)
+    // x_lo and x_hi should already be initialized.
+    void get(mpfr_t x_lo, mpfr_t x_hi)
     {
-        mpfr_set_ui(x, sig[N-1], MPFR_RNDD);
+        mpfr_set_ui(x_lo, sig_lo[N-1], MPFR_RNDD);
         for(size_t i = N-1; i > 0; i--)
         {
-            mpfr_mul_2si(x, x, 64, MPFR_RNDD);
-            mpfr_add_ui(x, x, sig[i-1], MPFR_RNDD);
+            mpfr_mul_2si(x_lo, x_lo, 64, MPFR_RNDD);
+            mpfr_add_ui(x_lo, x_lo, sig_lo[i-1], MPFR_RNDD);
         }
-        mpfr_mul_2si(x, x, 64*exp, MPFR_RNDD);
-    }
+        mpfr_mul_2si(x_lo, x_lo, 64*exp, MPFR_RNDD);
 
-    // X should already be initialized.
-    void get_rndu(mpfr_t x)
-    {
-        mpfr_set_ui(x, sig[N-1], MPFR_RNDU);
+        mpfr_set_ui(x_hi, sig_hi[N-1], MPFR_RNDU);
         for(size_t i = N-1; i > 0; i--)
         {
-            mpfr_mul_2si(x, x, 64, MPFR_RNDU);
-            mpfr_add_ui(x, x, sig[i-1], MPFR_RNDU);
+            mpfr_mul_2si(x_hi, x_hi, 64, MPFR_RNDU);
+            mpfr_add_ui(x_hi, x_hi, sig_hi[i-1], MPFR_RNDU);
         }
-        mpfr_mul_2si(x, x, 64*exp, MPFR_RNDU);
+        mpfr_mul_2si(x_hi, x_hi, 64*exp, MPFR_RNDU);
     }
 };
 
 template<size_t N>
-std::ostream& operator<<(std::ostream& os, const FastBigFloat<N>& x)
+std::ostream& operator<<(std::ostream& os, const FastBigInterval<N>& x)
 {
+    os << "(";
     for(size_t i = N; i > 0; i--)
     {
-        os << x.sig[i-1] << " ";
+        os << x.sig_lo[i-1] << " ";
     }
-    os << "x (2^64)^" << x.exp;
+    os << "- ";
+    for(size_t i = N; i > 0; i--)
+    {
+        os << x.sig_hi[i-1] << " ";
+    }
+    os << ") x (2^64)^" << x.exp;
     return os;
 }
 
