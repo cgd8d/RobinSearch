@@ -605,9 +605,9 @@ uint64_t AddPrimeFactors()
                         }
 
                         // Check if test values indicate possible violation of bound.
-                        lhs_update_test.get(mpfr_helper.d, mpfr_helper.a);
+                        lhs_update_test.get_rndu(mpfr_helper.a);
                         mpfr_mul(mpfr_helper.a, mpfr_helper.a, LHS_rndu, MPFR_RNDU);
-                        rhs_update_test.get(mpfr_helper.c, mpfr_helper.d);
+                        rhs_update_test.get_rndd(mpfr_helper.c);
                         mpfr_mul(mpfr_helper.b, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
 
                         if(mpfr_less_p(mpfr_helper.a, mpfr_helper.b))
@@ -634,14 +634,15 @@ uint64_t AddPrimeFactors()
                 }
 
                 // Lock in the updates from bunches.
-                rhs_update.get(mpfr_helper.c, mpfr_helper.a);
+                lhs_update.get_rndu(mpfr_helper.a);
+                mpfr_mul(LHS_rndu, mpfr_helper.a, LHS_rndu, MPFR_RNDU);
+                rhs_update.get_rndd(mpfr_helper.c);
                 mpfr_mul(NloglogN_rndd, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
                 mpfr_mul(Number_rndd, Number_rndd, mpfr_helper.c, MPFR_RNDD);
+                lhs_update.get_rndd(mpfr_helper.a);
+                mpfr_mul(LHS_rndd, mpfr_helper.a, LHS_rndd, MPFR_RNDD);
+                rhs_update.get_rndu(mpfr_helper.a);
                 mpfr_mul(Number_rndu, Number_rndu, mpfr_helper.a, MPFR_RNDU);
-
-                lhs_update.get(mpfr_helper.b, mpfr_helper.a);
-                mpfr_mul(LHS_rndu, mpfr_helper.a, LHS_rndu, MPFR_RNDU);
-                mpfr_mul(LHS_rndd, mpfr_helper.b, LHS_rndd, MPFR_RNDD);
 
                 // Iterate factor by factor until we update logs.
                 while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
