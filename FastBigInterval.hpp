@@ -3,6 +3,7 @@
 
 #include <array>
 #include <ostream>
+#include <cassert>
 #include <mpfr.h>
 #include <immintrin.h>
 
