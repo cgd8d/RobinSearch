@@ -91,6 +91,7 @@ struct FastBigInterval
         */
         if(sig_hi[N-1] == 0)
         {
+            assert(sig_lo[N-1] == 0);
             for(size_t i = N-1; i > 0; i--)
             {
                 sig_hi[i] = sig_hi[i-1];
@@ -101,7 +102,6 @@ struct FastBigInterval
         }
         else
         {
-            assert(sig_lo[N-1] == 0);
             exp++;
 
             // The calculation is not exact.
