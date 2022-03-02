@@ -36,7 +36,8 @@ void CheckIntervals(FastBigInterval<3>& bigint,
     mpfr_init2(t1, 1024);
     mpfr_t t2;
     mpfr_init2(t2, 1024);
-    bigint.get(t1, t2);
+    bigint.get_rndd(t1);
+    bigint.get_rndu(t2);
     if(mpfr_greater_p(t1, mp2))
     {
         PrintFactors();
