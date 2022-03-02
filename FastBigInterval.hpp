@@ -131,7 +131,7 @@ struct FastBigInterval
     }
 
     // x_lo and x_hi should already be initialized.
-    void get(mpfr_t x_lo, mpfr_t x_hi)
+    void get_rndd(mpfr_t x_lo)
     {
         mpfr_set_ui(x_lo, sig_lo[N-1], MPFR_RNDD);
         for(size_t i = N-1; i > 0; i--)
@@ -140,7 +140,9 @@ struct FastBigInterval
             mpfr_add_ui(x_lo, x_lo, sig_lo[i-1], MPFR_RNDD);
         }
         mpfr_mul_2si(x_lo, x_lo, 64*exp, MPFR_RNDD);
-
+    }
+    void get_rndu(mpfr_t x_hi)
+    {
         mpfr_set_ui(x_hi, sig_hi[N-1], MPFR_RNDU);
         for(size_t i = N-1; i > 0; i--)
         {
