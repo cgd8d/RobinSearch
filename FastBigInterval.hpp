@@ -43,6 +43,7 @@ struct FastBigInterval
         exp = 1-N;
     }
 
+    inline
     void mul_ui(uint64_t x)
     {
         // In a majority of cases the highest word is
