@@ -601,6 +601,12 @@ uint64_t AddPrimeFactors()
                             i++)
                         {
                             lhs_update_test.mul_ui(PrimeQueue[i]+1);
+                        }
+
+                        for(size_t i = NextPrimeIdx;
+                            i < NextPrimeIdx + BunchSize;
+                            i++)
+                        {
                             rhs_update_test.mul_ui(PrimeQueue[i]);
                         }
 
