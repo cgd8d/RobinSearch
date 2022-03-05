@@ -1,9 +1,11 @@
 #ifndef FastBigFloat_hpp
 #define FastBigFloat_hpp
 
-#include <array>
+#include <tuple>
+#include <utility>
 #include <ostream>
 #include <mpfr.h>
+#include <boost/mp11.hpp>
 #include <immintrin.h>
 
 /*
@@ -30,13 +32,17 @@ static_assert(sizeof(unsigned long long int) == sizeof(uint64_t),
 template <size_t N>
 struct FastBigFloat
 {
+    // Define tuple of N uint64_t
+    using SingleType = std::tuple<uint64_t>;
+    using TupleType = boost::mp11::mp_repeat_c<SingleType, N>;
+
     int64_t exp;
-    std::array<uint64_t, N> sig;
+    TupleType sig;
 
     void set_ui(uint64_t x)
     {
-        sig.fill(0);
-        sig[N-1] = x;
+        std::apply([](uint64_t& val){val = 0;}, sig);
+        std::get<N-1>(sig) = x;
         exp = 1-N;
     }
 
@@ -47,7 +53,11 @@ struct FastBigFloat
         // lowest word separately and only shift it in
         // for the minority of cases when it is needed.
         uint64_t carry = 0;
-        uint64_t lo = _mulx_u64(sig[0], x, reinterpret_cast<unsigned long long*>(&sig[0]));
+        uint64_t lo = _mulx_u64(std::get<0>(sig), x, reinterpret_cast<unsigned long long*>(&std::get<0>(sig[0])));
+
+
+
+
         for(size_t i = 1; i < N; i++)
         {
             uint64_t tmp = _mulx_u64(sig[i], x, reinterpret_cast<unsigned long long*>(&sig[i]));
