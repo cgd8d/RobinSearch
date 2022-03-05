@@ -27,7 +27,7 @@ jobs:
       - name: Setup
         run: |
           sudo apt-get update
-          sudo apt-get install libmpfr-dev libprimesieve-dev gnuplot llvm-12 clang-12
+          sudo apt-get install libmpfr-dev libprimesieve-dev gnuplot llvm-12 clang-12 libboost1.71-dev
           # perf list
 
       # Compile test segments to assembly
