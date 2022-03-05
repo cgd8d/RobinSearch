@@ -41,7 +41,11 @@ struct FastBigFloat
 
     void set_ui(uint64_t x)
     {
-        std::apply([](uint64_t& val){val = 0;}, sig);
+        std::apply([](uint64_t&... val)
+            {
+                (val = 0,...);
+            },
+            sig);
         std::get<N-1>(sig) = x;
         exp = 1-N;
     }
