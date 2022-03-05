@@ -4,6 +4,7 @@
 #include <tuple>
 #include <utility>
 #include <ostream>
+#include <concepts>
 #include <mpfr.h>
 #include <boost/mp11.hpp>
 #include <immintrin.h>
@@ -41,7 +42,7 @@ struct FastBigFloat
 
     void set_ui(uint64_t x)
     {
-        std::apply([](uint64_t&... val)
+        std::apply([](std::same_as<uint64_t> auto&... val)
             {
                 (val = 0,...);
             },
