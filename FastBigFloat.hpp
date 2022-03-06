@@ -60,6 +60,8 @@ struct FastBigFloat
         uint64_t carry = 0;
         uint64_t lo = _mulx_u64(std::get<0>(sig), x, reinterpret_cast<unsigned long long*>(&std::get<0>(sig)));
 
+        // For I=0 to N-2, run helperfunc with sig[I]=lo and
+        // sig[I+1]=hi.  Multiply is x*hi.
         auto helperfunc = [](uint64_t& lo, uint64_t& hi, uint64_t& carry, const uint64_t& x)
             {
                 uint64_t tmp = _mulx_u64(hi, x, reinterpret_cast<unsigned long long*>(&hi));
@@ -72,23 +74,7 @@ struct FastBigFloat
             };
         helperfunc2(std::make_index_sequence<N-1>{});
 
-/*
-
-        std::apply([&](class T, auto... idx)
-            {
-                (helperfunc(std::get<idx>(sig), std::get<idx+1>(sig), carry, x),...);
-            },
-            std::make_index_sequence<N-1>{});
-
-/*
-        for(size_t i = 1; i < N; i++)
-        {
-            uint64_t tmp = _mulx_u64(sig[i], x, reinterpret_cast<unsigned long long*>(&sig[i]));
-            sig[i-1] = __builtin_addcl(sig[i-1], tmp, carry, &carry);
-        }
-*/
-
-        sig[N-1] += carry; // Will not overflow.
+        std::get<N-1>(sig) += carry; // Will not overflow.
 
         /*
         Note that now we need to conditionally move.
@@ -108,7 +94,7 @@ struct FastBigFloat
 
         Anyway, come back and experiment with this one.
         */
-        if(sig[N-1] == 0)
+        if(std::get<N-1>(sig) == 0)
         {
             for(size_t i = N-1; i > 0; i--)
             {
