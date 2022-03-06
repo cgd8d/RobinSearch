@@ -158,36 +158,50 @@ struct FastBigFloat
                 mpfr_mul_2si(x, x, 64, MPFR_RNDD);
                 mpfr_add_ui(x, x, val, MPFR_RNDD);
             };
-        auto helperfunc2 = [&]<std::size_t ...I>
+        auto helper2 = [&]<std::size_t ...I>
             (std::index_sequence<I...>)
             {
-
-
-
-
-                (helperfunc3(std::get<N-I-1>(sig), std::get<N-I-2>(sig)),...);
+                (helper1(std::get<N-I-2>(sig)),...);
             };
-        helperfunc4(std::make_index_sequence<N-1>{});
+        helper2(std::make_index_sequence<N-1>{});
 
-
+/*
 
         for(size_t i = N-1; i > 0; i--)
         {
             mpfr_mul_2si(x, x, 64, MPFR_RNDD);
             mpfr_add_ui(x, x, sig[i-1], MPFR_RNDD);
         }
+*/
+
         mpfr_mul_2si(x, x, 64*exp, MPFR_RNDD);
     }
 
     // X should already be initialized.
     void get_rndu(mpfr_t x)
     {
-        mpfr_set_ui(x, sig[N-1], MPFR_RNDU);
+        mpfr_set_ui(x, std::get<N-1>(sig), MPFR_RNDU);
+        auto helper1 = [&]
+            (const uint64_t& val)
+            {
+                mpfr_mul_2si(x, x, 64, MPFR_RNDD);
+                mpfr_add_ui(x, x, val, MPFR_RNDD);
+            };
+        auto helper2 = [&]<std::size_t ...I>
+            (std::index_sequence<I...>)
+            {
+                (helper1(std::get<N-I-2>(sig)),...);
+            };
+        helper2(std::make_index_sequence<N-1>{});
+
+/*
         for(size_t i = N-1; i > 0; i--)
         {
             mpfr_mul_2si(x, x, 64, MPFR_RNDU);
             mpfr_add_ui(x, x, sig[i-1], MPFR_RNDU);
         }
+*/
+
         mpfr_mul_2si(x, x, 64*exp, MPFR_RNDU);
     }
 };
@@ -195,6 +209,20 @@ struct FastBigFloat
 template<size_t N>
 std::ostream& operator<<(std::ostream& os, const FastBigFloat<N>& x)
 {
+    auto helper1 = [&]
+        (const uint64_t& val)
+        {
+            os << val << " ";
+        };
+        auto helper2 = [&]<std::size_t ...I>
+            (std::index_sequence<I...>)
+            {
+                (helper1(std::get<N-I-1>(sig)),...);
+            };
+        helper2(std::make_index_sequence<N>{});
+
+
+
     for(size_t i = N; i > 0; i--)
     {
         os << x.sig[i-1] << " ";
