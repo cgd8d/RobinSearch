@@ -65,6 +65,15 @@ struct FastBigFloat
                 uint64_t tmp = _mulx_u64(hi, x, reinterpret_cast<unsigned long long*>(&hi));
                 lo = __builtin_addcl(lo, tmp, carry, &carry);
             };
+        auto helperfunc2 = [&]<std::size_t ...I>
+            (std::index_sequence<I...>)
+            {
+                (helperfunc(std::get<I>(sig), std::get<I+1>(sig), carry, x),...);
+            };
+        helperfunc2(std::make_index_sequence<N-1>{});
+
+/*
+
         std::apply([&](class T, auto... idx)
             {
                 (helperfunc(std::get<idx>(sig), std::get<idx+1>(sig), carry, x),...);
