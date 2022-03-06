@@ -96,11 +96,26 @@ struct FastBigFloat
         */
         if(std::get<N-1>(sig) == 0)
         {
+            auto helperfunc3 = []
+                (uint64_t& LHS, const uint64_t& RHS)
+                {
+                    LHS = RHS;
+                };
+            auto helperfunc4 = [&]<std::size_t ...I>
+                (std::index_sequence<I...>)
+                {
+                    (helperfunc3(std::get<N-I-1>(sig), std::get<N-I-2>(sig)),...);
+                };
+            helperfunc3(std::make_index_sequence<N-1>{});
+
+
+/*
             for(size_t i = N-1; i > 0; i--)
             {
                 sig[i] = sig[i-1];
             }
-            sig[0] = lo;
+*/
+            std::get<0>(sig) = lo;
         }
         else
         {
