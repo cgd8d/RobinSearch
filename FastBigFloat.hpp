@@ -221,12 +221,15 @@ std::ostream& operator<<(std::ostream& os, const FastBigFloat<N>& x)
             };
         helper2(std::make_index_sequence<N>{});
 
-
+/*
 
     for(size_t i = N; i > 0; i--)
     {
         os << x.sig[i-1] << " ";
     }
+*/
+
+
     os << "x (2^64)^" << x.exp;
     return os;
 }
