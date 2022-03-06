@@ -217,7 +217,7 @@ std::ostream& operator<<(std::ostream& os, const FastBigFloat<N>& x)
         auto helper2 = [&]<std::size_t ...I>
             (std::index_sequence<I...>)
             {
-                (helper1(std::get<N-I-1>(sig)),...);
+                (helper1(std::get<N-I-1>(x.sig)),...);
             };
         helper2(std::make_index_sequence<N>{});
 
