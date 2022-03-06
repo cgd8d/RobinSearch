@@ -106,7 +106,7 @@ struct FastBigFloat
                 {
                     (helperfunc3(std::get<N-I-1>(sig), std::get<N-I-2>(sig)),...);
                 };
-            helperfunc3(std::make_index_sequence<N-1>{});
+            helperfunc4(std::make_index_sequence<N-1>{});
 
 
 /*
