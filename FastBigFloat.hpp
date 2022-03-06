@@ -107,14 +107,6 @@ struct FastBigFloat
                     (helperfunc3(std::get<N-I-1>(sig), std::get<N-I-2>(sig)),...);
                 };
             helperfunc4(std::make_index_sequence<N-1>{});
-
-
-/*
-            for(size_t i = N-1; i > 0; i--)
-            {
-                sig[i] = sig[i-1];
-            }
-*/
             std::get<0>(sig) = lo;
         }
         else
@@ -128,10 +120,24 @@ struct FastBigFloat
         mul_ui_rndd(x);
 
         // Then increment by one.
-        sig[0]++;
-        if(__builtin_expect(sig[0] == 0, 0)) // [[unlikely]]
+        std::get<0>(sig)++;
+        if(__builtin_expect(std::get<0>(sig) == 0, 0)) // [[unlikely]]
         {
+            // If the LSW overflows then we need to carry.
             bool inc_exp = true;
+            auto helper1 = [&]
+                (uint64_t& val)
+                {
+                    if(inc_exp) val++;
+                    if(val != 0) inc_exp = false;
+                };
+            std::apply([&]
+                (uint64_t& first, auto&... rest)
+                {
+                    (helper1(rest),...);
+                },
+                sig);
+/*
             for(size_t i = 1; i < N; i++)
             {
                 sig[i]++;
@@ -141,9 +147,10 @@ struct FastBigFloat
                     break;
                 }
             }
+*/
             if(inc_exp)
             {
-                sig[N-1] = 1;
+                std::get<N-1>(sig) = 1;
                 exp++;
             }
         }
