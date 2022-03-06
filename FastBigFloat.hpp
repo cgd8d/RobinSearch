@@ -137,17 +137,9 @@ struct FastBigFloat
                     (helper1(rest),...);
                 },
                 sig);
-/*
-            for(size_t i = 1; i < N; i++)
-            {
-                sig[i]++;
-                if(sig[i] != 0)
-                {
-                    inc_exp = false;
-                    break;
-                }
-            }
-*/
+
+            // This lady but is only relevant if sig was
+            // 2^(64N)-1 and overflowed to the next word.
             if(inc_exp)
             {
                 std::get<N-1>(sig) = 1;
