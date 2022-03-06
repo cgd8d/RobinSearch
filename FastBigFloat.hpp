@@ -151,7 +151,11 @@ struct FastBigFloat
     // X should already be initialized.
     void get_rndd(mpfr_t x)
     {
-        mpfr_set_ui(x, sig[N-1], MPFR_RNDD);
+        mpfr_set_ui(x, std::get<N-1>(sig), MPFR_RNDD);
+        auto helper1 = [&]
+
+
+
         for(size_t i = N-1; i > 0; i--)
         {
             mpfr_mul_2si(x, x, 64, MPFR_RNDD);
