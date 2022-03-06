@@ -44,7 +44,7 @@ struct FastBigFloat
     {
         std::apply([](std::same_as<uint64_t> auto&... val)
             {
-                (val = 0,...);
+                (val = ... = 0);
             },
             sig);
         std::get<N-1>(sig) = x;
@@ -58,7 +58,7 @@ struct FastBigFloat
         // lowest word separately and only shift it in
         // for the minority of cases when it is needed.
         uint64_t carry = 0;
-        uint64_t lo = _mulx_u64(std::get<0>(sig), x, reinterpret_cast<unsigned long long*>(&std::get<0>(sig[0])));
+        uint64_t lo = _mulx_u64(std::get<0>(sig), x, reinterpret_cast<unsigned long long*>(&std::get<0>(sig)));
 
 
 
