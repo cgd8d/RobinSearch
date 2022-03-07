@@ -30,6 +30,18 @@ jobs:
           sudo apt-get install libmpfr-dev libprimesieve-dev gnuplot llvm-12 clang-12
           # perf list
 
+      # build libprimesieve 7.8.
+      # Ubuntu 20.04 only has version 7.5.
+      - name: SetupPrimeSieve
+        run: |
+          git clone --depth 1 --branch v7.8 https://github.com/kimwalisch/primesieve
+          cd primesieve
+          cmake -DBUILD_TESTS=ON .
+          make -j
+          ctest
+          echo "Run ls"
+          ls
+
       # Compile test segments to assembly
       #- name: CompileAsmTest
       #  run: |
