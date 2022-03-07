@@ -184,8 +184,8 @@ struct FastBigFloat
         auto helper1 = [&]
             (const uint64_t& val)
             {
-                mpfr_mul_2si(x, x, 64, MPFR_RNDD);
-                mpfr_add_ui(x, x, val, MPFR_RNDD);
+                mpfr_mul_2si(x, x, 64, MPFR_RNDU);
+                mpfr_add_ui(x, x, val, MPFR_RNDU);
             };
         auto helper2 = [&]<std::size_t ...I>
             (std::index_sequence<I...>)
