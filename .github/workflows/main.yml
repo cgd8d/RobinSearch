@@ -58,7 +58,7 @@ jobs:
         run: |
           clang++-12 --version
           lscpu
-          clang++-12 -std=c++20 -g -Wall -O3 -flto -march=native -Lprimesieve -Wl,-rpath-link=primesieve -Iprimesieve/include -lmpfr -lprimesieve Search.cpp -o Search
+          clang++-12 -std=c++20 -g -Wall -O3 -flto -march=native -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -lmpfr -lprimesieve Search.cpp -o Search
           #clang++ -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search_ndebug
 
       # Run code straight, no profiling.
