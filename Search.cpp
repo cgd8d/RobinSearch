@@ -722,6 +722,12 @@ int main(int argc, char *argv[])
               << mpfr_get_version()
               << std::endl;
 
+    // Sieve size check.
+    std::cout << "Prime sieve size is "
+              << primesieve::get_sieve_size()
+              << " KiB (kibibytes)."
+              << std::endl;
+
     CheckTypes();
     mpfr_init2(Number_rndd, Precision);
     mpfr_init2(Number_rndu, Precision);
