@@ -716,7 +716,7 @@ int main(int argc, char *argv[])
 
     // Print library versions.
     std::cout << "Primesieve version is "
-              << primesieve_version()
+              << primesieve::primesieve_version()
               << std::endl;
     std::cout << "mpfr version is "
               << mpfr_get_version()
