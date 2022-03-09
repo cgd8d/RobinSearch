@@ -41,6 +41,8 @@ jobs:
           ctest
           echo "Run ls"
           ls
+          echo "Run ls CMakeFiles"
+          ls CMakeFiles
 
       # Compile test segments to assembly
       #- name: CompileAsmTest
