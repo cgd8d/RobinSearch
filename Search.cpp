@@ -714,6 +714,14 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    // Print library versions.
+    std::cout << "Primesieve version is "
+              << primesieve_version()
+              << std::endl;
+    std::cout << "mpfr version is "
+              << mpfr_get_version()
+              << std::endl;
+
     CheckTypes();
     mpfr_init2(Number_rndd, Precision);
     mpfr_init2(Number_rndu, Precision);
