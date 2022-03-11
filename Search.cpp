@@ -714,6 +714,20 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    // Print library versions.
+    std::cout << "Primesieve version is "
+              << primesieve::primesieve_version()
+              << std::endl;
+    std::cout << "mpfr version is "
+              << mpfr_get_version()
+              << std::endl;
+
+    // Sieve size check.
+    std::cout << "Prime sieve size is "
+              << primesieve::get_sieve_size()
+              << " KiB (kibibytes)."
+              << std::endl;
+
     CheckTypes();
     mpfr_init2(Number_rndd, Precision);
     mpfr_init2(Number_rndu, Precision);
