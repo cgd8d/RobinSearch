@@ -489,7 +489,7 @@ Internally we record calculations of the critical
 epsilon, since the goal is to compute it for a very
 small subset of factors.
 */
-std::vector<uint64_t> PrimeQueue(6*512);
+std::vector<uint64_t> PrimeQueue(1 << 15);
 size_t NextPrimeIdx = PrimeQueue.size();
 primesieve::iterator PrimeQueueProducer;
 struct PrimeQueueEpsilonGroup
@@ -727,7 +727,7 @@ int main(int argc, char *argv[])
               << primesieve::get_sieve_size()
               << " KiB (kibibytes)."
               << std::endl;
-    primesieve::set_sieve_size(32);
+    primesieve::set_sieve_size(512);
     std::cout << "Prime sieve size changed to "
               << primesieve::get_sieve_size()
               << " KiB (kibibytes)."
