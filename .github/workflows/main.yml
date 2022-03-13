@@ -36,7 +36,7 @@ jobs:
         run: |
           git clone --depth 1 --branch v7.8 https://github.com/kimwalisch/primesieve
           cd primesieve
-          cmake -DBUILD_TESTS=ON .
+          CC="clang-12 -fuse-ld=gold" CXX="clang++-12 -fuse-ld=gold" cmake -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .
           make -j
           ctest
           echo "Run ls"
@@ -52,15 +52,16 @@ jobs:
       # Run tests.
       - name: RunTests
         run: |
-          clang++-12 -std=c++20 -g -Wall -O3 -flto -march=native -lmpfr test/TestBigFloat.cpp -o TestBigFloat
+          clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -lmpfr test/TestBigFloat.cpp -o TestBigFloat
           ./TestBigFloat
 
       # Compile code
       - name: Compile
         run: |
           clang++-12 --version
+          /usr/bin/ld -v
           lscpu
-          clang++-12 -std=c++20 -g -Wall -O3 -flto -march=native -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -lmpfr -lprimesieve Search.cpp -o Search
+          clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include Search.cpp -lmpfr -lprimesieve -o Search
           #clang++ -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search_ndebug
 
       # Run code straight, no profiling.
