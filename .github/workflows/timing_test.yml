@@ -49,26 +49,13 @@ jobs:
       - name: Run
         run: ./Search 43
 
-      # build libprimesieve 7.8.
-      # Ubuntu 20.04 only has version 7.5.
-      - name: SetupPrimeSieve (no lto)
-        run: |
-          rm -rf primesieve
-          git clone --depth 1 --branch v7.8 https://github.com/kimwalisch/primesieve
-          cd primesieve
-          cmake -DBUILD_TESTS=ON .
-          make -j
-          ctest
-          echo "Run ls"
-          ls
-
      # Compile code from main branch
       - name: Compile main
         run: |
           rm Search
           git checkout main
           git rev-parse --short HEAD
-          clang++-12 -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -lmpfr -lprimesieve Search.cpp -o Search
+          clang++-12 -std=c++20 -DNDEBUG -fuse-ld=gold -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include Search.cpp -lmpfr -lprimesieve -o Search
 
       # Run main code straight, no profiling.
       - name: Run main
