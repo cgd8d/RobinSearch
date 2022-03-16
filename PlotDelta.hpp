@@ -29,7 +29,8 @@ struct PlotDeltaStruct
         fprintf(plotpipe, "set ylabel 'log \\delta(N)\n");
         fprintf(plotpipe, "set pointtype 7\n");
         fprintf(plotpipe, "set xrange [15:*]\n");
-        fprintf(plotpipe, "plot '-'\n");
+        fprintf(plotpipe, "set grid\n");
+        fprintf(plotpipe, "plot '-' with points\n");
 
         plotpipe2 = popen("gnuplot", "w");
         if(not plotpipe2)
@@ -43,7 +44,8 @@ struct PlotDeltaStruct
         fprintf(plotpipe2, "set ylabel 'log \\delta(N) + log(log(N))/2\n");
         fprintf(plotpipe2, "set pointtype 0\n");
         fprintf(plotpipe2, "set xrange [11:*]\n");
-        fprintf(plotpipe2, "plot '-'\n");
+        fprintf(plotpipe2, "set grid\n");
+        fprintf(plotpipe2, "plot '-' with points\n");
 
 
         loglogn_step = 0.001;
