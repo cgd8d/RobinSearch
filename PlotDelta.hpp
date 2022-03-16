@@ -27,6 +27,8 @@ struct PlotDeltaStruct
         fprintf(plotpipe, "set output 'DeltaPlot.png'\n");
         fprintf(plotpipe, "set xlabel 'log(log(N))'\n");
         fprintf(plotpipe, "set ylabel 'log \\delta(N)\n");
+        fprintf(plotpipe2, "set pointtype 7\n");
+        fprintf(plotpipe2, "set xrange [15:*]\n");
         fprintf(plotpipe, "plot '-'\n");
 
         plotpipe2 = popen("gnuplot", "w");
@@ -39,6 +41,8 @@ struct PlotDeltaStruct
         fprintf(plotpipe2, "set output 'DeltaPlotScaled.png'\n");
         fprintf(plotpipe2, "set xlabel 'log(log(N))'\n");
         fprintf(plotpipe2, "set ylabel 'log \\delta(N) + log(log(N))/2\n");
+        fprintf(plotpipe2, "set pointtype 0\n");
+        fprintf(plotpipe2, "set xrange [11:*]\n");
         fprintf(plotpipe2, "plot '-'\n");
 
 
