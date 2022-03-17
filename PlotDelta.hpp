@@ -28,7 +28,11 @@ struct PlotDeltaStruct
         fprintf(plotpipe, "set xlabel 'log(log(N))'\n");
         fprintf(plotpipe, "set ylabel 'log \\delta(N)\n");
         fprintf(plotpipe, "set xrange [15:*]\n");
-        fprintf(plotpipe, "set grid\n");
+        fprintf(plotpipe, "set xtics 2\n");
+        fprintf(plotpipe, "set mxtics 1\n");
+        fprintf(plotpipe, "set ytics 1\n");
+        fprintf(plotpipe, "set mytics .5\n");
+        fprintf(plotpipe, "set grid mxtics mytics\n");
         fprintf(plotpipe, "plot '-' with points pt 0\n");
 
         plotpipe2 = popen("gnuplot", "w");
@@ -43,7 +47,11 @@ struct PlotDeltaStruct
         fprintf(plotpipe2, "set ylabel 'log \\delta(N)+log(log(N))/2-0.323336\n");
         fprintf(plotpipe2, "set xrange [11:*]\n");
         fprintf(plotpipe2, "set yrange [*:0.08]\n");
-        fprintf(plotpipe2, "set grid\n");
+        fprintf(plotpipe2, "set xtics 5\n");
+        fprintf(plotpipe2, "set mxtics 1\n");
+        fprintf(plotpipe2, "set ytics .02\n");
+        fprintf(plotpipe2, "set mytics .01\n");
+        fprintf(plotpipe2, "set grid mxtics mytics\n");
         fprintf(plotpipe2, "plot '-' with points pt 0\n");
 
 
