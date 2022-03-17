@@ -30,7 +30,7 @@ struct PlotDeltaStruct
         //fprintf(plotpipe, "set pointtype 7\n");
         fprintf(plotpipe, "set xrange [15:*]\n");
         fprintf(plotpipe, "set grid\n");
-        fprintf(plotpipe, "plot '-' with points pt 7\n");
+        fprintf(plotpipe, "plot '-' with points pt 0\n");
 
         plotpipe2 = popen("gnuplot", "w");
         if(not plotpipe2)
