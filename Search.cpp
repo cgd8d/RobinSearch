@@ -541,7 +541,7 @@ uint64_t AddPrimeFactors()
                 PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_,
                 PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_+num_copy,
                 PrimeQueue.begin()+i);
-            PrimeQueueProducer.i_ += num_copy;
+            PrimeQueueProducer.i_ += num_copy-1;
             i += num_copy;
             //PrimeQueue[i] = PrimeQueueProducer.next_prime();
         }
