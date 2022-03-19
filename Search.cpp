@@ -528,7 +528,22 @@ uint64_t AddPrimeFactors()
     {
         for(size_t i = 0; i < PrimeQueue.size(); i++)
         {
-            PrimeQueue[i] = PrimeQueueProducer.next_prime();
+            // Hack into primesieve iterator to enable
+            // fast copy.
+            if(PrimeQueueProducer.i_++ == PrimeQueueProducer.last_idx_)
+            {
+                PrimeQueueProducer.generate_next_primes();
+            }
+            size_t num_copy = std::min(
+                PrimeQueue.size()-i,
+                PrimeQueueProducer.last_idx_+1-PrimeQueueProducer.i_);
+            std::copy(
+                PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_,
+                PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_+num_copy,
+                PrimeQueue.begin()+i);
+            PrimeQueueProducer.i_ += num_copy;
+            i += num_copy;
+            //PrimeQueue[i] = PrimeQueueProducer.next_prime();
         }
         NextPrimeIdx = 0;
         PrimeQueueEpsilonStack.emplace(PrimeQueue.size() - 1);
