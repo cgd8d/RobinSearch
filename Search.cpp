@@ -537,6 +537,11 @@ uint64_t AddPrimeFactors()
             size_t num_copy = std::min(
                 PrimeQueue.size()-i,
                 PrimeQueueProducer.last_idx_+1-PrimeQueueProducer.i_);
+            std::cout << "Copying " << num_copy << " primes." << std::endl;
+            std::cout << *(PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_)
+                      << " To "
+                      << *(PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_+num_copy-1)
+                      << std::endl;
             std::copy(
                 PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_,
                 PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_+num_copy,
