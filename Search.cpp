@@ -727,6 +727,11 @@ int main(int argc, char *argv[])
               << primesieve::get_sieve_size()
               << " KiB (kibibytes)."
               << std::endl;
+    primesieve::set_sieve_size(1024);
+    std::cout << "Prime sieve size changed to "
+              << primesieve::get_sieve_size()
+              << " KiB (kibibytes)."
+              << std::endl;
 
     CheckTypes();
     mpfr_init2(Number_rndd, Precision);
