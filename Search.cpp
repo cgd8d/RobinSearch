@@ -507,7 +507,7 @@ struct PrimeQueueEpsilonGroup
         mpfr_init2(Epsilon_rndu, Precision);
         ComputeEpsilon.Do_rndu(
             Epsilon_rndu,
-            PrimeQueue[idx],
+            PrimeQueue[idx]+PrimeQueueOffset,
             0);
     }
     ~PrimeQueueEpsilonGroup()
@@ -566,11 +566,6 @@ uint64_t AddPrimeFactors()
         MaxPrimeQueueDiff = std::max(
             MaxPrimeQueueDiff,
             PrimeQueueProducer.primes_[PrimeQueueProducer.i_]-PrimeQueueOffset);
-
-
-Not done yet!
-
-
     }
 
     // Find a safe number of primes to add.
@@ -588,14 +583,14 @@ Not done yet!
             // Acquire mpfr_helper.a (holds eps_rndd)
             ComputeEpsilon.Do_rndd(
                 mpfr_helper.a,
-                PrimeQueue[PrimeQueueEpsilonStack.top().index],
+                PrimeQueue[PrimeQueueEpsilonStack.top().index]+PrimeQueueOffset,
                 0);
             if(mpfr_lessequal_p(
                 mpfr_helper.a,
                 PrimeGroupQueue.top()->CriticalEpsilon_rndu))
             {
                 std::cerr << "Unable to compare epsilon for "
-                          << PrimeQueue[PrimeQueueEpsilonStack.top().index] << "^0"
+                          << PrimeQueue[PrimeQueueEpsilonStack.top().index]+PrimeQueueOffset << "^0"
                           << " and "
                           << PrimeGroupQueue.top()->PrimeLo << "^" << int(PrimeGroupQueue.top()->Exp)
                           << std::endl;
@@ -641,10 +636,10 @@ Not done yet!
                             i < NextPrimeIdx + BunchSize;
                             i++)
                         {
-                            lhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]+1);
-                            lhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]+1);
-                            rhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]);
-                            rhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]);
+                            lhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]+PrimeQueueOffset+1);
+                            lhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]+PrimeQueueOffset+1);
+                            rhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]+PrimeQueueOffset);
+                            rhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]+PrimeQueueOffset);
                         }
 
                         // Check if test values indicate possible violation of bound.
@@ -663,7 +658,7 @@ Not done yet!
                             rhs_update_rndu = rhs_update_rndu_test;
                             NextPrimeIdx += BunchSize;
                             cnt_NumUniquePrimeFactors += BunchSize;
-                            Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx-1];
+                            Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx-1]+PrimeQueueOffset;
                             cnt_NumPrimeFactors += BunchSize;
                             cnt_FastBunchMul_keep++;
                         }
@@ -692,7 +687,7 @@ Not done yet!
                 // Iterate factor by factor until we update logs.
                 while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
                 {
-                    uint64_t this_p = PrimeQueue[NextPrimeIdx];
+                    uint64_t this_p = PrimeQueue[NextPrimeIdx]+PrimeQueueOffset;
                     mpfr_mul_ui(Number_rndd, Number_rndd, this_p, MPFR_RNDD);
                     mpfr_mul_ui(Number_rndu, Number_rndu, this_p, MPFR_RNDU);
                     mpfr_mul_ui(NloglogN_rndd, NloglogN_rndd, this_p, MPFR_RNDD);
