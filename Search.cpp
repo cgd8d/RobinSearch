@@ -493,7 +493,7 @@ PrimeQueueOffset, which allows more compact storage
 and reduces memory and cache burden.
 */
 size_t PrimeQueueOffset;
-std::vector<uint64_t> PrimeQueue(1 << 14);
+std::vector<uint32_t> PrimeQueue(1 << 14);
 size_t MaxPrimeQueueDiff = 0; // Track range of primes.
 size_t NextPrimeIdx = PrimeQueue.size();
 primesieve::iterator PrimeQueueProducer;
