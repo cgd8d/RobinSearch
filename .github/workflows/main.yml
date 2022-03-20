@@ -28,7 +28,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libmpfr-dev gnuplot llvm-12 clang-12 libmkl-full-dev
-          # perf list
+          pkg-config mkl-static-lp64-seq --exists
+          pkg-config mkl-static-lp64-seq --cflags
+          pkg-config mkl-static-lp64-seq --libs
 
       # build libprimesieve 7.8.
       # Ubuntu 20.04 only has version 7.5.
