@@ -490,6 +490,7 @@ epsilon, since the goal is to compute it for a very
 small subset of factors.
 */
 std::vector<uint64_t> PrimeQueue(1 << 14);
+size_t MaxPrimeQueueDiff = 0; // Track range of primes.
 size_t NextPrimeIdx = PrimeQueue.size();
 primesieve::iterator PrimeQueueProducer;
 struct PrimeQueueEpsilonGroup
@@ -552,6 +553,9 @@ uint64_t AddPrimeFactors()
         NextPrimeIdx = 0;
         PrimeQueueEpsilonStack.emplace(PrimeQueue.size() - 1);
         cnt_EpsEvalForExpZero++;
+        MaxPrimeQueueDiff = std::max(
+            MaxPrimeQueueDiff,
+            PrimeQueue.back()-PrimeQueue.front());
     }
 
     // Find a safe number of primes to add.
@@ -799,6 +803,7 @@ int main(int argc, char *argv[])
     std::cout << "cnt_LogLogNUpdates = " << cnt_LogLogNUpdates << std::endl;
     std::cout << "cnt_FastBunchMul = " << cnt_FastBunchMul << std::endl;
     std::cout << "cnt_FastBunchMul_drop = " << cnt_FastBunchMul-cnt_FastBunchMul_keep << std::endl;
+    std::cout << "MaxPrimeQueueDiff = " << MaxPrimeQueueDiff << std::endl;
 
     mpfr_clear(Number_rndd);
     mpfr_clear(Number_rndu);
