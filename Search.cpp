@@ -40,6 +40,11 @@ void CheckTypes()
 
     static_assert(sizeof(mp_limb_t) == sizeof(uint64_t),
         "mp_limb_t is not 64 bits.");
+
+    // I plan to do a reinterpret cast of uint64_t to extract
+    // the lower four bytes.  Verify that the system
+    // is little endian so I pick the right bytes.
+    static_assert(__LITTLE_ENDIAN__);
 }
 
 // Helper object to store initialized mpfr objects.
