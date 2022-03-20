@@ -526,9 +526,28 @@ uint64_t AddPrimeFactors()
     assert(PrimeQueueEpsilonStack.empty() == (NextPrimeIdx == PrimeQueue.size()));
     if(PrimeQueueEpsilonStack.empty())
     {
-        for(size_t i = 0; i < PrimeQueue.size(); i++)
+        size_t i = 0;
+        while(i < PrimeQueue.size())
         {
-            PrimeQueue[i] = PrimeQueueProducer.next_prime();
+            // Hack into primesieve iterator to enable
+            // fast copy.
+            // Handle i_ the way iterator usually does
+            // so the iterator remains in a valid state.
+            if(PrimeQueueProducer.i_++ == PrimeQueueProducer.last_idx_)
+            {
+                // Note generate_next_primes has post-
+                // condition that i_ == 0.
+                PrimeQueueProducer.generate_next_primes();
+            }
+            size_t num_copy = std::min(
+                PrimeQueue.size()-i,
+                PrimeQueueProducer.last_idx_+1-PrimeQueueProducer.i_);
+            std::copy(
+                PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_,
+                PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_+num_copy,
+                PrimeQueue.begin()+i);
+            PrimeQueueProducer.i_ += num_copy-1;
+            i += num_copy;
         }
         NextPrimeIdx = 0;
         PrimeQueueEpsilonStack.emplace(PrimeQueue.size() - 1);
