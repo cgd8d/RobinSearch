@@ -488,7 +488,11 @@ return value is zero.
 Internally we record calculations of the critical
 epsilon, since the goal is to compute it for a very
 small subset of factors.
+Prime queue is stored as values offset by
+PrimeQueueOffset, which allows more compact storage
+and reduces memory and cache burden.
 */
+size_t PrimeQueueOffset;
 std::vector<uint64_t> PrimeQueue(1 << 14);
 size_t MaxPrimeQueueDiff = 0; // Track range of primes.
 size_t NextPrimeIdx = PrimeQueue.size();
@@ -527,9 +531,12 @@ uint64_t AddPrimeFactors()
     assert(PrimeQueueEpsilonStack.empty() == (NextPrimeIdx == PrimeQueue.size()));
     if(PrimeQueueEpsilonStack.empty())
     {
-        size_t i = 0;
+        PrimeQueueOffset = PrimeQueueProducer.next_prime();
+        PrimeQueue[0] = 0;
+        size_t i = 1;
         while(i < PrimeQueue.size())
         {
+            /*
             // Hack into primesieve iterator to enable
             // fast copy.
             // Handle i_ the way iterator usually does
@@ -549,13 +556,21 @@ uint64_t AddPrimeFactors()
                 PrimeQueue.begin()+i);
             PrimeQueueProducer.i_ += num_copy-1;
             i += num_copy;
+            */
+            PrimeQueue[i] = PrimeQueueProducer.next_prime()-PrimeQueueOffset;
+            i++;
         }
         NextPrimeIdx = 0;
         PrimeQueueEpsilonStack.emplace(PrimeQueue.size() - 1);
         cnt_EpsEvalForExpZero++;
         MaxPrimeQueueDiff = std::max(
             MaxPrimeQueueDiff,
-            PrimeQueue.back()-PrimeQueue.front());
+            PrimeQueueProducer.primes_[PrimeQueueProducer.i_]-PrimeQueueOffset);
+
+
+Not done yet!
+
+
     }
 
     // Find a safe number of primes to add.
