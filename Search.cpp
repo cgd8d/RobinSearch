@@ -539,9 +539,9 @@ uint64_t AddPrimeFactors()
         PrimeQueueOffset = PrimeQueueProducer.next_prime();
         PrimeQueue[0] = 0;
         size_t i = 1;
+        //size_t LastPrime = PrimeQueueOffset;
         while(i < PrimeQueue.size())
         {
-            /*
             // Hack into primesieve iterator to enable
             // fast copy.
             // Handle i_ the way iterator usually does
@@ -555,6 +555,23 @@ uint64_t AddPrimeFactors()
             size_t num_copy = std::min(
                 PrimeQueue.size()-i,
                 PrimeQueueProducer.last_idx_+1-PrimeQueueProducer.i_);
+
+            //for(size_t j = 0; j < num_copy; j++)
+            size_t stop = i+num_copy;
+            while(i < stop)
+            {
+                PrimeQueue[i++] =
+                    (uint32_t)PrimeQueueProducer.primes_[PrimeQueueProducer.i_++]
+                    - (uint32_t)PrimeQueueOffset;
+            }
+            PrimeQueueProducer.i_--;
+
+            /*LastPrime = PrimeQueueProducer.primes_[PrimeQueueProducer.i_+num_copy-1];
+            std::for_each(
+                PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_,
+                PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_+num_copy,
+                [](uint64_t& n){n -= PrimeQueueOffset;});
+
             std::copy(
                 PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_,
                 PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_+num_copy,
@@ -562,8 +579,8 @@ uint64_t AddPrimeFactors()
             PrimeQueueProducer.i_ += num_copy-1;
             i += num_copy;
             */
-            PrimeQueue[i] = PrimeQueueProducer.next_prime()-PrimeQueueOffset;
-            i++;
+            //PrimeQueue[i] = PrimeQueueProducer.next_prime()-PrimeQueueOffset;
+            //i++;
         }
         NextPrimeIdx = 0;
         PrimeQueueEpsilonStack.emplace(PrimeQueue.size() - 1);
