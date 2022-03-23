@@ -9,6 +9,7 @@
 #include <stack>
 #include <mpfr.h>
 #include <primesieve.hpp>
+#include <mkl.h>
 #include "PlotDelta.hpp"
 #include "FastBigFloat.hpp"
 
@@ -556,6 +557,23 @@ uint64_t AddPrimeFactors()
                 PrimeQueue.size()-i,
                 PrimeQueueProducer.last_idx_+1-PrimeQueueProducer.i_);
 
+            // This line relies on the memory format
+            // being little-endian (which we check
+            // at beginning of program).
+            cblas_scopy(
+                num_copy,
+                (float*)&PrimeQueueProducer.primes_[PrimeQueueProducer.i_],
+                2,
+                (float*)&PrimeQueue[i],
+                1);
+
+            size_t stop = i+num_copy;
+            while(i < stop)
+            {
+                PrimeQueue[i++] -= (uint32_t)PrimeQueueOffset;
+            }
+            PrimeQueueProducer.i_ += num_copy-1;
+/*
             //for(size_t j = 0; j < num_copy; j++)
             size_t stop = i+num_copy;
             while(i < stop)
@@ -566,7 +584,7 @@ uint64_t AddPrimeFactors()
             }
             PrimeQueueProducer.i_--;
 
-            /*LastPrime = PrimeQueueProducer.primes_[PrimeQueueProducer.i_+num_copy-1];
+            LastPrime = PrimeQueueProducer.primes_[PrimeQueueProducer.i_+num_copy-1];
             std::for_each(
                 PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_,
                 PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_+num_copy,
