@@ -34,6 +34,7 @@ jobs:
           git clone --depth 1 --branch v7.8 https://github.com/kimwalisch/primesieve
           cd primesieve
           sed -i 's/private/public/g' include/primesieve/iterator.hpp
+          sed -i 's/resizeUninitialized(primes, 512)/resizeUninitialized(primes, 1024)/g' src/PrimeGenerator.cpp
           CC="clang-12 -fuse-ld=gold -march=native" CXX="clang++-12 -fuse-ld=gold -march=native" cmake -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .
           make -j
           ctest
@@ -49,6 +50,20 @@ jobs:
       # Run code straight, no profiling.
       - name: Run
         run: ./Search 43
+
+      # build libprimesieve 7.8.
+      # Ubuntu 20.04 only has version 7.5.
+      - name: SetupPrimeSieve (old)
+        run: |
+          rm -rf primesieve
+          git clone --depth 1 --branch v7.8 https://github.com/kimwalisch/primesieve
+          cd primesieve
+          sed -i 's/private/public/g' include/primesieve/iterator.hpp
+          CC="clang-12 -fuse-ld=gold -march=native" CXX="clang++-12 -fuse-ld=gold -march=native" cmake -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .
+          make -j
+          ctest
+          echo "Run ls"
+          ls
 
      # Compile code from main branch
       - name: Compile main
