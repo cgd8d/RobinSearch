@@ -62,6 +62,12 @@ jobs:
           clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include test/TimerSumPrimes.cpp -lmpfr -lprimesieve -o TimerSumPrimes
           ./TimerSumPrimes
 
+      # Time the summing of primes.
+      - name: RunTimerSumPrimes2
+        run: |
+          clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include test/TimerSumPrimes2.cpp -lmpfr -lprimesieve -o TimerSumPrimes2
+          ./TimerSumPrimes2
+
       # Compile code
       - name: Compile
         run: |
