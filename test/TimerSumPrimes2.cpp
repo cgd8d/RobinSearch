@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 {
   uint64_t limit = 135452688167ull;
 
-  primesieve::iterator it(0, limit);
+  primesieve::iterator it;
   uint64_t prime = it.next_prime();
   uint64_t sum = 0;
   size_t NextPrimeIdx = PrimeQueue.size();
