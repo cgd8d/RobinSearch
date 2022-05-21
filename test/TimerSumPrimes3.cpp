@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 
   primesieve::iterator it_exp(0, 1000);
 
-  primesieve::iterator it(0, limit);
+  primesieve::iterator it;
   uint64_t prime = it.next_prime();
   uint64_t sum = 0;
   size_t NextPrimeIdx = PrimeQueue.size();
