@@ -37,7 +37,7 @@ int main(int argc, char** argv)
   uint64_t prime = it.next_prime();
   mpfr_t sum;
   mpfr_init2(sum, Precision);
-  mpfr_set_ui(sum, 0, MPFR_RNDU);
+  mpfr_set_ui(sum, 1, MPFR_RNDU);
   size_t NextPrimeIdx = PrimeQueue.size();
 
   while(true)
