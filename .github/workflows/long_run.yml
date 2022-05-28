@@ -26,11 +26,11 @@ jobs:
           sudo apt-get install libmpfr-dev gnuplot llvm-12 clang-12
           # perf list
 
-      # build libprimesieve 7.8.
+      # build libprimesieve 7.9.
       # Ubuntu 20.04 only has version 7.5.
       - name: SetupPrimeSieve
         run: |
-          git clone --depth 1 --branch v7.8 https://github.com/kimwalisch/primesieve
+          git clone --depth 1 --branch v7.9 https://github.com/kimwalisch/primesieve
           cd primesieve
           sed -i 's/private/public/g' include/primesieve/iterator.hpp
           CC="clang-12 -fuse-ld=gold -march=native" CXX="clang++-12 -fuse-ld=gold -march=native" cmake -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .
