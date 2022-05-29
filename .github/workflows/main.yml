@@ -50,7 +50,10 @@ jobs:
         run: |
           wget https://ftp.gnu.org/gnu/gmp/gmp-6.2.1.tar.xz
           tar -xf gmp-6.2.1.tar.xz
-          ls
+          cd gmp-6.2.1
+          ./configure
+          make
+          make check
           exit 1
 
 
