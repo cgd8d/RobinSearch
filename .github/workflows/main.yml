@@ -27,7 +27,7 @@ jobs:
       - name: Setup
         run: |
           sudo apt-get update
-          sudo apt-get install libmpfr-dev gnuplot llvm-12 clang-12
+          sudo apt-get install gnuplot llvm-12 clang-12
           # perf list
 
       # build libprimesieve 7.9.
@@ -43,7 +43,16 @@ jobs:
           echo "Run ls"
           ls
           echo "Run ls CMakeFiles"
-          ls CMakeFiles
+          ls 
+
+      # Build GMP 6.2.1.
+      - name: SetupGMP
+        run: |
+          wget https://ftp.gnu.org/gnu/gmp/gmp-6.2.1.tar.xz
+          tar -xf gmp-6.2.1.tar.xz
+          ls
+          exit 1
+
 
       # Compile test segments to assembly
       #- name: CompileAsmTest
