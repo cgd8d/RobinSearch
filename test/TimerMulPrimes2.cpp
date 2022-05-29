@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 
-const mpfr_prec_t Precision = 128;
+const mpfr_prec_t Precision = 127;
 
 std::vector<uint64_t> PrimeQueue(1 << 14);
 
