@@ -56,7 +56,7 @@ jobs:
           make
           make check
           cd tune
-          makespeed
+          make speed
           ls -a
 
 
