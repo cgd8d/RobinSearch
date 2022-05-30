@@ -55,7 +55,7 @@ jobs:
           CC=clang-12 CFLAGS="-fuse-ld=gold -flto=thin" AR=llvm-ar-12 NM=llvm-nm-12 RANLIB=llvm-ranlib-12 ./configure --disable-shared
           make
           make check
-          ls
+          ls -a
           exit 1
 
 
