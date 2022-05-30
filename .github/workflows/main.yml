@@ -52,7 +52,7 @@ jobs:
           tar -xf gmp-6.2.1.tar.xz
           cd gmp-6.2.1
           ./configure --help
-          CC=clang-12 CFLAGS="-fuse-ld=gold -flto=thin" ./configure --disable-shared
+          CC=clang-12 CFLAGS="-fuse-ld=gold -flto=thin" AR=llvm-ar NM=llvm-nm RANLIB=llvm-ranlib ./configure --disable-shared
           make
           make check
           ls
