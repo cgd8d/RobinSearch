@@ -51,9 +51,11 @@ jobs:
           wget https://ftp.gnu.org/gnu/gmp/gmp-6.2.1.tar.xz
           tar -xf gmp-6.2.1.tar.xz
           cd gmp-6.2.1
-          CC=clang-12 ./configure
+          ./configure --help
+          CC=clang-12 CFLAGS="-fuse-ld=gold -flto=thin" ./configure
           make
           make check
+          ls
           exit 1
 
 
