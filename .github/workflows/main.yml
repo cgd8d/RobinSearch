@@ -71,7 +71,7 @@ jobs:
           echo "make tune"
           cd tune
           make tune
-          cd
+          cd ..
           echo make
           make
           echo make check
