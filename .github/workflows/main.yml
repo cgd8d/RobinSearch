@@ -47,7 +47,7 @@ jobs:
           ls
           echo "Run ls CMakeFiles"
           ls
-          MY_DEPENDENCY_FLAGS="$MY_DEPENDENCY_FLAGS -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include"
+          export MY_DEPENDENCY_FLAGS="$MY_DEPENDENCY_FLAGS -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include"
           echo "MY_DEPENDENCY_FLAGS=$MY_DEPENDENCY_FLAGS"
 
       # Build GMP 6.2.1.
@@ -85,7 +85,7 @@ jobs:
           echo ls -a src
           cd src
           ls -a
-          MY_DEPENDENCY_FLAGS="$MY_DEPENDENCY_FLAGS -Lmpfr/src -Wl,-rpath=mpfr/src -Impfr/src"
+          export MY_DEPENDENCY_FLAGS="$MY_DEPENDENCY_FLAGS -Lmpfr/src -Wl,-rpath=mpfr/src -Impfr/src"
           echo "MY_DEPENDENCY_FLAGS=$MY_DEPENDENCY_FLAGS"
 
 
