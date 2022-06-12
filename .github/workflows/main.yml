@@ -78,8 +78,8 @@ jobs:
           make check
           echo ls -a
           ls -a
-          echo ls -a compile
-          cd compile
+          echo ls -a src
+          cd src
           ls -a
           exit 1
 
