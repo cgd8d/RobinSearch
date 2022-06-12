@@ -11,6 +11,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  MY_DEPENDENCY_FLAGS: 
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -43,7 +46,9 @@ jobs:
           echo "Run ls"
           ls
           echo "Run ls CMakeFiles"
-          ls 
+          ls
+          MY_DEPENDENCY_FLAGS="$MY_DEPENDENCY_FLAGS -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include"
+          echo "MY_DEPENDENCY_FLAGS=$MY_DEPENDENCY_FLAGS"
 
       # Build GMP 6.2.1.
       - name: SetupGMP
@@ -58,7 +63,6 @@ jobs:
           #cd tune
           #make speed
           ls -a
-
 
       # Build MPFR 4.1
       - name: SetupMPFR
@@ -81,7 +85,8 @@ jobs:
           echo ls -a src
           cd src
           ls -a
-          exit 1
+          MY_DEPENDENCY_FLAGS="$MY_DEPENDENCY_FLAGS -Lmpfr/src -Wl,-rpath=mpfr/src -Impfr/src"
+          echo "MY_DEPENDENCY_FLAGS=$MY_DEPENDENCY_FLAGS"
 
 
       # Compile test segments to assembly
@@ -138,7 +143,7 @@ jobs:
           /usr/bin/ld -v
           lscpu
           clang++-12 -march=native -E - -dM </dev/null # print macros
-          clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include Search.cpp -lmpfr -lprimesieve -o Search
+          clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS Search.cpp -lmpfr -lprimesieve -o Search
           #clang++ -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search_ndebug
 
       # Run code straight, no profiling.
