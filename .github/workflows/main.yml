@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 env:
-  MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src"
+  MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.2.1/.libs  -Wl,-rpath=gmp-6.2.1/.libs"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -100,7 +100,7 @@ jobs:
       # Run tests.
       - name: RunTests
         run: |
-          clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native $MY_DEPENDENCY_FLAGS test/TestBigFloat.cpp -lmpfr -o TestBigFloat
+          clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native $MY_DEPENDENCY_FLAGS test/TestBigFloat.cpp -lmpfr -lgmp -o TestBigFloat
           ./TestBigFloat
 
       # Time the summing of primes.
