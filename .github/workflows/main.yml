@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 env:
-  MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src -Wl,-rpath=mpfr/src -Impfr/src"
+  MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
