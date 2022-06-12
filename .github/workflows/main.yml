@@ -57,7 +57,7 @@ jobs:
           tar -xf gmp-6.2.1.tar.xz
           cd gmp-6.2.1
           ./configure --help
-          CC=clang-12 CFLAGS="-fuse-ld=gold -flto=thin" AR=llvm-ar-12 NM=llvm-nm-12 RANLIB=llvm-ranlib-12 ./configure --disable-shared
+          CC=clang-12 CFLAGS="-fuse-ld=gold -flto=thin -march=native" AR=llvm-ar-12 NM=llvm-nm-12 RANLIB=llvm-ranlib-12 ./configure --disable-shared
           make
           make check
           #cd tune
@@ -71,7 +71,7 @@ jobs:
           cd mpfr
           autoreconf -i
           ./configure --help
-          CC=clang-12 CFLAGS="-fuse-ld=gold -flto=thin" AR=llvm-ar-12 NM=llvm-nm-12 RANLIB=llvm-ranlib-12 ./configure --with-gmp-build=${PWD%/*}/gmp-6.2.1 --disable-shared
+          CC=clang-12 CFLAGS="-fuse-ld=gold -flto=thin -march=native" AR=llvm-ar-12 NM=llvm-nm-12 RANLIB=llvm-ranlib-12 ./configure --with-gmp-build=${PWD%/*}/gmp-6.2.1 --disable-shared
           #echo "make tune"
           #cd tune
           #make tune
