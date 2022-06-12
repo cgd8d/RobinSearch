@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 env:
-  MY_DEPENDENCY_FLAGS: 
+  MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src -Wl,-rpath=mpfr/src -Impfr/src"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -47,7 +47,7 @@ jobs:
           ls
           echo "Run ls CMakeFiles"
           ls
-          export MY_DEPENDENCY_FLAGS="$MY_DEPENDENCY_FLAGS -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include"
+          #export MY_DEPENDENCY_FLAGS="$MY_DEPENDENCY_FLAGS -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include"
           echo "MY_DEPENDENCY_FLAGS=$MY_DEPENDENCY_FLAGS"
 
       # Build GMP 6.2.1.
@@ -85,7 +85,7 @@ jobs:
           echo ls -a src
           cd src
           ls -a
-          export MY_DEPENDENCY_FLAGS="$MY_DEPENDENCY_FLAGS -Lmpfr/src -Wl,-rpath=mpfr/src -Impfr/src"
+          #export MY_DEPENDENCY_FLAGS="$MY_DEPENDENCY_FLAGS -Lmpfr/src -Wl,-rpath=mpfr/src -Impfr/src"
           echo "MY_DEPENDENCY_FLAGS=$MY_DEPENDENCY_FLAGS"
 
 
