@@ -10,9 +10,9 @@ CC=clang-12 CFLAGS="-fuse-ld=gold -flto=thin -march=native -O3" AR=llvm-ar-12 NM
 #make tune
 #cd ..
 echo make
-make -j -O
+make -j 2 --output-sync
 echo make check
-make -j -O check
+make -j 2 --output-sync check
 echo ls -a
 ls -a
 echo ls -a src
