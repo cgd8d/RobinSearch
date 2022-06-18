@@ -7,6 +7,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.2.1/.libs  -Wl,-rpath=gmp-6.2.1/.libs"
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -23,23 +26,20 @@ jobs:
       - name: Setup
         run: |
           sudo apt-get update
-          sudo apt-get install libmpfr-dev gnuplot llvm-12 clang-12
+          sudo apt-get install gnuplot llvm-12 clang-12 autoconf-archive
           # perf list
 
-      # build libprimesieve 7.9.
-      # Ubuntu 20.04 only has version 7.5.
+      # build libprimesieve
       - name: SetupPrimeSieve
-        run: |
-          git clone --depth 1 --branch v7.9 https://github.com/kimwalisch/primesieve
-          cd primesieve
-          sed -i 's/private/public/g' include/primesieve/iterator.hpp
-          CC="clang-12 -fuse-ld=gold -march=native" CXX="clang++-12 -fuse-ld=gold -march=native" cmake -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .
-          make -j
-          ctest
-          echo "Run ls"
-          ls
-          echo "Run ls CMakeFiles"
-          ls CMakeFiles
+        run: bash scripts/SetupPrimeSieve.sh
+
+      # Build GMP
+      - name: SetupGMP
+        run: bash scripts/SetupGMP.sh
+
+      # Build MPFR
+      - name: SetupMPFR
+        run: bash scripts/SetupMPFR.sh
 
       # Compile test segments to assembly
       #- name: CompileAsmTest
@@ -49,7 +49,7 @@ jobs:
       # Run tests.
       - name: RunTests
         run: |
-          clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -lmpfr test/TestBigFloat.cpp -o TestBigFloat
+          clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native $MY_DEPENDENCY_FLAGS test/TestBigFloat.cpp -lmpfr -lgmp -o TestBigFloat
           ./TestBigFloat
 
       # Compile code
@@ -58,7 +58,7 @@ jobs:
           clang++-12 --version
           /usr/bin/ld -v
           lscpu
-          clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility -Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include Search.cpp -lmpfr -lprimesieve -o Search
+          clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS Search.cpp -lmpfr -lgmp -lprimesieve -o Search
           #clang++ -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search_ndebug
 
       # Run code straight, no profiling.
