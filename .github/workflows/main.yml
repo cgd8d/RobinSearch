@@ -33,20 +33,9 @@ jobs:
           sudo apt-get install gnuplot llvm-12 clang-12 autoconf-archive
           # perf list
 
-      # build libprimesieve 7.9.
-      # Ubuntu 20.04 only has version 7.5.
+      # build libprimesieve.
       - name: SetupPrimeSieve
-        run: |
-          git clone --depth 1 --branch v7.9 https://github.com/kimwalisch/primesieve
-          cd primesieve
-          sed -i 's/private/public/g' include/primesieve/iterator.hpp
-          CC="clang-12 -fuse-ld=gold -march=native" CXX="clang++-12 -fuse-ld=gold -march=native" cmake -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .
-          make -j
-          ctest
-          echo "Run ls"
-          ls
-          echo "Run ls CMakeFiles"
-          ls
+        run: bash scripts/SetupPrimeSieve.sh
 
       # Build GMP 6.2.1.
       - name: SetupGMP
