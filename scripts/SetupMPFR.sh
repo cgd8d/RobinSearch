@@ -1,4 +1,6 @@
 # Install MPFR from source.
+# Parallel build doesn't seem to speed it up (6/18/2022),
+# but left here anyway.
 
 git clone --depth 1 --branch 4.1 https://gitlab.inria.fr/mpfr/mpfr
 cd mpfr
@@ -10,9 +12,9 @@ CC=clang-12 CFLAGS="-fuse-ld=gold -flto=thin -march=native -O3" AR=llvm-ar-12 NM
 #make tune
 #cd ..
 echo make
-make -j 2
+make -j --output-sync
 echo make check
-make -j 2 check
+make -j --output-sync check
 echo ls -a
 ls -a
 echo ls -a src
