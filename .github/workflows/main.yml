@@ -30,7 +30,7 @@ jobs:
       - name: Setup
         run: |
           sudo apt-get update
-          sudo apt-get install gnuplot llvm-12 clang-12 autoconf-archive libomp-dev
+          sudo apt-get install gnuplot llvm-12 clang-12 autoconf-archive libomp12-dev
           # perf list
 
       # build libprimesieve
