@@ -491,7 +491,16 @@ Internally we record calculations of the critical
 epsilon, since the goal is to compute it for a very
 small subset of factors.
 */
-std::vector<uint64_t> PrimeQueue(1 << 14);
+std::vector<std::vector<uint64_t>> PrimeQueueVec(NumThreads);
+
+
+
+//std::vector<uint64_t> PrimeQueue(1 << 14);
+
+
+size_t PrimeQueueVecIdx = NumThreads;
+
+
 size_t MaxPrimeQueueDiff = 0; // Track range of primes.
 size_t NextPrimeIdx = PrimeQueue.size();
 primesieve::iterator PrimeQueueProducer;
