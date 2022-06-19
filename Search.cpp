@@ -14,6 +14,7 @@
 #include "FastBigFloat.hpp"
 
 const mpfr_prec_t Precision = 128;
+const int NumThreads = omp_get_max_threads();
 
 /*
 Convention: All mpfr_t values should have their rounding
@@ -754,7 +755,7 @@ int main(int argc, char *argv[])
 
     // Number of threads.
     std::cout << "Max number of threads: "
-              << omp_get_max_threads()
+              << NumThreads
               << std::endl;
 
     CheckTypes();
