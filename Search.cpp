@@ -8,6 +8,7 @@
 #include <queue>
 #include <stack>
 #include <mpfr.h>
+#include <omp.h>
 #include <primesieve.hpp>
 #include "PlotDelta.hpp"
 #include "FastBigFloat.hpp"
@@ -749,6 +750,11 @@ int main(int argc, char *argv[])
     std::cout << "Prime sieve size is "
               << primesieve::get_sieve_size()
               << " KiB (kibibytes)."
+              << std::endl;
+
+    // Number of threads.
+    std::cout << "Max number of threads: "
+              << omp_get_max_threads()
               << std::endl;
 
     CheckTypes();
