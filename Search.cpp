@@ -430,7 +430,7 @@ bool CheckNumber()
         // Release mpfr_helper.a.
 
         // Go ahead and print information.
-        if(true /*LogLogN_d > 2.5 and delta <= NextPrintDelta*/)
+        if(LogLogN_d > 2.5 and delta <= NextPrintDelta)
         {
             std::cout << "Updating logs on:" << std::endl;
             std::cout << "N = ";
@@ -553,13 +553,13 @@ uint64_t AddPrimeFactors()
                 NextPrimeToGen + i*PrimeQueueStep,
                 NextPrimeToGen + (i+1)*PrimeQueueStep - 1,
                 &PrimeQueueVec[i]);
-            std::cout << "Generated prime queue from "
+            /*std::cout << "Generated prime queue from "
                       << PrimeQueueVec[i].front()
                       << " to "
                       << PrimeQueueVec[i].back()
                       << " for i = "
                       << i
-                      << std::endl;
+                      << std::endl;*/
         }
         NextPrimeToGen += NumThreads*PrimeQueueStep;
         if(2*PrimeQueueVec.back().size() <
