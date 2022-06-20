@@ -551,7 +551,7 @@ uint64_t AddPrimeFactors()
             PrimeQueueVec[i].clear();
             primesieve::generate_primes(
                 NextPrimeToGen + i*PrimeQueueStep,
-                NextPrimeToGen + (i+1)*PrimeQueueStep,
+                NextPrimeToGen + (i+1)*PrimeQueueStep - 1,
                 &PrimeQueueVec[i]);
             std::cout << "Generated prime queue from "
                       << PrimeQueueVec[i].front()
