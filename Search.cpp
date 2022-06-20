@@ -502,7 +502,7 @@ size_t PrimeQueueVecIdx = NumThreads;
 
 
 size_t MaxPrimeQueueDiff = 0; // Track range of primes.
-size_t NextPrimeIdx = PrimeQueue.size();
+size_t NextPrimeIdx;
 primesieve::iterator PrimeQueueProducer;
 struct PrimeQueueEpsilonGroup
 {
@@ -534,8 +534,39 @@ uint64_t AddPrimeFactors()
         throw std::invalid_argument("AddPrimeFactors called with bad Number_factors.");
     }
 
+    // Basic requirement - check that prime queue
+    // and epsilon stack are in sync.
+    assert(PrimeQueueEpsilonStack.empty() ==
+           (NextPrimeIdx == PrimeQueueVec[PrimeQueueVecIdx].size()));
+
+    // Set up PrimeQueue.
+    if(NextPrimeIdx == PrimeQueueVec[PrimeQueueVecIdx].size())
+    {
+        // Reached the end of this prime queue,
+        // so advance one.
+        PrimeQueueVecIdx++;
+        NextPrimeIdx = 0;
+    }
+    if(PrimeQueueVecIdx >= NumThreads)
+    {
+        // Need to generate more primes.
+        #pragma omp parallel for num_threads(NumThreads)
+        for(int i = 0; i < NumThreads; i++)
+        {
+            PrimeQueueVec[i].clear();
+
+
+
+
+
+
+
+
+
     // Fill up PrimeQueue if it's empty.
-    assert(PrimeQueueEpsilonStack.empty() == (NextPrimeIdx == PrimeQueue.size()));
+
+
+
     if(PrimeQueueEpsilonStack.empty())
     {
         size_t i = 0;
