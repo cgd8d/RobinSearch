@@ -495,14 +495,7 @@ std::vector<std::vector<uint64_t>> PrimeQueueVec(NumThreads);
 size_t PrimeQueueStep = 1 << 15;
 const size_t TargetPrimeQueueSize = 1 << 14;
 uint64_t NextPrimeToGen = 0;
-
-
-//std::vector<uint64_t> PrimeQueue(1 << 14);
-
-
 size_t PrimeQueueVecIdx = NumThreads;
-
-
 size_t MaxPrimeQueueDiff = 0; // Track range of primes.
 size_t NextPrimeIdx;
 primesieve::iterator PrimeQueueProducer;
