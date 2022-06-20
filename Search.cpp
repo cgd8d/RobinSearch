@@ -430,7 +430,7 @@ bool CheckNumber()
         // Release mpfr_helper.a.
 
         // Go ahead and print information.
-        if(LogLogN_d > 2.5 and delta <= NextPrintDelta)
+        if(true /*LogLogN_d > 2.5 and delta <= NextPrintDelta*/)
         {
             std::cout << "Updating logs on:" << std::endl;
             std::cout << "N = ";
