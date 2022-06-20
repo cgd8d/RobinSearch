@@ -497,7 +497,7 @@ const size_t TargetPrimeQueueSize = 1 << 14;
 uint64_t NextPrimeToGen = 0;
 size_t PrimeQueueVecIdx = NumThreads;
 size_t MaxPrimeQueueDiff = 0; // Track range of primes.
-size_t NextPrimeIdx;
+size_t NextPrimeIdx = 0;
 primesieve::iterator PrimeQueueProducer;
 struct PrimeQueueEpsilonGroup
 {
