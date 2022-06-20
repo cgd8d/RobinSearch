@@ -492,7 +492,9 @@ epsilon, since the goal is to compute it for a very
 small subset of factors.
 */
 std::vector<std::vector<uint64_t>> PrimeQueueVec(NumThreads);
-
+size_t PrimeQueueStep = 1 << 15;
+const size_t TargetPrimeQueueSize = 1 << 14;
+uint64_t NextPrimeToGen = 0;
 
 
 //std::vector<uint64_t> PrimeQueue(1 << 14);
@@ -514,7 +516,7 @@ struct PrimeQueueEpsilonGroup
         mpfr_init2(Epsilon_rndu, Precision);
         ComputeEpsilon.Do_rndu(
             Epsilon_rndu,
-            PrimeQueue[idx],
+            PrimeQueueVec[PrimeQueueVecIdx][idx],
             0);
     }
     ~PrimeQueueEpsilonGroup()
@@ -554,50 +556,26 @@ uint64_t AddPrimeFactors()
         for(int i = 0; i < NumThreads; i++)
         {
             PrimeQueueVec[i].clear();
-
-
-
-
-
-
-
-
-
-    // Fill up PrimeQueue if it's empty.
-
-
-
+            primesieve::generate_primes(
+                NextPrimeToGen + i*PrimeQueueStep,
+                NextPrimeToGen + (i+1)*PrimeQueueStep,
+                &PrimeQueueVec[i]);
+        }
+        NextPrimeToGen += NumThreads*PrimeQueueStep;
+        if(2*PrimeQueueVec.back().size() <
+           TargetPrimeQueueSize)
+        {
+            // Next time use a bigger step.
+            PrimeQueueStep *= 2;
+        }
+        PrimeQueueVecIdx = 0;
+        assert(NextPrimeIdx == 0);
+    }
+    std::vector<uint64_t>& PrimeQueue = PrimeQueueVec[PrimeQueueVecIdx];
     if(PrimeQueueEpsilonStack.empty())
     {
-        size_t i = 0;
-        while(i < PrimeQueue.size())
-        {
-            // Hack into primesieve iterator to enable
-            // fast copy.
-            // Handle i_ the way iterator usually does
-            // so the iterator remains in a valid state.
-            if(PrimeQueueProducer.i_++ == PrimeQueueProducer.last_idx_)
-            {
-                // Note generate_next_primes has post-
-                // condition that i_ == 0.
-                PrimeQueueProducer.generate_next_primes();
-            }
-            size_t num_copy = std::min(
-                PrimeQueue.size()-i,
-                PrimeQueueProducer.last_idx_+1-PrimeQueueProducer.i_);
-            std::copy(
-                PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_,
-                PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_+num_copy,
-                PrimeQueue.begin()+i);
-            PrimeQueueProducer.i_ += num_copy-1;
-            i += num_copy;
-        }
-        NextPrimeIdx = 0;
         PrimeQueueEpsilonStack.emplace(PrimeQueue.size() - 1);
         cnt_EpsEvalForExpZero++;
-        MaxPrimeQueueDiff = std::max(
-            MaxPrimeQueueDiff,
-            PrimeQueue.back()-PrimeQueue.front());
     }
 
     // Find a safe number of primes to add.
