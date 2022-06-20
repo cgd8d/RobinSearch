@@ -498,7 +498,6 @@ uint64_t NextPrimeToGen = 3;
 size_t PrimeQueueVecIdx = NumThreads-1;
 size_t MaxPrimeQueueDiff = 0; // Track range of primes.
 size_t NextPrimeIdx = 0;
-primesieve::iterator PrimeQueueProducer;
 struct PrimeQueueEpsilonGroup
 {
     uint64_t index;
@@ -805,7 +804,6 @@ int main(int argc, char *argv[])
 
     // Step forward to N=2 to initiate processing.
     IncrementExp();
-    PrimeQueueProducer.next_prime(); // discard value.
     cnt_NumPrimeFactors++;
     cnt_NumUniquePrimeFactors++;
 
