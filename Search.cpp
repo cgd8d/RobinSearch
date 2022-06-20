@@ -494,7 +494,7 @@ small subset of factors.
 std::vector<std::vector<uint64_t>> PrimeQueueVec(NumThreads);
 size_t PrimeQueueStep = 1 << 15;
 const size_t TargetPrimeQueueSize = 1 << 14;
-uint64_t NextPrimeToGen = 0;
+uint64_t NextPrimeToGen = 3;
 size_t PrimeQueueVecIdx = NumThreads-1;
 size_t MaxPrimeQueueDiff = 0; // Track range of primes.
 size_t NextPrimeIdx = 0;
