@@ -492,8 +492,8 @@ epsilon, since the goal is to compute it for a very
 small subset of factors.
 */
 std::vector<std::vector<uint64_t>> PrimeQueueVec(NumThreads);
-size_t PrimeQueueStep = 1 << 15;
-const size_t TargetPrimeQueueSize = 1 << 14;
+size_t PrimeQueueStep = 1 << 19;
+const size_t TargetPrimeQueueSize = 1 << 18;
 uint64_t NextPrimeToGen = 3;
 size_t PrimeQueueVecIdx = NumThreads-1;
 size_t MaxPrimeQueueDiff = 0; // Track range of primes.
