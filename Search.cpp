@@ -8,11 +8,13 @@
 #include <queue>
 #include <stack>
 #include <mpfr.h>
+#include <omp.h>
 #include <primesieve.hpp>
 #include "PlotDelta.hpp"
 #include "FastBigFloat.hpp"
 
 const mpfr_prec_t Precision = 128;
+const int NumThreads = omp_get_max_threads();
 
 /*
 Convention: All mpfr_t values should have their rounding
@@ -489,10 +491,12 @@ Internally we record calculations of the critical
 epsilon, since the goal is to compute it for a very
 small subset of factors.
 */
-std::vector<uint64_t> PrimeQueue(1 << 14);
-size_t MaxPrimeQueueDiff = 0; // Track range of primes.
-size_t NextPrimeIdx = PrimeQueue.size();
-primesieve::iterator PrimeQueueProducer;
+std::vector<std::vector<uint64_t>> PrimeQueueVec(NumThreads);
+const size_t TargetPrimeQueueSize = 1 << 22;
+size_t PrimeQueueStep = 2*TargetPrimeQueueSize;
+uint64_t NextPrimeToGen = 3;
+size_t PrimeQueueVecIdx = NumThreads-1;
+size_t NextPrimeIdx = 0;
 struct PrimeQueueEpsilonGroup
 {
     uint64_t index;
@@ -503,7 +507,7 @@ struct PrimeQueueEpsilonGroup
         mpfr_init2(Epsilon_rndu, Precision);
         ComputeEpsilon.Do_rndu(
             Epsilon_rndu,
-            PrimeQueue[idx],
+            PrimeQueueVec[PrimeQueueVecIdx][idx],
             0);
     }
     ~PrimeQueueEpsilonGroup()
@@ -523,39 +527,46 @@ uint64_t AddPrimeFactors()
         throw std::invalid_argument("AddPrimeFactors called with bad Number_factors.");
     }
 
-    // Fill up PrimeQueue if it's empty.
-    assert(PrimeQueueEpsilonStack.empty() == (NextPrimeIdx == PrimeQueue.size()));
+    // Basic requirement - check that prime queue
+    // and epsilon stack are in sync.
+    assert(PrimeQueueEpsilonStack.empty() ==
+           (NextPrimeIdx == PrimeQueueVec[PrimeQueueVecIdx].size()));
+
+    // Set up PrimeQueue.
+    if(NextPrimeIdx == PrimeQueueVec[PrimeQueueVecIdx].size())
+    {
+        // Reached the end of this prime queue,
+        // so advance one.
+        PrimeQueueVecIdx++;
+        NextPrimeIdx = 0;
+    }
+    if(PrimeQueueVecIdx >= NumThreads)
+    {
+        // Need to generate more primes.
+        #pragma omp parallel for num_threads(NumThreads)
+        for(int i = 0; i < NumThreads; i++)
+        {
+            PrimeQueueVec[i].clear();
+            primesieve::generate_primes(
+                NextPrimeToGen + i*PrimeQueueStep,
+                NextPrimeToGen + (i+1)*PrimeQueueStep - 1,
+                &PrimeQueueVec[i]);
+        }
+        NextPrimeToGen += NumThreads*PrimeQueueStep;
+        if(2*PrimeQueueVec.back().size() <
+           TargetPrimeQueueSize)
+        {
+            // Next time use a bigger step.
+            PrimeQueueStep *= 2;
+        }
+        PrimeQueueVecIdx = 0;
+        assert(NextPrimeIdx == 0);
+    }
+    std::vector<uint64_t>& PrimeQueue = PrimeQueueVec[PrimeQueueVecIdx];
     if(PrimeQueueEpsilonStack.empty())
     {
-        size_t i = 0;
-        while(i < PrimeQueue.size())
-        {
-            // Hack into primesieve iterator to enable
-            // fast copy.
-            // Handle i_ the way iterator usually does
-            // so the iterator remains in a valid state.
-            if(PrimeQueueProducer.i_++ == PrimeQueueProducer.last_idx_)
-            {
-                // Note generate_next_primes has post-
-                // condition that i_ == 0.
-                PrimeQueueProducer.generate_next_primes();
-            }
-            size_t num_copy = std::min(
-                PrimeQueue.size()-i,
-                PrimeQueueProducer.last_idx_+1-PrimeQueueProducer.i_);
-            std::copy(
-                PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_,
-                PrimeQueueProducer.primes_.begin()+PrimeQueueProducer.i_+num_copy,
-                PrimeQueue.begin()+i);
-            PrimeQueueProducer.i_ += num_copy-1;
-            i += num_copy;
-        }
-        NextPrimeIdx = 0;
         PrimeQueueEpsilonStack.emplace(PrimeQueue.size() - 1);
         cnt_EpsEvalForExpZero++;
-        MaxPrimeQueueDiff = std::max(
-            MaxPrimeQueueDiff,
-            PrimeQueue.back()-PrimeQueue.front());
     }
 
     // Find a safe number of primes to add.
@@ -751,6 +762,11 @@ int main(int argc, char *argv[])
               << " KiB (kibibytes)."
               << std::endl;
 
+    // Number of threads.
+    std::cout << "Max number of threads: "
+              << NumThreads
+              << std::endl;
+
     CheckTypes();
     mpfr_init2(Number_rndd, Precision);
     mpfr_init2(Number_rndu, Precision);
@@ -780,7 +796,6 @@ int main(int argc, char *argv[])
 
     // Step forward to N=2 to initiate processing.
     IncrementExp();
-    PrimeQueueProducer.next_prime(); // discard value.
     cnt_NumPrimeFactors++;
     cnt_NumUniquePrimeFactors++;
 
@@ -803,7 +818,6 @@ int main(int argc, char *argv[])
     std::cout << "cnt_LogLogNUpdates = " << cnt_LogLogNUpdates << std::endl;
     std::cout << "cnt_FastBunchMul = " << cnt_FastBunchMul << std::endl;
     std::cout << "cnt_FastBunchMul_drop = " << cnt_FastBunchMul-cnt_FastBunchMul_keep << std::endl;
-    std::cout << "MaxPrimeQueueDiff = " << MaxPrimeQueueDiff << std::endl;
 
     mpfr_clear(Number_rndd);
     mpfr_clear(Number_rndu);
