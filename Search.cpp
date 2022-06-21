@@ -496,7 +496,6 @@ const size_t TargetPrimeQueueSize = 1 << 22;
 size_t PrimeQueueStep = 2*TargetPrimeQueueSize;
 uint64_t NextPrimeToGen = 3;
 size_t PrimeQueueVecIdx = NumThreads-1;
-size_t MaxPrimeQueueDiff = 0; // Track range of primes.
 size_t NextPrimeIdx = 0;
 struct PrimeQueueEpsilonGroup
 {
@@ -819,7 +818,6 @@ int main(int argc, char *argv[])
     std::cout << "cnt_LogLogNUpdates = " << cnt_LogLogNUpdates << std::endl;
     std::cout << "cnt_FastBunchMul = " << cnt_FastBunchMul << std::endl;
     std::cout << "cnt_FastBunchMul_drop = " << cnt_FastBunchMul-cnt_FastBunchMul_keep << std::endl;
-    std::cout << "MaxPrimeQueueDiff = " << MaxPrimeQueueDiff << std::endl;
 
     mpfr_clear(Number_rndd);
     mpfr_clear(Number_rndu);
