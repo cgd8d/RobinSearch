@@ -552,13 +552,6 @@ uint64_t AddPrimeFactors()
                 NextPrimeToGen + i*PrimeQueueStep,
                 NextPrimeToGen + (i+1)*PrimeQueueStep - 1,
                 &PrimeQueueVec[i]);
-            /*std::cout << "Generated prime queue from "
-                      << PrimeQueueVec[i].front()
-                      << " to "
-                      << PrimeQueueVec[i].back()
-                      << " for i = "
-                      << i
-                      << std::endl;*/
         }
         NextPrimeToGen += NumThreads*PrimeQueueStep;
         if(2*PrimeQueueVec.back().size() <
