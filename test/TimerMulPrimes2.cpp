@@ -1,6 +1,5 @@
 /// @example primesieve_iterator.cpp
 /// Iterate over primes using primesieve::iterator.
-/// This is based on libprimesieve with modifications.
 
 #include <primesieve.hpp>
 #include <mpfr.h>
@@ -35,10 +34,18 @@ int main(int argc, char** argv)
 
   primesieve::iterator it;
   uint64_t prime = it.next_prime();
-  mpfr_t sum;
-  mpfr_init2(sum, Precision);
-  mpfr_set_ui(sum, 1, MPFR_RNDU);
-  size_t NextPrimeIdx = PrimeQueue.size();
+  mpfr_t prod;
+  mpfr_init2(prod, Precision);
+  mpfr_set_ui(prod, 1, MPFR_RNDU);
+  while(prime < (1ull << 36))
+
+
+
+
+
+
+
+
 
   mpfr_t tmp;
   mpfr_init2(tmp, Precision);
