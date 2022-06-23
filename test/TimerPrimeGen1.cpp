@@ -5,7 +5,7 @@
 #include <primesieve.hpp>
 #include <iostream>
 #include <vector>
-#include <algorithm>
+#include <numeric>
 
 int main(int argc, char** argv)
 {
