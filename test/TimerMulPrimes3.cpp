@@ -4,7 +4,7 @@
 #include <primesieve.hpp>
 #include <mpfr.h>
 #include <iostream>
-#include "FastBigFloat.hpp"
+#include "../FastBigFloat.hpp"
 
 const mpfr_prec_t Precision = 127;
 
