@@ -30,7 +30,7 @@ jobs:
 
       # build libprimesieve
       - name: SetupPrimeSieve
-        run: bash scripts/SetupPrimeSieve.sh
+        run: bash scripts/SetupPrimeSieve_main.sh
 
       # Time the summing of primes.
       - name: RunTimerSumPrimes
