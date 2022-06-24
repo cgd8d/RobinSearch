@@ -25,9 +25,20 @@ void store_primes_modified(uint64_t start,
     primes.reserve(size);
 
     primesieve::iterator it(start, stop);
-    uint64_t prime = it.next_prime();
-    for (; prime <= stop; prime = it.next_prime())
-      primes.push_back((V) prime);
+    while(true)
+    {
+      it.i_++;
+      if(it.i_ >= it.size_)
+        it.generate_next_primes();
+
+      uint64_t* it_begin = it.primes_ + it.i_;
+      uint64_t* it_last = it.primes_ + it.size_;
+      uint64_t* it_end = std::lower_bound(it_begin, it.primes_ + it.size_, stop);
+      primes.insert(primes.end, it_begin, it_end);
+      it.i_ += std::distance(it_begin, it_end)-1;
+      if(it_end < it.primes_ + it.size_)
+        break;
+    }
   }
 }
 
