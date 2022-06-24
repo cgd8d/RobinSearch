@@ -58,6 +58,7 @@ void store_primes_modified(uint64_t start,
         // sure it will behave properly in all
         // scenarios.
         uint64_t* it_end = std::lower_bound(it_begin, it_last, stop);
+        primes.insert(primes.end(), it_begin, it_end);
         it.i_ += std::distance(it_begin, it_end)-1;
         break;
       }
