@@ -32,15 +32,19 @@ jobs:
       - name: SetupPrimeSieve
         run: bash scripts/SetupPrimeSieve_main.sh
 
+      # Build programs for summing primes.
+      - name: BuildSumPrimes
+        run: |
+          clang++-12 -std=c++20 -Wall -O3 -march=native $MY_DEPENDENCY_FLAGS test/TimerPrimeGen1.cpp -lprimesieve -o TimerPrimeGen1
+          clang++-12 -std=c++20 -Wall -O3 -march=native $MY_DEPENDENCY_FLAGS test/TimerPrimeGen2.cpp -lprimesieve -o TimerPrimeGen2
+
       # Time the summing of primes.
       - name: RunTimerSumPrimes1
         run: |
-          clang++-12 -std=c++20 -Wall -O3 -march=native $MY_DEPENDENCY_FLAGS test/TimerPrimeGen1.cpp -lprimesieve -o TimerPrimeGen1
           ./TimerPrimeGen1
 
       # Time the summing of primes.
       - name: RunTimerSumPrimes2
         run: |
-          clang++-12 -std=c++20 -Wall -O3 -march=native $MY_DEPENDENCY_FLAGS test/TimerPrimeGen2.cpp -lprimesieve -o TimerPrimeGen2
           ./TimerPrimeGen2
 
