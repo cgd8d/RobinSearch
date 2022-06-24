@@ -6,25 +6,42 @@
 #include <iostream>
 #include <vector>
 #include <numeric>
+#include <algorithm>
+
+template <typename T>
+void store_primes_modified(uint64_t start,
+                         uint64_t stop,
+                         T& primes)
+{
+  if (start > 0)
+    start--;
+  if (~stop == 0)
+    stop--;
+
+  if (start < stop)
+  {
+    using V = typename T::value_type;
+    std::size_t size = primes.size() + primesieve::prime_count_approx(start, stop);
+    primes.reserve(size);
+
+    primesieve::iterator it(start, stop);
+    uint64_t prime = it.next_prime();
+    for (; prime <= stop; prime = it.next_prime())
+      primes.push_back((V) prime);
+  }
+}
 
 int main(int argc, char** argv)
 {
   uint64_t num_iter = (1 << 7);
   uint64_t step_size = (1 << 30);
   std::vector<uint64_t> vec;
-  primesieve::iterator it;
   uint64_t sum = 0;
 
   for(uint64_t i = 0; i < num_iter; i++)
   {
     vec.clear();
-
-    // Need to use vector copy here.
-
-
-
-
-    primesieve::generate_primes(
+    store_primes_modified(
       i*step_size,
       (i+1)*step_size,
       &vec);
