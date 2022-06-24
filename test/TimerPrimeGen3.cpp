@@ -36,8 +36,8 @@ void store_primes_modified(uint64_t start,
       uint64_t* it_end;
       if(it.primes[it.size_-1] < stop)
         it_end = it_last;
-
- = std::lower_bound(it_begin, it_last, stop);
+      else
+        it_end = std::lower_bound(it_begin, it_last, stop);
       primes.insert(primes.end(), it_begin, it_end);
       it.i_ += std::distance(it_begin, it_end)-1;
       if(it_end < it_last)
