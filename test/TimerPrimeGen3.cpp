@@ -34,7 +34,7 @@ void store_primes_modified(uint64_t start,
       uint64_t* it_begin = it.primes_ + it.i_;
       uint64_t* it_last = it.primes_ + it.size_;
       uint64_t* it_end;
-      if(it.primes[it.size_-1] < stop)
+      if(it.primes_[it.size_-1] < stop)
         it_end = it_last;
       else
         it_end = std::lower_bound(it_begin, it_last, stop);
