@@ -12,7 +12,6 @@ int main(int argc, char** argv)
   uint64_t num_iter = (1 << 7);
   uint64_t step_size = (1 << 30);
   std::vector<uint64_t> vec;
-  primesieve::iterator it;
   uint64_t sum = 0;
 
   for(uint64_t i = 0; i < num_iter; i++)
