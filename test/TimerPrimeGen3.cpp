@@ -47,13 +47,20 @@ void store_primes_modified(uint64_t start,
 */
       if(it.primes_[it.size_-1] < stop)
       {
-        primes.insert(primes.end(), it_begin, it_end);
-        it.i_ = it_last-1;
+        primes.insert(primes.end(), it_begin, it_last);
+        it.i_ = it.size_-1;
       } else {
-
-      
-
-
+        // Note one odd corner case: when i_==0
+        // (so we called generate_next_primes())
+        // but primes[0] >= stop.  Then we insert no
+        // primes and i_==uint64_t(-1).
+        // It's fine for this use-case but I'm not
+        // sure it will behave properly in all
+        // scenarios.
+        uint64_t* it_end = std::lower_bound(it_begin, it_last, stop);
+        it.i_ += std::distance(it_begin, it_end)-1;
+        break;
+      }
     }
   }
 }
