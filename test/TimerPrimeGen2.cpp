@@ -44,7 +44,7 @@ int main(int argc, char** argv)
     store_primes_modified(
       i*step_size,
       (i+1)*step_size,
-      &vec);
+      vec);
     sum = std::accumulate(vec.begin(), vec.end(), sum);
   }
 
