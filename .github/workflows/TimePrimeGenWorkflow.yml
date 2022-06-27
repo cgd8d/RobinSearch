@@ -27,6 +27,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install clang-12
+          lscpu
 
       # build libprimesieve
       - name: SetupPrimeSieve
