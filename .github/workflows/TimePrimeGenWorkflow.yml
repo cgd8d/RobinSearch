@@ -38,6 +38,7 @@ jobs:
           clang++-12 -std=c++20 -Wall -O3 -march=native $MY_DEPENDENCY_FLAGS test/TimerPrimeGen1.cpp -lprimesieve -o TimerPrimeGen1
           clang++-12 -std=c++20 -Wall -O3 -march=native $MY_DEPENDENCY_FLAGS test/TimerPrimeGen2.cpp -lprimesieve -o TimerPrimeGen2
           clang++-12 -std=c++20 -Wall -O3 -march=native $MY_DEPENDENCY_FLAGS test/TimerPrimeGen3.cpp -lprimesieve -o TimerPrimeGen3
+          clang++-12 -std=c++20 -Wall -O3 -march=native $MY_DEPENDENCY_FLAGS test/TimerPrimeGen4.cpp -lprimesieve -o TimerPrimeGen4
 
       # Time the summing of primes.
       - name: RunTimerSumPrimes1
@@ -54,3 +55,7 @@ jobs:
         run: |
           ./TimerPrimeGen3
 
+      # Time the summing of primes.
+      - name: RunTimerSumPrimes4
+        run: |
+          ./TimerPrimeGen4
