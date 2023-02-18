@@ -5,7 +5,7 @@ cd primesieve
 sed -i 's/private/public/g' include/primesieve/iterator.hpp
 CC="clang-15 -fuse-ld=gold -march=native" CXX="clang++-15 -fuse-ld=gold -march=native" cmake -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .
 make -j
-ctest
+ctest -V
 echo "Run ls"
 ls
 echo "Run ls CMakeFiles"
