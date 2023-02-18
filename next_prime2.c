@@ -28,23 +28,22 @@ void check(int OK)
 
 int main()
 {
-/*
   size_t size = 0;
   printf("about to call generate primes\n");
   uint64_t* primes = (uint64_t*) primesieve_generate_primes(0, 100000, &size, UINT64_PRIMES);
   printf("returned from generate primes\n");
   printf("size is %" PRIu64 "\n", size);
-*/
+/*
   primesieve_iterator it;
   primesieve_init(&it);
-/*
+*/
   uint64_t i;
   uint64_t old;
   uint64_t prime;
   uint64_t max_prime = primes[size - 1];
   printf("max_prime is %" PRIu64 "\n", max_prime);
   uint64_t sum = 0;
-
+/*
   for (i = 0; i < size - 1; i++)
   {
     primesieve_jump_to(&it, primes[i], max_prime);
