@@ -1,6 +1,6 @@
 # Compile libprimesieve from source.
 
-git clone --depth 1 --branch v8.0 https://github.com/kimwalisch/primesieve
+git clone --depth 1 --branch v11.0 https://github.com/kimwalisch/primesieve
 cd primesieve
 sed -i 's/private/public/g' include/primesieve/iterator.hpp
 CC="clang-14 -fuse-ld=gold -march=native" CXX="clang++-14 -fuse-ld=gold -march=native" cmake -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .
