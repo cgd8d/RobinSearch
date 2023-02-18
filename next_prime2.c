@@ -33,10 +33,10 @@ int main()
   uint64_t* primes = (uint64_t*) primesieve_generate_primes(0, 100000, &size, UINT64_PRIMES);
   printf("returned from generate primes\n");
   printf("size is %" PRIu64 "\n", size);
-/*
+
   primesieve_iterator it;
   primesieve_init(&it);
-*/
+
   uint64_t i;
   uint64_t old;
   uint64_t prime;
