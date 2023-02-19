@@ -5,7 +5,7 @@ git clone --depth 1 --branch v11.0 https://github.com/kimwalisch/primesieve
 cd primesieve
 
 cmake -DBUILD_TESTS=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE .
-make -j
+make -j VERBOSE=1
 ctest
 
 exit 1
