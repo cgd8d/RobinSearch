@@ -4,7 +4,7 @@ git clone --depth 1 --branch v11.0 https://github.com/kimwalisch/primesieve
 #cp -f next_prime2.c primesieve/test/next_prime2.c
 cd primesieve
 
-CC=clang-15 CXX=clang++-15 cmake -DBUILD_TESTS=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE .
+CC=clang-15 CXX=clang++-15 cmake -DBUILD_TESTS=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE -DCMAKE_BUILD_TYPE=Debug .
 make -j VERBOSE=1
 ctest
 
