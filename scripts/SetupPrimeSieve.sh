@@ -8,6 +8,13 @@ CC="clang-15 -march=native -Wall" CXX="clang++-15 -march=native -Wall" cmake -DB
 # CC="clang-15 -fuse-ld=gold -march=native" CXX="clang++-15 -fuse-ld=gold -march=native" cmake -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .
 make -j VERBOSE=1
 #ctest
+
+echo "Starting generate_primes2"
+./test/generate_primes2
+
+echo "Starting skipto_next_prime"
+./test/skipto_next_prime
+
 echo "starting next_prime2"
 ./test/next_prime2
 
