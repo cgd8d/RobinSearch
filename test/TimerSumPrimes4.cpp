@@ -28,7 +28,8 @@ int main(int argc, char** argv)
             // fast copy.
             // Handle i_ the way iterator usually does
             // so the iterator remains in a valid state.
-            if(it.i_++ == it.last_idx_)
+            it.i_++;
+            if(it.i_ == it.size_)
             {
                 // Note generate_next_primes has post-
                 // condition that i_ == 0.
@@ -36,7 +37,7 @@ int main(int argc, char** argv)
             }
             size_t num_copy = std::min(
                 PrimeQueue.size()-i,
-                it.last_idx_+1-it.i_);
+                it.size_-it.i_);
             std::copy(
                 it.primes_.begin()+it.i_,
                 it.primes_.begin()+it.i_+num_copy,
