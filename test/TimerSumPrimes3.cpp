@@ -39,8 +39,8 @@ int main(int argc, char** argv)
                 PrimeQueue.size()-i,
                 it.size_-it.i_);
             std::copy(
-                it.primes_.begin()+it.i_,
-                it.primes_.begin()+it.i_+num_copy,
+                it.primes_+it.i_,
+                it.primes_+it.i_+num_copy,
                 PrimeQueue.begin()+i);
             it.i_ += num_copy-1;
             i += num_copy;
