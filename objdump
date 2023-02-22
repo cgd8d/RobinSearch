@@ -2,5 +2,4 @@
 # Borrow this trick from:
 # https://fasterthanli.me/articles/when-rustc-explodes
 
-#echo "In script llvm-objdump."
 llvm-objdump-15 "$@"
