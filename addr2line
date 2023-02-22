@@ -2,4 +2,5 @@
 # Borrow this trick from:
 # https://fasterthanli.me/articles/when-rustc-explodes
 
+echo "In script addr2line."
 llvm-addr2line-15 "$@"
