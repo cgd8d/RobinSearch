@@ -1,0 +1,6 @@
+#!/bin/bash -eu
+# Borrow this trick from:
+# https://fasterthanli.me/articles/when-rustc-explodes
+
+echo "In script llvm-addr2line."
+llvm-addr2line-15 "$@"
