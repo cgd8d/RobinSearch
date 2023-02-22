@@ -127,11 +127,11 @@ jobs:
 
       # Print perf report.
       - name: Report from perf
-        run: sudo perf report -i perf.data --call-graph=graph,0.1
+        run: sudo PATH=`pwd`:$PATH perf report -i perf.data --call-graph=graph,0.1
 
       # Print perf source annotations.
       - name: Source annotations from perf
-        run: sudo perf annotate -i perf.data
+        run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data
 
       # Run code
       # - name: Run
