@@ -1,6 +1,9 @@
 #ifndef MPFR_MUL_UI_FAST_HPP
 #define MPFR_MUL_UI_FAST_HPP
 
+#include <mpfr.h>
+#include <immintrin.h>
+
 // Function that assumes:
 // * All values are regular.
 // * u >= 2
@@ -25,7 +28,7 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long int u, mpfr_rnd_t rnd_mode)
     unsigned long int out0, out1, out2;
     unsigned long int p0, p1, p2;
     unsigned char c0;
-    mp_limb_t *xp = MPFR_MANT(x);
+    mp_limb_t *xp = x->_mpfr_d;
 
     // Do full multiplication x*u -> out.
     out0 = _mulx_u64(xp[0], u, &p0);
@@ -43,7 +46,7 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long int u, mpfr_rnd_t rnd_mode)
     xp[1] = (out2 << ls) | (out1 >> (64-ls));
 
     // Update exp.
-    MPFR_EXP(x) += (64-ls);
+    x->_mpfr_exp += (64-ls);
 
     // Rounding.
     // Slightly conservative since the discarded
