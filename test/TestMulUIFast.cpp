@@ -65,7 +65,6 @@ int main()
     // Test starting at 1.
     for(size_t i = 0; i < 1000; i++)
     {
-        FastBigFloat<3> bf1, bf2;
         mpfr_t t1, t2, mp1, mp2;
         mpfr_init2(t1, 128);
         mpfr_init2(t2, 128);
