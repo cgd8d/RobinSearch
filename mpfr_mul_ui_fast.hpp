@@ -6,6 +6,7 @@
 // * u >= 2
 // * The size of x is known at computer time.
 // * The operation is in-place.
+// * Rounding is either up or down.
 // This allows us to skip some checks in the
 // standard implementation if this function.
 
@@ -42,14 +43,31 @@ int mpfr_mul_ui_fast (mpfr_ptr x, unsigned long int u, mpfr_rnd_t rnd_mode)
     unsigned long int p0, p1, p2;
     unsigned char c0;
     mp_limb_t *xp = MPFR_MANT(x);
+
+    // Do full multiplication x*u -> out.
     out0 = _mulx_u64(xp[0], u, &p0);
-    p1 = _mulx_u64(xp[0], u, &p2);
-    c0 = _addcarryx_u64(0, p0, p1, &out1);
+    p1 = _mulx_u64(xp[1], u, &p2);
+    c0 = _addcarry_u64(0, p0, p1, &out1);
     out2 = p2 + c0;
+
+    // Count leading zeros.
+    // out2 is guaranteed to be nonzero
+    // because x is normalized and u >= 2.
+    int ls = __builtin_clzl(out2);
+
+    // Do shift operations.
+    xp[0] = (out1 << ls) | (out0 >> (64-ls));
+    xp[1] = (out2 << ls) | (out1 >> (64-ls));
+
+    // Rounding.
+    if(rnd_mode == MPFR_RNDU)
+    {
+        if(xp[0] == unsigned long int(-1)) [[unlikely]]
 
 ... To finish later 
 
-
+Rounding, including very unlikely carry.
+Adjust exp.
 
 }
 
