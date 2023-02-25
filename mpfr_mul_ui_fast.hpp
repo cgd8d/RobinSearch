@@ -54,7 +54,7 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long int u, mpfr_rnd_t rnd_mode)
     // for the time savings of not checking.
     if(rnd_mode == MPFR_RNDU)
     {
-        if(xp[0] == unsigned long int(-1)) [[unlikely]]
+        if(xp[0] == (unsigned long int)(-1)) [[unlikely]]
         {
             mpfr_nextabove(x);
         }
