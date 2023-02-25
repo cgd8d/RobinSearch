@@ -15,7 +15,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -28,7 +28,12 @@ jobs:
       - name: Setup
         run: |
           sudo apt-get update
-          sudo apt-get install gnuplot clang-12 autoconf-archive libomp-12-dev
+          sudo apt-get install gnuplot llvm-15 clang-15 autoconf-archive libomp-15-dev
+          perf config llvm.clang-path=clang-15
+          chmod a+x addr2line
+          chmod a+x objdump
+          PATH=`pwd`:$PATH which addr2line
+          PATH=`pwd`:$PATH which objdump
 
       # build libprimesieve
       - name: SetupPrimeSieve
@@ -46,7 +51,7 @@ jobs:
       - name: Compile
         run: |
           git rev-parse --short HEAD
-          clang++-12 -std=c++20 -DNDEBUG -fuse-ld=gold -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility -fopenmp $MY_DEPENDENCY_FLAGS Search.cpp -lmpfr -lgmp -lprimesieve -o Search
+          bash scripts/CompileRobinSearch.sh
 
       # Run code straight, no profiling.
       - name: Run
@@ -55,10 +60,10 @@ jobs:
      # Compile code from main branch
       - name: Compile main
         run: |
-          rm Search
+          rm Search code.profdata default.profraw
           git checkout main
           git rev-parse --short HEAD
-          clang++-12 -std=c++20 -DNDEBUG -fuse-ld=gold -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility -fopenmp $MY_DEPENDENCY_FLAGS Search.cpp -lmpfr -lgmp -lprimesieve -o Search
+          bash scripts/CompileRobinSearch.sh
 
       # Run main code straight, no profiling.
       - name: Run main
