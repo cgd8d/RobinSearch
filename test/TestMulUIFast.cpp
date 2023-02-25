@@ -93,29 +93,30 @@ int main()
     // Test starting at arbitrary value.
     for(size_t i = 0; i < 1000; i++)
     {
-        FastBigFloat<3> bf1, bf2;
-        mpfr_t mp1, mp2;
+        mpfr_t t1, t2, mp1, mp2;
         uint64_t x = mt();
-        bf1.set_ui(x);
-        bf2.set_ui(x);
+        mpfr_init2(t1, 128);
+        mpfr_init2(t2, 128);
+        mpfr_set_ui(t1, x, MPFR_RNDD);
+        mpfr_set_ui(t2, x, MPFR_RNDU);
         mpfr_init2(mp1, 1024);
         mpfr_init2(mp2, 1024);
         mpfr_set_ui(mp1, x, MPFR_RNDD);
         mpfr_set_ui(mp2, x, MPFR_RNDU);
         factors.resize(0);
         factors.push_back(x);
-        CheckIntervals(bf1, bf2, mp1, mp2);
+        CheckIntervals(t1, t2, mp1, mp2);
         for(size_t j = 0; j < 1000; j++)
         {
             x = mt();
-            bf1.mul_ui_rndd(x);
-            bf2.mul_ui_rndu(x);
+            mpfr_mul_ui_fast(t1, x, MPFR_RNDD);
+            mpfr_mul_ui_fast(t2, x, MPFR_RNDU);
             mpfr_mul_ui(mp1, mp1, x, MPFR_RNDD);
             mpfr_mul_ui(mp2, mp2, x, MPFR_RNDU);
             factors.push_back(x);
-            CheckIntervals(bf1, bf2, mp1, mp2);
+            CheckIntervals(t1, t2, mp1, mp2);
         }
     }
 
-    std::cout << "passed test of FastBigFloat." << std::endl;
+    std::cout << "passed test of mpfr_mul_ui_fast." << std::endl;
 }
