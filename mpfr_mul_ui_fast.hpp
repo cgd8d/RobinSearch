@@ -18,26 +18,9 @@ static_assert(sizeof(unsigned long int) == sizeof(uint64_t),
 static_assert(sizeof(unsigned long long int) == sizeof(uint64_t),
     "Unsigned long long int is not 64 bits.");
 
-// tuple enables better register usage than array
-// For small compile time sizes.
-// Use a "magic" type for tuple<t,t,...,t>.
-#include <tuple>
-template <size_t N, typename Head, typename... T>
-struct magic {
-    using tuple_type = typename magic<N - 1, Head, Head, T...>::tuple_type;
-};
-template <typename... T>
-struct magic<1, T...> {
-    using tuple_type = std::tuple<T...>;
-};
-
-
-template <size_t N>
 int mpfr_mul_ui_fast (mpfr_ptr x, unsigned long int u, mpfr_rnd_t rnd_mode)
 {
-    magic<N+1, unsigned long int>::tuple_type{} tmp;
-
-    // X data is stored as little endian
+    // Note: X data is stored as little endian
 
     unsigned long int out0, out1, out2;
     unsigned long int p0, p1, p2;
@@ -59,16 +42,21 @@ int mpfr_mul_ui_fast (mpfr_ptr x, unsigned long int u, mpfr_rnd_t rnd_mode)
     xp[0] = (out1 << ls) | (out0 >> (64-ls));
     xp[1] = (out2 << ls) | (out1 >> (64-ls));
 
+    // Update exp.
+    MPFR_EXP(x) += (64-ls);
+
     // Rounding.
     if(rnd_mode == MPFR_RNDU)
     {
         if(xp[0] == unsigned long int(-1)) [[unlikely]]
-
-... To finish later 
-
-Rounding, including very unlikely carry.
-Adjust exp.
-
+        {
+            mpfr_nextabove(x);
+        }
+        else
+        {
+            xp[0]++;
+        }
+    }
 }
 
 #endif // MPFR_MUL_UI_FAST_HPP
