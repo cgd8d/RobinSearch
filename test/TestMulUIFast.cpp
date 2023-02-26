@@ -68,18 +68,19 @@ int main()
         mpfr_t t1, t2, mp1, mp2;
         mpfr_init2(t1, 128);
         mpfr_init2(t2, 128);
-        mpfr_set_ui(t1, 1, MPFR_RNDD);
-        mpfr_set_ui(t2, 1, MPFR_RNDU);
+        mpfr_set_ui(t1, 2, MPFR_RNDD);
+        mpfr_set_ui(t2, 2, MPFR_RNDU);
         mpfr_init2(mp1, 128);
         mpfr_init2(mp2, 128);
-        mpfr_set_ui(mp1, 1, MPFR_RNDD);
-        mpfr_set_ui(mp2, 1, MPFR_RNDU);
+        mpfr_set_ui(mp1, 2, MPFR_RNDD);
+        mpfr_set_ui(mp2, 2, MPFR_RNDU);
         factors.resize(0);
         factors.push_back(1);
         CheckIntervals(t1, t2, mp1, mp2);
         for(size_t j = 0; j < 1000; j++)
         {
             uint64_t x = mt();
+            if(x < 2) continue;
             mpfr_mul_ui_fast(t1, x, MPFR_RNDD);
             mpfr_mul_ui_fast(t2, x, MPFR_RNDU);
             mpfr_mul_ui(mp1, mp1, x, MPFR_RNDD);
@@ -94,6 +95,7 @@ int main()
     {
         mpfr_t t1, t2, mp1, mp2;
         uint64_t x = mt();
+        while(x < 2) x = mt();
         mpfr_init2(t1, 128);
         mpfr_init2(t2, 128);
         mpfr_set_ui(t1, x, MPFR_RNDD);
@@ -108,6 +110,7 @@ int main()
         for(size_t j = 0; j < 1000; j++)
         {
             x = mt();
+            if(x < 2) continue;
             mpfr_mul_ui_fast(t1, x, MPFR_RNDD);
             mpfr_mul_ui_fast(t2, x, MPFR_RNDU);
             mpfr_mul_ui(mp1, mp1, x, MPFR_RNDD);
