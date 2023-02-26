@@ -62,7 +62,8 @@ int main()
 
     std::mt19937_64 mt;
 
-    // Test starting at 1.
+    // Test starting at 2.
+    // (Starting at one is not valid.)
     for(size_t i = 0; i < 1000; i++)
     {
         mpfr_t t1, t2, mp1, mp2;
@@ -75,7 +76,7 @@ int main()
         mpfr_set_ui(mp1, 2, MPFR_RNDD);
         mpfr_set_ui(mp2, 2, MPFR_RNDU);
         factors.resize(0);
-        factors.push_back(1);
+        factors.push_back(2);
         CheckIntervals(t1, t2, mp1, mp2);
         for(size_t j = 0; j < 1000; j++)
         {
