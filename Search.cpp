@@ -11,7 +11,7 @@
 #include <omp.h>
 #include <primesieve.hpp>
 #include "PlotDelta.hpp"
-#include "FastBigFloat.hpp"
+#include "mpfr_mul_ui_fast.hpp"
 
 const mpfr_prec_t Precision = 128;
 const size_t NumLimbs = 2;
@@ -609,6 +609,8 @@ uint64_t AddPrimeFactors()
             while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
             {
                 // Iterate
+
+/*
                 FastBigFloat<3> lhs_update_rndd;
                 lhs_update_rndd.set_ui(1);
                 FastBigFloat<3> lhs_update_rndu;
@@ -688,16 +690,18 @@ uint64_t AddPrimeFactors()
                 mpfr_mul(LHS_rndd, mpfr_helper.a, LHS_rndd, MPFR_RNDD);
                 rhs_update_rndu.get_rndu(mpfr_helper.a);
                 mpfr_mul(Number_rndu, Number_rndu, mpfr_helper.a, MPFR_RNDU);
+
+*/
                         
                 // Iterate factor by factor until we update logs.
                 while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
                 {
                     uint64_t this_p = PrimeQueue[NextPrimeIdx];
-                    mpfr_mul_ui(Number_rndd, Number_rndd, this_p, MPFR_RNDD);
-                    mpfr_mul_ui(Number_rndu, Number_rndu, this_p, MPFR_RNDU);
-                    mpfr_mul_ui(NloglogN_rndd, NloglogN_rndd, this_p, MPFR_RNDD);
-                    mpfr_mul_ui(LHS_rndd, LHS_rndd, this_p+1, MPFR_RNDD);
-                    mpfr_mul_ui(LHS_rndu, LHS_rndu, this_p+1, MPFR_RNDU);
+                    mpfr_mul_ui_fast(Number_rndd, this_p, MPFR_RNDD);
+                    mpfr_mul_ui_fast(Number_rndu, this_p, MPFR_RNDU);
+                    mpfr_mul_ui_fast(NloglogN_rndd, this_p, MPFR_RNDD);
+                    mpfr_mul_ui_fast(LHS_rndd, this_p+1, MPFR_RNDD);
+                    mpfr_mul_ui_fast(LHS_rndu, this_p+1, MPFR_RNDU);
                     Number_factors.back().PrimeHi = this_p;
                     NextPrimeIdx++;
                     cnt_NumUniquePrimeFactors++;
