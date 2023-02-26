@@ -1,6 +1,7 @@
 #ifndef MPFR_MUL_UI_FAST_HPP
 #define MPFR_MUL_UI_FAST_HPP
 
+#include <iostream>
 #include <mpfr.h>
 #include <immintrin.h>
 
@@ -35,6 +36,9 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     p1 = _mulx_u64(xp[1], u, &p2);
     c0 = _addcarry_u64(0, p0, p1, &out1);
     out2 = p2 + c0;
+
+    std::cout << "(" << xp[1] << ", " << xp[0] << ") * " << u << std::endl;
+    std::cout << " = (" << out2 << ", " << out1 << ", " << out0 << ")" << std::endl;
 
     // Count leading zeros.
     // out2 is guaranteed to be nonzero
