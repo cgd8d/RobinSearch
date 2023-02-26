@@ -88,9 +88,7 @@ int main()
             uint64_t x = mt();
             if(x < 2) continue;
             mpfr_mul_ui_fast(t1, x, MPFR_RNDD);
-            //std::cout << "after return, t1 is (" << t1->_mpfr_d[1] << ", " << t1->_mpfr_d[0] << ")" << std::endl;
             mpfr_mul_ui_fast(t2, x, MPFR_RNDU);
-            //std::cout << "after return, t2 is (" << t2->_mpfr_d[1] << ", " << t2->_mpfr_d[0] << ")" << std::endl;
             mpfr_mul_ui(mp1, mp1, x, MPFR_RNDD);
             mpfr_mul_ui(mp2, mp2, x, MPFR_RNDU);
             factors.push_back(x);
