@@ -21,12 +21,12 @@ static_assert(sizeof(unsigned long int) == sizeof(uint64_t),
 static_assert(sizeof(unsigned long long int) == sizeof(uint64_t),
     "Unsigned long long int is not 64 bits.");
 
-void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long int u, mpfr_rnd_t rnd_mode)
+void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode)
 {
     // Note: X data is stored as little endian
 
-    unsigned long int out0, out1, out2;
-    unsigned long int p0, p1, p2;
+    unsigned long long int out0, out1, out2;
+    unsigned long long int p0, p1, p2;
     unsigned char c0;
     mp_limb_t *xp = x->_mpfr_d;
 
