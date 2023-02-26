@@ -37,21 +37,21 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     c0 = _addcarry_u64(0, p0, p1, &out1);
     out2 = p2 + c0;
 
-    std::cout << "(" << xp[1] << ", " << xp[0] << ") * " << u << std::endl;
-    std::cout << " = (" << out2 << ", " << out1 << ", " << out0 << ")" << std::endl;
+    //std::cout << "(" << xp[1] << ", " << xp[0] << ") * " << u << std::endl;
+    //std::cout << " = (" << out2 << ", " << out1 << ", " << out0 << ")" << std::endl;
 
     // Count leading zeros.
     // out2 is guaranteed to be nonzero
     // because x is normalized and u >= 2.
     int ls = __builtin_clzl(out2);
-    std::cout << "ls = " << ls << std::endl;
+    //std::cout << "ls = " << ls << std::endl;
 
     // Do shift operations.
     xp[0] = (out1 << ls) | (out0 >> (64-ls));
     xp[1] = (out2 << ls) | (out1 >> (64-ls));
 
-    std::cout << "out2 << " << ls << " = " << (out2<<ls) << std::endl;
-    std::cout << "after shift, x is (" << xp[1] << ", " << xp[0] << ")" << std::endl;
+    //std::cout << "out2 << " << ls << " = " << (out2<<ls) << std::endl;
+    //std::cout << "after shift, x is (" << xp[1] << ", " << xp[0] << ")" << std::endl;
 
 
     // Update exp.
@@ -63,7 +63,7 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     // for the time savings of not checking.
     if(rnd_mode == MPFR_RNDU)
     {
-        std::cout << "in rndu branch" << std::endl;
+        //std::cout << "in rndu branch" << std::endl;
         if(xp[0] == (unsigned long int)(-1)) [[unlikely]]
         {
             mpfr_nextabove(x);
@@ -73,7 +73,7 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
             xp[0]++;
         }
     }
-    std::cout << "before exiting function, x is (" << xp[1] << ", " << xp[0] << ")" << std::endl;
+    //std::cout << "before exiting function, x is (" << xp[1] << ", " << xp[0] << ")" << std::endl;
 }
 
 #endif // MPFR_MUL_UI_FAST_HPP
