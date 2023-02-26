@@ -44,6 +44,7 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     // out2 is guaranteed to be nonzero
     // because x is normalized and u >= 2.
     int ls = __builtin_clzl(out2);
+    std::cout << "ls = " << ls << std::endl;
 
     // Do shift operations.
     xp[0] = (out1 << ls) | (out0 >> (64-ls));
