@@ -51,7 +51,7 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     xp[1] = (out2 << ls) | (out1 >> (64-ls));
 
     std::cout << "out2 << " << ls << " = " << (out2<<ls) << std::endl;
-    std::cout << "after shift, x is (" << xp[1] << ", " << xp[0] << ") << std::endl;
+    std::cout << "after shift, x is (" << xp[1] << ", " << xp[0] << ")" << std::endl;
 
 
     // Update exp.
