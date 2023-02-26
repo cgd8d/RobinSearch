@@ -47,14 +47,19 @@ void CheckIntervals(mpfr_t t1, mpfr_t t2,
         PrintInterval(t1, t2);
         throw std::runtime_error("Intervals do not overlap.");
     }
-    mpfr_sub(t1, t2, t1, MPFR_RNDD);
-    mpfr_sub(t2, mp2, mp1, MPFR_RNDD);
-    mpfr_div(t1, t1, t2, MPFR_RNDD);
-    if(mpfr_less_p(mp1, mp2) and mpfr_get_prec(mp1) <= 128 and mpfr_cmp_ui(t1, 10) > 0)
+    mpfr_t temp1, temp2;
+    mpfr_init2(temp1, 128);
+    mpfr_init2(temp2, 128);
+    mpfr_sub(temp1, t2, t1, MPFR_RNDD);
+    mpfr_sub(temp2, mp2, mp1, MPFR_RNDD);
+    mpfr_div(temp1, temp1, temp2, MPFR_RNDD);
+    if(mpfr_less_p(mp1, mp2) and mpfr_get_prec(mp1) <= 128 and mpfr_cmp_ui(temp1, 10) > 0)
     {
         PrintFactors();
         throw std::runtime_error("mpfr_mul_ui_fast interval is too big.");
     }
+    mpfr_clear(temp1);
+    mpfr_clear(temp2);
 }
 
 int main()
@@ -83,9 +88,9 @@ int main()
             uint64_t x = mt();
             if(x < 2) continue;
             mpfr_mul_ui_fast(t1, x, MPFR_RNDD);
-            std::cout << "after return, t1 is (" << t1->_mpfr_d[1] << ", " << t1->_mpfr_d[0] << ")" << std::endl;
+            //std::cout << "after return, t1 is (" << t1->_mpfr_d[1] << ", " << t1->_mpfr_d[0] << ")" << std::endl;
             mpfr_mul_ui_fast(t2, x, MPFR_RNDU);
-            std::cout << "after return, t2 is (" << t2->_mpfr_d[1] << ", " << t2->_mpfr_d[0] << ")" << std::endl;
+            //std::cout << "after return, t2 is (" << t2->_mpfr_d[1] << ", " << t2->_mpfr_d[0] << ")" << std::endl;
             mpfr_mul_ui(mp1, mp1, x, MPFR_RNDD);
             mpfr_mul_ui(mp2, mp2, x, MPFR_RNDU);
             factors.push_back(x);
