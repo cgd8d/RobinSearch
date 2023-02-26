@@ -44,7 +44,7 @@ void CheckTypes()
     static_assert(sizeof(mp_limb_t) == sizeof(uint64_t),
         "mp_limb_t is not 64 bits.");
 
-    static_assert(Precision == 64*NumLimbs),
+    static_assert(Precision == 64*NumLimbs,
         "Precision and NumLimbs are not consistent.");
 }
 
