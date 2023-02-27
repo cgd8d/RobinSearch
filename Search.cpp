@@ -11,7 +11,7 @@
 #include <omp.h>
 #include <primesieve.hpp>
 #include "PlotDelta.hpp"
-#include "FastBigFloat.hpp"
+//#include "FastBigFloat.hpp"
 #include "mpfr_mul_ui_fast.hpp"
 
 const mpfr_prec_t Precision = 128;
@@ -469,7 +469,7 @@ bool CheckNumber()
             std::cout << "Maybe the bound is violated?" << std::endl;
             std::cout << "NloglogN > " << NloglogN_rndd << std::endl;
             std::cout << "sigma(N)/exp(gamma) = (" << LHS_rndd << ", " << LHS_rndu << ")" << std::endl;
-            if(mpfr_cmp_ui(Number_rndu, 5040) > 0)
+            if(mpfr_cmp_ui(Number_rndu, 5040.5) > 0)
             {
                 std::cout << "And it seems to be the real deal." << std::endl;
                 std::cout << "Number_rndd = " << mpfr_get_d(Number_rndd, MPFR_RNDD) << std::endl;
@@ -614,6 +614,8 @@ uint64_t AddPrimeFactors()
             {
                 // Iterate
 
+/*
+
                 FastBigFloat<3> lhs_update_rndd;
                 lhs_update_rndd.set_ui(1);
                 FastBigFloat<3> lhs_update_rndu;
@@ -694,7 +696,7 @@ uint64_t AddPrimeFactors()
                 rhs_update_rndu.get_rndu(mpfr_helper.a);
                 mpfr_mul(Number_rndu, Number_rndu, mpfr_helper.a, MPFR_RNDU);
 
-
+*/
                         
                 // Iterate factor by factor until we update logs.
                 while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
