@@ -471,6 +471,9 @@ bool CheckNumber()
             std::cout << "sigma(N)/exp(gamma) = (" << LHS_rndd << ", " << LHS_rndu << ")" << std::endl;
             if(mpfr_cmp_ui(Number_rndu, 5040) > 0)
             {
+                std::cout << "And it seems to be the real deal." << std::endl;
+                std::cout << "Number_rndd = " << mpfr_get_d(Number_rndd, MPFR_RNDD) << std::endl;
+                std::cout << "Number_rndu = " << mpfr_get_d(Number_rndu, MPFR_RNDU) << std::endl;
                 exit(0);
             }
             else
