@@ -469,7 +469,7 @@ bool CheckNumber()
             std::cout << "Maybe the bound is violated?" << std::endl;
             std::cout << "NloglogN > " << NloglogN_rndd << std::endl;
             std::cout << "sigma(N)/exp(gamma) = (" << LHS_rndd << ", " << LHS_rndu << ")" << std::endl;
-            if(mpfr_cmp_ui(Number_rndu, 5040.5) > 0)
+            if(mpfr_cmp_d(Number_rndu, 5040.5) > 0)
             {
                 std::cout << "And it seems to be the real deal." << std::endl;
                 std::cout << "Number_rndd = " << mpfr_get_d(Number_rndd, MPFR_RNDD) << std::endl;
