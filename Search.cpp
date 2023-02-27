@@ -610,7 +610,6 @@ uint64_t AddPrimeFactors()
             {
                 // Iterate
 
-/*
                 FastBigFloat<3> lhs_update_rndd;
                 lhs_update_rndd.set_ui(1);
                 FastBigFloat<3> lhs_update_rndu;
@@ -691,7 +690,7 @@ uint64_t AddPrimeFactors()
                 rhs_update_rndu.get_rndu(mpfr_helper.a);
                 mpfr_mul(Number_rndu, Number_rndu, mpfr_helper.a, MPFR_RNDU);
 
-*/
+
                         
                 // Iterate factor by factor until we update logs.
                 while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
