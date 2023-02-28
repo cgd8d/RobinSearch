@@ -60,6 +60,9 @@ struct mpfr_helper_t
     mpfr_t f;
     mpfr_t g;
     mpfr_t h;
+    mpfr_t i;
+    mpfr_t j;
+    mpfr_t k;
 
     mpfr_helper_t()
     {
@@ -71,6 +74,9 @@ struct mpfr_helper_t
         mpfr_init2(f, Precision);
         mpfr_init2(g, Precision);
         mpfr_init2(h, Precision);
+        mpfr_init2(i, Precision);
+        mpfr_init2(j, Precision);
+        mpfr_init2(k, Precision);
     }
 
     ~mpfr_helper_t()
@@ -83,6 +89,9 @@ struct mpfr_helper_t
         mpfr_clear(f);
         mpfr_clear(g);
         mpfr_clear(h);
+        mpfr_clear(i);
+        mpfr_clear(j);
+        mpfr_clear(k);
     }
 }
 mpfr_helper;
@@ -622,9 +631,7 @@ uint64_t AddPrimeFactors()
             }
             // Release mpfr_helper.a
 
-            // Acquire mpfr_helper.a.
-            // Acquire mpfr_helper.b.
-            // Acquire mpfr_helper.c.
+            // Acquire mpfr_helper.a-j
             while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
             {
                 // Iterate
@@ -693,24 +700,28 @@ uint64_t AddPrimeFactors()
                             mpfr_mul_ui_fast(mpfr_helper.h, PrimeQueue[i], MPFR_RNDU);
                         }
 
-
-Working from here...
-
-
                         // Check if test values indicate possible violation of bound.
-                        lhs_update_rndu_test.get_rndu(mpfr_helper.a);
-                        mpfr_mul(mpfr_helper.a, mpfr_helper.a, LHS_rndu, MPFR_RNDU);
-                        rhs_update_rndd_test.get_rndd(mpfr_helper.c);
-                        mpfr_mul(mpfr_helper.b, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
+                        // Compute updated lhs rounded up.
+                        mpfr_mul(mpfr_helper.i, mpfr_helper.f, LHS_rndu, MPFR_RNDU);
+                        // Compute updated rhs rounded down.
+                        mpfr_mul(mpfr_helper.j, mpfr_helper.g, NloglogN_rndd, MPFR_RNDD);
 
-                        if(mpfr_less_p(mpfr_helper.a, mpfr_helper.b))
+                        if(mpfr_less_p(mpfr_helper.i, mpfr_helper.j))
                         {
                             // LHS < RHS is guaranteed.
                             // Save current progress and keep going.
-                            lhs_update_rndd = lhs_update_rndd_test;
-                            lhs_update_rndu = lhs_update_rndu_test;
-                            rhs_update_rndd = rhs_update_rndd_test;
-                            rhs_update_rndu = rhs_update_rndu_test;
+                            mpfr.set(mpfr_helper.a,
+                                     mpfr_helper.e,
+                                     MPFR_RNDD);
+                            mpfr.set(mpfr_helper.b,
+                                     mpfr_helper.f,
+                                     MPFR_RNDU);
+                            mpfr.set(mpfr_helper.c,
+                                     mpfr_helper.g,
+                                     MPFR_RNDD);
+                            mpfr.set(mpfr_helper.d,
+                                     mpfr_helper.h,
+                                     MPFR_RNDU);
                             NextPrimeIdx += BunchSize;
                             cnt_NumUniquePrimeFactors += BunchSize;
                             Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx-1];
@@ -729,17 +740,11 @@ Working from here...
                 }
 
                 // Lock in the updates from bunches.
-                lhs_update_rndu.get_rndu(mpfr_helper.a);
-                mpfr_mul(LHS_rndu, mpfr_helper.a, LHS_rndu, MPFR_RNDU);
-                rhs_update_rndd.get_rndd(mpfr_helper.c);
-                mpfr_mul(NloglogN_rndd, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
-                mpfr_mul(Number_rndd, Number_rndd, mpfr_helper.c, MPFR_RNDD);
-                lhs_update_rndd.get_rndd(mpfr_helper.a);
                 mpfr_mul(LHS_rndd, mpfr_helper.a, LHS_rndd, MPFR_RNDD);
-                rhs_update_rndu.get_rndu(mpfr_helper.a);
-                mpfr_mul(Number_rndu, Number_rndu, mpfr_helper.a, MPFR_RNDU);
-
-*/
+                mpfr_mul(LHS_rndu, mpfr_helper.b, LHS_rndu, MPFR_RNDU);
+                mpfr_mul(Number_rndd, mpfr_helper.c, Number_rndd, MPFR_RNDD);
+                mpfr_mul(Number_rndu, mpfr_helper.d, Number_rndu, MPFR_RNDU);
+                mpfr_mul(NloglogN_rndd, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
                         
                 // Iterate factor by factor until we update logs.
                 while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
@@ -761,9 +766,7 @@ Working from here...
                     }
                 }
             }
-            // Release mpfr_helper.a
-            // Release mpfr_helper.b
-            // Release mpfr_helper.c
+            // Release mpfr_helper.a-j
 
             uint64_t retval = NextPrimeIdx - NextPrimeIdx_init;
             PrimeQueueEpsilonStack.pop();
