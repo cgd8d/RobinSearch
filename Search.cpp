@@ -11,7 +11,7 @@
 #include <omp.h>
 #include <primesieve.hpp>
 #include "PlotDelta.hpp"
-#include "FastBigFloat.hpp"
+#include "mpfr_mul_ui_fast.hpp"
 
 const mpfr_prec_t Precision = 128;
 const size_t NumLimbs = 2;
@@ -54,12 +54,28 @@ struct mpfr_helper_t
     mpfr_t a;
     mpfr_t b;
     mpfr_t c;
+    mpfr_t d;
+    mpfr_t e;
+    mpfr_t f;
+    mpfr_t g;
+    mpfr_t h;
+    mpfr_t i;
+    mpfr_t j;
+    mpfr_t k;
 
     mpfr_helper_t()
     {
         mpfr_init2(a, Precision);
         mpfr_init2(b, Precision);
         mpfr_init2(c, Precision);
+        mpfr_init2(d, Precision);
+        mpfr_init2(e, Precision);
+        mpfr_init2(f, Precision);
+        mpfr_init2(g, Precision);
+        mpfr_init2(h, Precision);
+        mpfr_init2(i, Precision);
+        mpfr_init2(j, Precision);
+        mpfr_init2(k, Precision);
     }
 
     ~mpfr_helper_t()
@@ -67,6 +83,14 @@ struct mpfr_helper_t
         mpfr_clear(a);
         mpfr_clear(b);
         mpfr_clear(c);
+        mpfr_clear(d);
+        mpfr_clear(e);
+        mpfr_clear(f);
+        mpfr_clear(g);
+        mpfr_clear(h);
+        mpfr_clear(i);
+        mpfr_clear(j);
+        mpfr_clear(k);
     }
 }
 mpfr_helper;
@@ -468,7 +492,7 @@ bool CheckNumber()
             std::cout << "Maybe the bound is violated?" << std::endl;
             std::cout << "NloglogN > " << NloglogN_rndd << std::endl;
             std::cout << "sigma(N)/exp(gamma) = (" << LHS_rndd << ", " << LHS_rndu << ")" << std::endl;
-            if(mpfr_cmp_ui(Number_rndu, 5040) > 0)
+            if(mpfr_cmp_d(Number_rndu, 5040.5) > 0)
             {
                 std::cout << "And it seems to be the real deal." << std::endl;
                 std::cout << "Number_rndd = " << mpfr_get_d(Number_rndd, MPFR_RNDD) << std::endl;
@@ -606,20 +630,35 @@ uint64_t AddPrimeFactors()
             }
             // Release mpfr_helper.a
 
-            // Acquire mpfr_helper.a.
-            // Acquire mpfr_helper.b.
-            // Acquire mpfr_helper.c.
+            // Acquire mpfr_helper.a-j
             while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
             {
                 // Iterate
-                FastBigFloat<3> lhs_update_rndd;
-                lhs_update_rndd.set_ui(1);
-                FastBigFloat<3> lhs_update_rndu;
-                lhs_update_rndu.set_ui(1);
-                FastBigFloat<3> rhs_update_rndd;
-                rhs_update_rndd.set_ui(1);
-                FastBigFloat<3> rhs_update_rndu;
-                rhs_update_rndu.set_ui(1);
+
+                // Initialize lhs.
+                mpfr_set_ui(mpfr_helper.a,
+                            PrimeQueue[NextPrimeIdx]+1,
+                            MPFR_RNDD);
+                mpfr_set_ui(mpfr_helper.b,
+                            PrimeQueue[NextPrimeIdx]+1,
+                            MPFR_RNDU);
+
+                // Initialize rhs.
+                mpfr_set_ui(mpfr_helper.c,
+                            PrimeQueue[NextPrimeIdx],
+                            MPFR_RNDD);
+                mpfr_set_ui(mpfr_helper.d,
+                            PrimeQueue[NextPrimeIdx],
+                            MPFR_RNDU);
+
+                // Update tracking and statistics.
+                Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx];
+                NextPrimeIdx++;
+                cnt_NumUniquePrimeFactors++;
+
+                // Before we check the value,
+                // try to multiply by additional
+                // fast bunches.
 
                 // Fast bunches have to throw away work when they
                 // advance too far, rather than just updating
@@ -630,11 +669,21 @@ uint64_t AddPrimeFactors()
                 // Run with sequence bunch sizes.
                 for(uint64_t BunchSize : {512, 64, 32, 16, 8, 4})
                 {
+                    // Initialize lhs.
+                    mpfr_set(mpfr_helper.e,
+                             mpfr_helper.a,
+                             MPFR_RNDD);
+                    mpfr_set(mpfr_helper.f,
+                             mpfr_helper.b,
+                             MPFR_RNDU);
 
-                    FastBigFloat<3> lhs_update_rndd_test = lhs_update_rndd;
-                    FastBigFloat<3> lhs_update_rndu_test = lhs_update_rndu;
-                    FastBigFloat<3> rhs_update_rndd_test = rhs_update_rndd;
-                    FastBigFloat<3> rhs_update_rndu_test = rhs_update_rndu;
+                    // Initialize rhs.
+                    mpfr_set(mpfr_helper.g,
+                             mpfr_helper.c,
+                             MPFR_RNDD);
+                    mpfr_set(mpfr_helper.h,
+                             mpfr_helper.d,
+                             MPFR_RNDU);
 
                     while(NextPrimeIdx + BunchSize - 1 <= MaxBunchIdx)
                     {
@@ -644,26 +693,34 @@ uint64_t AddPrimeFactors()
                             i < NextPrimeIdx + BunchSize;
                             i++)
                         {
-                            lhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]+1);
-                            lhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]+1);
-                            rhs_update_rndd_test.mul_ui_rndd(PrimeQueue[i]);
-                            rhs_update_rndu_test.mul_ui_rndu(PrimeQueue[i]);
+                            mpfr_mul_ui_fast(mpfr_helper.e, PrimeQueue[i]+1, MPFR_RNDD);
+                            mpfr_mul_ui_fast(mpfr_helper.f, PrimeQueue[i]+1, MPFR_RNDU);
+                            mpfr_mul_ui_fast(mpfr_helper.g, PrimeQueue[i], MPFR_RNDD);
+                            mpfr_mul_ui_fast(mpfr_helper.h, PrimeQueue[i], MPFR_RNDU);
                         }
 
                         // Check if test values indicate possible violation of bound.
-                        lhs_update_rndu_test.get_rndu(mpfr_helper.a);
-                        mpfr_mul(mpfr_helper.a, mpfr_helper.a, LHS_rndu, MPFR_RNDU);
-                        rhs_update_rndd_test.get_rndd(mpfr_helper.c);
-                        mpfr_mul(mpfr_helper.b, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
+                        // Compute updated lhs rounded up.
+                        mpfr_mul(mpfr_helper.i, mpfr_helper.f, LHS_rndu, MPFR_RNDU);
+                        // Compute updated rhs rounded down.
+                        mpfr_mul(mpfr_helper.j, mpfr_helper.g, NloglogN_rndd, MPFR_RNDD);
 
-                        if(mpfr_less_p(mpfr_helper.a, mpfr_helper.b))
+                        if(mpfr_less_p(mpfr_helper.i, mpfr_helper.j))
                         {
                             // LHS < RHS is guaranteed.
                             // Save current progress and keep going.
-                            lhs_update_rndd = lhs_update_rndd_test;
-                            lhs_update_rndu = lhs_update_rndu_test;
-                            rhs_update_rndd = rhs_update_rndd_test;
-                            rhs_update_rndu = rhs_update_rndu_test;
+                            mpfr_set(mpfr_helper.a,
+                                     mpfr_helper.e,
+                                     MPFR_RNDD);
+                            mpfr_set(mpfr_helper.b,
+                                     mpfr_helper.f,
+                                     MPFR_RNDU);
+                            mpfr_set(mpfr_helper.c,
+                                     mpfr_helper.g,
+                                     MPFR_RNDD);
+                            mpfr_set(mpfr_helper.d,
+                                     mpfr_helper.h,
+                                     MPFR_RNDU);
                             NextPrimeIdx += BunchSize;
                             cnt_NumUniquePrimeFactors += BunchSize;
                             Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx-1];
@@ -682,29 +739,33 @@ uint64_t AddPrimeFactors()
                 }
 
                 // Lock in the updates from bunches.
-                lhs_update_rndu.get_rndu(mpfr_helper.a);
-                mpfr_mul(LHS_rndu, mpfr_helper.a, LHS_rndu, MPFR_RNDU);
-                rhs_update_rndd.get_rndd(mpfr_helper.c);
-                mpfr_mul(NloglogN_rndd, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
-                mpfr_mul(Number_rndd, Number_rndd, mpfr_helper.c, MPFR_RNDD);
-                lhs_update_rndd.get_rndd(mpfr_helper.a);
                 mpfr_mul(LHS_rndd, mpfr_helper.a, LHS_rndd, MPFR_RNDD);
-                rhs_update_rndu.get_rndu(mpfr_helper.a);
-                mpfr_mul(Number_rndu, Number_rndu, mpfr_helper.a, MPFR_RNDU);
+                mpfr_mul(LHS_rndu, mpfr_helper.b, LHS_rndu, MPFR_RNDU);
+                mpfr_mul(Number_rndd, mpfr_helper.c, Number_rndd, MPFR_RNDD);
+                mpfr_mul(Number_rndu, mpfr_helper.d, Number_rndu, MPFR_RNDU);
+                mpfr_mul(NloglogN_rndd, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
+
+                // Also check the number.
+                bool LogsWereRecomputed =  CheckNumber();
+                if(LogsWereRecomputed)
+                {
+                    // Maybe we can do more fast bunches.
+                    continue;
+                }
                         
                 // Iterate factor by factor until we update logs.
                 while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
                 {
                     uint64_t this_p = PrimeQueue[NextPrimeIdx];
-                    mpfr_mul_ui(Number_rndd, Number_rndd, this_p, MPFR_RNDD);
-                    mpfr_mul_ui(Number_rndu, Number_rndu, this_p, MPFR_RNDU);
-                    mpfr_mul_ui(NloglogN_rndd, NloglogN_rndd, this_p, MPFR_RNDD);
-                    mpfr_mul_ui(LHS_rndd, LHS_rndd, this_p+1, MPFR_RNDD);
-                    mpfr_mul_ui(LHS_rndu, LHS_rndu, this_p+1, MPFR_RNDU);
+                    mpfr_mul_ui_fast(Number_rndd, this_p, MPFR_RNDD);
+                    mpfr_mul_ui_fast(Number_rndu, this_p, MPFR_RNDU);
+                    mpfr_mul_ui_fast(NloglogN_rndd, this_p, MPFR_RNDD);
+                    mpfr_mul_ui_fast(LHS_rndd, this_p+1, MPFR_RNDD);
+                    mpfr_mul_ui_fast(LHS_rndu, this_p+1, MPFR_RNDU);
                     Number_factors.back().PrimeHi = this_p;
                     NextPrimeIdx++;
                     cnt_NumUniquePrimeFactors++;
-                    bool LogsWereRecomputed =  CheckNumber();
+                    LogsWereRecomputed =  CheckNumber();
                     if(LogsWereRecomputed)
                     {
                         // Maybe we can do more fast bunches.
@@ -712,9 +773,7 @@ uint64_t AddPrimeFactors()
                     }
                 }
             }
-            // Release mpfr_helper.a
-            // Release mpfr_helper.b
-            // Release mpfr_helper.c
+            // Release mpfr_helper.a-j
 
             uint64_t retval = NextPrimeIdx - NextPrimeIdx_init;
             PrimeQueueEpsilonStack.pop();
