@@ -11,7 +11,6 @@
 #include <omp.h>
 #include <primesieve.hpp>
 #include "PlotDelta.hpp"
-//#include "FastBigFloat.hpp"
 #include "mpfr_mul_ui_fast.hpp"
 
 const mpfr_prec_t Precision = 128;
