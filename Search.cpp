@@ -745,6 +745,14 @@ uint64_t AddPrimeFactors()
                 mpfr_mul(Number_rndd, mpfr_helper.c, Number_rndd, MPFR_RNDD);
                 mpfr_mul(Number_rndu, mpfr_helper.d, Number_rndu, MPFR_RNDU);
                 mpfr_mul(NloglogN_rndd, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
+
+                // Also check the number.
+                bool LogsWereRecomputed =  CheckNumber();
+                if(LogsWereRecomputed)
+                {
+                    // Maybe we can do more fast bunches.
+                    continue;
+                }
                         
                 // Iterate factor by factor until we update logs.
                 while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
@@ -758,7 +766,7 @@ uint64_t AddPrimeFactors()
                     Number_factors.back().PrimeHi = this_p;
                     NextPrimeIdx++;
                     cnt_NumUniquePrimeFactors++;
-                    bool LogsWereRecomputed =  CheckNumber();
+                    LogsWereRecomputed =  CheckNumber();
                     if(LogsWereRecomputed)
                     {
                         // Maybe we can do more fast bunches.
