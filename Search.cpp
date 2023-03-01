@@ -653,7 +653,7 @@ uint64_t AddPrimeFactors()
                             MPFR_RNDU);
 
                 // Update tracking and statistics.
-                Number_factors.back().PrimeHi = this_p;
+                Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx];
                 NextPrimeIdx++;
                 cnt_NumUniquePrimeFactors++;
 
