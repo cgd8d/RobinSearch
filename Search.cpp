@@ -637,18 +637,18 @@ uint64_t AddPrimeFactors()
                 // Iterate
 
                 // Initialize lhs.
-                mpfr.set_ui(mpfr_helper.a,
+                mpfr_set_ui(mpfr_helper.a,
                             PrimeQueue[NextPrimeIdx]+1,
                             MPFR_RNDD);
-                mpfr.set_ui(mpfr_helper.b,
+                mpfr_set_ui(mpfr_helper.b,
                             PrimeQueue[NextPrimeIdx]+1,
                             MPFR_RNDU);
 
                 // Initialize rhs.
-                mpfr.set_ui(mpfr_helper.c,
+                mpfr_set_ui(mpfr_helper.c,
                             PrimeQueue[NextPrimeIdx],
                             MPFR_RNDD);
-                mpfr.set_ui(mpfr_helper.d,
+                mpfr_set_ui(mpfr_helper.d,
                             PrimeQueue[NextPrimeIdx],
                             MPFR_RNDU);
 
@@ -671,18 +671,18 @@ uint64_t AddPrimeFactors()
                 for(uint64_t BunchSize : {512, 64, 32, 16, 8, 4})
                 {
                     // Initialize lhs.
-                    mpfr.set(mpfr_helper.e,
+                    mpfr_set(mpfr_helper.e,
                              mpfr_helper.a,
                              MPFR_RNDD);
-                    mpfr.set(mpfr_helper.f,
+                    mpfr_set(mpfr_helper.f,
                              mpfr_helper.b,
                              MPFR_RNDU);
 
                     // Initialize rhs.
-                    mpfr.set(mpfr_helper.g,
+                    mpfr_set(mpfr_helper.g,
                              mpfr_helper.c,
                              MPFR_RNDD);
-                    mpfr.set(mpfr_helper.h,
+                    mpfr_set(mpfr_helper.h,
                              mpfr_helper.d,
                              MPFR_RNDU);
 
@@ -710,16 +710,16 @@ uint64_t AddPrimeFactors()
                         {
                             // LHS < RHS is guaranteed.
                             // Save current progress and keep going.
-                            mpfr.set(mpfr_helper.a,
+                            mpfr_set(mpfr_helper.a,
                                      mpfr_helper.e,
                                      MPFR_RNDD);
-                            mpfr.set(mpfr_helper.b,
+                            mpfr_set(mpfr_helper.b,
                                      mpfr_helper.f,
                                      MPFR_RNDU);
-                            mpfr.set(mpfr_helper.c,
+                            mpfr_set(mpfr_helper.c,
                                      mpfr_helper.g,
                                      MPFR_RNDD);
-                            mpfr.set(mpfr_helper.d,
+                            mpfr_set(mpfr_helper.d,
                                      mpfr_helper.h,
                                      MPFR_RNDU);
                             NextPrimeIdx += BunchSize;
