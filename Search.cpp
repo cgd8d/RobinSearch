@@ -127,6 +127,8 @@ uint64_t cnt_EpsEvalForExpZero = 0;
 uint64_t cnt_LogLogNUpdates = 0;
 uint64_t cnt_FastBunchMul = 0;
 uint64_t cnt_FastBunchMul_keep = 0;
+uint64_t cnt_FastBunchMul_used = 0;
+uint64_t cnt_FastBunchMul_wasted = 0;
 
 /*
 Struct to compute critical epsilon values and
@@ -726,6 +728,7 @@ uint64_t AddPrimeFactors()
                             Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx-1];
                             cnt_NumPrimeFactors += BunchSize;
                             cnt_FastBunchMul_keep++;
+                            cnt_FastBunchMul_used += BunchSize;
                         }
                         else
                         {
@@ -733,6 +736,7 @@ uint64_t AddPrimeFactors()
                             // We need to drop that last bunch and go more carefully.
                             // Reduce MaxBunchIdx so we won't try the same thing again.
                             MaxBunchIdx = NextPrimeIdx + BunchSize - 2;
+                            cnt_FastBunchMul_wasted += BunchSize;
                             break;
                         }
                     }
@@ -884,6 +888,8 @@ int main(int argc, char *argv[])
     std::cout << "cnt_LogLogNUpdates = " << cnt_LogLogNUpdates << std::endl;
     std::cout << "cnt_FastBunchMul = " << cnt_FastBunchMul << std::endl;
     std::cout << "cnt_FastBunchMul_drop = " << cnt_FastBunchMul-cnt_FastBunchMul_keep << std::endl;
+    std::cout << "cnt_FastBunchMul_used = " << cnt_FastBunchMul_used << std::endl;
+    std::cout << "cnt_FastBunchMul_wasted = " << cnt_FastBunchMul_wasted << std::endl;
 
     mpfr_clear(Number_rndd);
     mpfr_clear(Number_rndu);
