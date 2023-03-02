@@ -525,7 +525,7 @@ epsilon, since the goal is to compute it for a very
 small subset of factors.
 */
 std::vector<std::vector<uint64_t>> PrimeQueueVec(NumThreads);
-const size_t TargetPrimeQueueSize = 1 << 22;
+const size_t TargetPrimeQueueSize = 1 << 23;
 size_t PrimeQueueStep = 2*TargetPrimeQueueSize;
 uint64_t NextPrimeToGen = 3;
 size_t PrimeQueueVecIdx = NumThreads-1;
