@@ -580,6 +580,7 @@ uint64_t AddPrimeFactors()
         for(int i = 0; i < NumThreads; i++)
         {
             PrimeQueueVec[i].clear();
+            PrimeQueueVec[i].reserve(TargetPrimeQueueSize);
             primesieve::generate_primes(
                 NextPrimeToGen + i*PrimeQueueStep,
                 NextPrimeToGen + (i+1)*PrimeQueueStep - 1,
