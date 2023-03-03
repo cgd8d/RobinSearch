@@ -42,8 +42,12 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     int ls = __builtin_clzl(out2);
 
     // Do shift operations.
-    xp[0] = (out1 << ls) | (out0 >> (64-ls));
-    xp[1] = (out2 << ls) | (out1 >> (64-ls));
+    // Try to avoid implementing with Shld
+    // because even though that would be
+    // A efficient by itself, there is too
+    // much pressure on cpu port p1.
+    xp[0] = (out1 << ls) + (out0 >> (64-ls));
+    xp[1] = (out2 << ls) + (out1 >> (64-ls));
 
     // Update exp.
     x->_mpfr_exp += (64-ls);
