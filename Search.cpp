@@ -523,6 +523,13 @@ return value is zero.
 Internally we record calculations of the critical
 epsilon, since the goal is to compute it for a very
 small subset of factors.
+Large queues are needed because successive calls
+to primesieve::generate_primes have a startup
+cost proportional to sqrt of the prime values.
+Since primes will easily exceed 1e12, a sqrt(p)
+penalty is a lot.
+Azure free GitHub runners have 7GB RAM, see
+https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
 */
 std::vector<std::vector<uint64_t>> PrimeQueueVec(NumThreads);
 const size_t TargetPrimeQueueSize = 1 << 26;
