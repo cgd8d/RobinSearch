@@ -86,6 +86,7 @@ int main()
         for(size_t j = 0; j < 1000; j++)
         {
             uint64_t x = mt();
+            x = x >> 1; // ensure x < 2^63.
             if(x < 2) continue;
             mpfr_mul_ui_fast(t1, x, MPFR_RNDD);
             mpfr_mul_ui_fast(t2, x, MPFR_RNDU);
@@ -116,6 +117,7 @@ int main()
         for(size_t j = 0; j < 1000; j++)
         {
             x = mt();
+            x = x >> 1; // ensure x < 2^63.
             if(x < 2) continue;
             mpfr_mul_ui_fast(t1, x, MPFR_RNDD);
             mpfr_mul_ui_fast(t2, x, MPFR_RNDU);
