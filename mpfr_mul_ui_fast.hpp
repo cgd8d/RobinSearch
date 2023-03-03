@@ -6,7 +6,7 @@
 
 // Function that assumes:
 // * All values are regular.
-// * u >= 2
+// * 2 <= u < 2^63.
 // * The size of x is known at computer time.
 // * The operation is in-place.
 // * Rounding is either up or down.
@@ -46,6 +46,11 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     // because even though that would be
     // A efficient by itself, there is too
     // much pressure on cpu port p1.
+    // Note that shl by a count of 64 is
+    // undefined, by contrast with Shld.
+    // So when we use shl, we also need to
+    // ensure ls > 0.  This is guaranteed when
+    // u < 2^63.
     xp[0] = (out1 << ls) + (out0 >> (64-ls));
     xp[1] = (out2 << ls) + (out1 >> (64-ls));
 
