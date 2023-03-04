@@ -42,16 +42,17 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     int ls = __builtin_clzl(out2);
 
     // Do shift operations.
-    // Try to avoid implementing with Shld
-    // because even though that would be
-    // A efficient by itself, there is too
-    // much pressure on cpu port p1.
-    // Note that shl by a count of 64 is
-    // undefined, by contrast with Shld.
-    // So when we use shl, we also need to
+    // Note that there is a lot of pressure
+    // on CPU port 1, so consider changing
+    // this instruction to be implemented
+    // by shl rather than shld (by changing
+    // the or to a plus).  But last time
+    // I checked it didn't help.
+    // Note that shift by a count of 64 is
+    // undefined in C++, so we also need to
     // ensure ls > 0.  This is guaranteed when
     // u < 2^63.
-    xp[0] = (out1 << ls) + (out0 >> (64-ls));
+    xp[0] = (out1 << ls) | (out0 >> (64-ls));
     xp[1] = (out2 << ls) | (out1 >> (64-ls));
 
     // Update exp.
