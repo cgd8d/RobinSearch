@@ -6,7 +6,7 @@
 
 // Function that assumes:
 // * All values are regular.
-// * u >= 2
+// * 2 <= u < 2^63.
 // * The size of x is known at computer time.
 // * The operation is in-place.
 // * Rounding is either up or down.
@@ -42,6 +42,16 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     int ls = __builtin_clzl(out2);
 
     // Do shift operations.
+    // Note that there is a lot of pressure
+    // on CPU port 1, so consider changing
+    // this instruction to be implemented
+    // by shl rather than shld (by changing
+    // the or to a plus).  But last time
+    // I checked it didn't help.
+    // Note that shift by a count of 64 is
+    // undefined in C++, so we also need to
+    // ensure ls > 0.  This is guaranteed when
+    // u < 2^63.
     xp[0] = (out1 << ls) | (out0 >> (64-ls));
     xp[1] = (out2 << ls) | (out1 >> (64-ls));
 
