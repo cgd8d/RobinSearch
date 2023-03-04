@@ -593,6 +593,14 @@ uint64_t AddPrimeFactors()
                 NextPrimeToGen + (i+1)*PrimeQueueStep - 1,
                 &PrimeQueueVec[i]);
         }
+        if(PrimeQueueVec.back().back() > (1ull<<63))
+        {
+            std::cout << "we can't use prime "
+                "values more than 2^63 because "
+                "of the implementation of "
+                "mpfr_mul_ui_fast." << std::endl;
+            exit(0);
+        }
         NextPrimeToGen += NumThreads*PrimeQueueStep;
         if(2*PrimeQueueVec.back().size() <
            TargetPrimeQueueSize)
