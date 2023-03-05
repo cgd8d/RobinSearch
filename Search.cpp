@@ -51,7 +51,7 @@ void CheckTypes()
 // Helper object to store initialized mpfr objects.
 struct mpfr_holder
 {
-    mpfr val;
+    mpfr_t val;
     mpfr_holder()
     {
         mpfr_init2(val, Precision);
@@ -467,9 +467,9 @@ bool CheckNumber()
 
         // Compute delta = exp(gamma) loglogN - sigma(N)/N.
         // Acquire mpfr_tmp[0].
-        mpfr_sub(mpfr_tmp[0], NloglogN_rndd, LHS_rndu, MPFR_RNDD);
-        mpfr_div(mpfr_tmp[0], mpfr_tmp[0], Number_rndu, MPFR_RNDD);
-        double delta = exp_gamma*mpfr_get_d(mpfr_tmp[0], MPFR_RNDD);
+        mpfr_sub(mpfr_tmp[0].val, NloglogN_rndd, LHS_rndu, MPFR_RNDD);
+        mpfr_div(mpfr_tmp[0].val, mpfr_tmp[0].val, Number_rndu, MPFR_RNDD);
+        double delta = exp_gamma*mpfr_get_d(mpfr_tmp[0].val, MPFR_RNDD);
         // Release mpfr_tmp[0].
 
         // Go ahead and print information.
@@ -645,11 +645,11 @@ uint64_t AddPrimeFactors()
         {
             // Acquire mpfr_tmp[0] (holds eps_rndd)
             ComputeEpsilon.Do_rndd(
-                mpfr_tmp[0],
+                mpfr_tmp[0].val,
                 PrimeQueue[PrimeQueueEpsilonStack.top().index],
                 0);
             if(mpfr_lessequal_p(
-                mpfr_tmp[0],
+                mpfr_tmp[0].val,
                 PrimeGroupQueue.top()->CriticalEpsilon_rndu))
             {
                 std::cerr << "Unable to compare epsilon for "
@@ -667,18 +667,18 @@ uint64_t AddPrimeFactors()
                 // Iterate
 
                 // Initialize lhs.
-                mpfr_set_ui(mpfr_tmp[0],
+                mpfr_set_ui(mpfr_tmp[0].val,
                             PrimeQueue[NextPrimeIdx]+1,
                             MPFR_RNDD);
-                mpfr_set_ui(mpfr_tmp[1],
+                mpfr_set_ui(mpfr_tmp[1].val,
                             PrimeQueue[NextPrimeIdx]+1,
                             MPFR_RNDU);
 
                 // Initialize rhs.
-                mpfr_set_ui(mpfr_tmp[2],
+                mpfr_set_ui(mpfr_tmp[2].val,
                             PrimeQueue[NextPrimeIdx],
                             MPFR_RNDD);
-                mpfr_set_ui(mpfr_tmp[3],
+                mpfr_set_ui(mpfr_tmp[3].val,
                             PrimeQueue[NextPrimeIdx],
                             MPFR_RNDU);
 
@@ -702,18 +702,18 @@ uint64_t AddPrimeFactors()
                 {
                     // Initialize lhs.
                     mpfr_set(mpfr_helper.e,
-                             mpfr_tmp[0],
+                             mpfr_tmp[0].val,
                              MPFR_RNDD);
                     mpfr_set(mpfr_helper.f,
-                             mpfr_tmp[1],
+                             mpfr_tmp[1].val,
                              MPFR_RNDU);
 
                     // Initialize rhs.
                     mpfr_set(mpfr_helper.g,
-                             mpfr_tmp[2],
+                             mpfr_tmp[2].val,
                              MPFR_RNDD);
                     mpfr_set(mpfr_helper.h,
-                             mpfr_tmp[3],
+                             mpfr_tmp[3].val,
                              MPFR_RNDU);
 
                     while(NextPrimeIdx + BunchSize - 1 <= MaxBunchIdx)
@@ -740,16 +740,16 @@ uint64_t AddPrimeFactors()
                         {
                             // LHS < RHS is guaranteed.
                             // Save current progress and keep going.
-                            mpfr_set(mpfr_tmp[0],
+                            mpfr_set(mpfr_tmp[0].val,
                                      mpfr_helper.e,
                                      MPFR_RNDD);
-                            mpfr_set(mpfr_tmp[1],
+                            mpfr_set(mpfr_tmp[1].val,
                                      mpfr_helper.f,
                                      MPFR_RNDU);
-                            mpfr_set(mpfr_tmp[2],
+                            mpfr_set(mpfr_tmp[2].val,
                                      mpfr_helper.g,
                                      MPFR_RNDD);
-                            mpfr_set(mpfr_tmp[3],
+                            mpfr_set(mpfr_tmp[3].val,
                                      mpfr_helper.h,
                                      MPFR_RNDU);
                             NextPrimeIdx += BunchSize;
@@ -772,11 +772,11 @@ uint64_t AddPrimeFactors()
                 }
 
                 // Lock in the updates from bunches.
-                mpfr_mul(LHS_rndd, mpfr_tmp[0], LHS_rndd, MPFR_RNDD);
-                mpfr_mul(LHS_rndu, mpfr_tmp[1], LHS_rndu, MPFR_RNDU);
-                mpfr_mul(Number_rndd, mpfr_tmp[2], Number_rndd, MPFR_RNDD);
-                mpfr_mul(Number_rndu, mpfr_tmp[3], Number_rndu, MPFR_RNDU);
-                mpfr_mul(NloglogN_rndd, mpfr_tmp[2], NloglogN_rndd, MPFR_RNDD);
+                mpfr_mul(LHS_rndd, mpfr_tmp[0].val, LHS_rndd, MPFR_RNDD);
+                mpfr_mul(LHS_rndu, mpfr_tmp[1].val, LHS_rndu, MPFR_RNDU);
+                mpfr_mul(Number_rndd, mpfr_tmp[2].val, Number_rndd, MPFR_RNDD);
+                mpfr_mul(Number_rndu, mpfr_tmp[3].val, Number_rndu, MPFR_RNDU);
+                mpfr_mul(NloglogN_rndd, mpfr_tmp[2].val, NloglogN_rndd, MPFR_RNDD);
 
                 // Also check the number.
                 bool LogsWereRecomputed =  CheckNumber();
