@@ -616,7 +616,7 @@ uint64_t AddPrimeFactors()
             }
             // Release mpfr_tmp[0]
 
-            // Acquire mpfr_helper.a-j
+            // Acquire mpfr_tmp
             while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
             {
                 // Iterate
@@ -761,7 +761,7 @@ uint64_t AddPrimeFactors()
                     }
                 }
             }
-            // Release mpfr_helper.a-j
+            // Release mpfr_tmp
 
             uint64_t retval = NextPrimeIdx - NextPrimeIdx_init;
             PrimeQueueEpsilonStack.pop();
