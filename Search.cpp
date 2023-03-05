@@ -62,53 +62,6 @@ struct mpfr_holder
     }
 };
 std::vector<mpfr_holder> mpfr_tmp;
-/*
-struct mpfr_helper_t
-{
-    mpfr_t a;
-    mpfr_t b;
-    mpfr_t c;
-    mpfr_t d;
-    mpfr_t e;
-    mpfr_t f;
-    mpfr_t g;
-    mpfr_t h;
-    mpfr_t i;
-    mpfr_t j;
-    mpfr_t k;
-
-    mpfr_helper_t()
-    {
-        mpfr_init2(a, Precision);
-        mpfr_init2(b, Precision);
-        mpfr_init2(c, Precision);
-        mpfr_init2(d, Precision);
-        mpfr_init2(e, Precision);
-        mpfr_init2(f, Precision);
-        mpfr_init2(g, Precision);
-        mpfr_init2(h, Precision);
-        mpfr_init2(i, Precision);
-        mpfr_init2(j, Precision);
-        mpfr_init2(k, Precision);
-    }
-
-    ~mpfr_helper_t()
-    {
-        mpfr_clear(a);
-        mpfr_clear(b);
-        mpfr_clear(c);
-        mpfr_clear(d);
-        mpfr_clear(e);
-        mpfr_clear(f);
-        mpfr_clear(g);
-        mpfr_clear(h);
-        mpfr_clear(i);
-        mpfr_clear(j);
-        mpfr_clear(k);
-    }
-}
-mpfr_helper;
-*/
 
 // Helper function to print mpfr_t with error checking.
 std::ostream& operator<<(std::ostream& os, mpfr_t op)
