@@ -62,6 +62,7 @@ struct mpfr_holder
     }
 };
 std::vector<mpfr_holder> mpfr_tmp;
+/*
 struct mpfr_helper_t
 {
     mpfr_t a;
@@ -107,6 +108,7 @@ struct mpfr_helper_t
     }
 }
 mpfr_helper;
+*/
 
 // Helper function to print mpfr_t with error checking.
 std::ostream& operator<<(std::ostream& os, mpfr_t op)
@@ -701,18 +703,18 @@ uint64_t AddPrimeFactors()
                 for(uint64_t BunchSize : {512, 64, 32, 16, 8, 4})
                 {
                     // Initialize lhs.
-                    mpfr_set(mpfr_helper.e,
+                    mpfr_set(mpfr_tmp[6].val,
                              mpfr_tmp[0].val,
                              MPFR_RNDD);
-                    mpfr_set(mpfr_helper.f,
+                    mpfr_set(mpfr_tmp[7].val,
                              mpfr_tmp[1].val,
                              MPFR_RNDU);
 
                     // Initialize rhs.
-                    mpfr_set(mpfr_helper.g,
+                    mpfr_set(mpfr_tmp[8].val,
                              mpfr_tmp[2].val,
                              MPFR_RNDD);
-                    mpfr_set(mpfr_helper.h,
+                    mpfr_set(mpfr_tmp[9].val,
                              mpfr_tmp[3].val,
                              MPFR_RNDU);
 
@@ -724,33 +726,33 @@ uint64_t AddPrimeFactors()
                             i < NextPrimeIdx + BunchSize;
                             i++)
                         {
-                            mpfr_mul_ui_fast(mpfr_helper.e, PrimeQueue[i]+1, MPFR_RNDD);
-                            mpfr_mul_ui_fast(mpfr_helper.f, PrimeQueue[i]+1, MPFR_RNDU);
-                            mpfr_mul_ui_fast(mpfr_helper.g, PrimeQueue[i], MPFR_RNDD);
-                            mpfr_mul_ui_fast(mpfr_helper.h, PrimeQueue[i], MPFR_RNDU);
+                            mpfr_mul_ui_fast(mpfr_tmp[6].val, PrimeQueue[i]+1, MPFR_RNDD);
+                            mpfr_mul_ui_fast(mpfr_tmp[7].val, PrimeQueue[i]+1, MPFR_RNDU);
+                            mpfr_mul_ui_fast(mpfr_tmp[8].val, PrimeQueue[i], MPFR_RNDD);
+                            mpfr_mul_ui_fast(mpfr_tmp[9].val, PrimeQueue[i], MPFR_RNDU);
                         }
 
                         // Check if test values indicate possible violation of bound.
                         // Compute updated lhs rounded up.
-                        mpfr_mul(mpfr_helper.i, mpfr_helper.f, LHS_rndu, MPFR_RNDU);
+                        mpfr_mul(mpfr_tmp[4].val, mpfr_tmp[7].val, LHS_rndu, MPFR_RNDU);
                         // Compute updated rhs rounded down.
-                        mpfr_mul(mpfr_helper.j, mpfr_helper.g, NloglogN_rndd, MPFR_RNDD);
+                        mpfr_mul(mpfr_tmp[5].val, mpfr_tmp[8].val, NloglogN_rndd, MPFR_RNDD);
 
-                        if(mpfr_less_p(mpfr_helper.i, mpfr_helper.j))
+                        if(mpfr_less_p(mpfr_tmp[4].val, mpfr_tmp[5].val))
                         {
                             // LHS < RHS is guaranteed.
                             // Save current progress and keep going.
                             mpfr_set(mpfr_tmp[0].val,
-                                     mpfr_helper.e,
+                                     mpfr_tmp[6].val,
                                      MPFR_RNDD);
                             mpfr_set(mpfr_tmp[1].val,
-                                     mpfr_helper.f,
+                                     mpfr_tmp[7].val,
                                      MPFR_RNDU);
                             mpfr_set(mpfr_tmp[2].val,
-                                     mpfr_helper.g,
+                                     mpfr_tmp[8].val,
                                      MPFR_RNDD);
                             mpfr_set(mpfr_tmp[3].val,
-                                     mpfr_helper.h,
+                                     mpfr_tmp[9].val,
                                      MPFR_RNDU);
                             NextPrimeIdx += BunchSize;
                             cnt_NumUniquePrimeFactors += BunchSize;
@@ -872,7 +874,7 @@ int main(int argc, char *argv[])
     mpfr_init2(NloglogN_rndd, Precision);
     mpfr_init2(LHS_rndd, Precision);
     mpfr_init2(LHS_rndu, Precision);
-    mpfr_tmp.resize(4*(NumThreads+1));
+    mpfr_tmp.resize(6+4*NumThreads);
 
     // Initialize everything to N = 1.
     mpfr_const_euler(LHS_rndd, MPFR_RNDU);
