@@ -49,6 +49,19 @@ void CheckTypes()
 }
 
 // Helper object to store initialized mpfr objects.
+struct mpfr_holder
+{
+    mpfr val;
+    mpfr_holder()
+    {
+        mpfr_init2(val, Precision);
+    }
+    ~mpfr_holder()
+    {
+        mpfr_clear(val);
+    }
+};
+std::vector<mpfr_holder> mpfr_tmp;
 struct mpfr_helper_t
 {
     mpfr_t a;
@@ -453,11 +466,11 @@ bool CheckNumber()
         cnt_LogLogNUpdates++;
 
         // Compute delta = exp(gamma) loglogN - sigma(N)/N.
-        // Acquire mpfr_helper.a.
-        mpfr_sub(mpfr_helper.a, NloglogN_rndd, LHS_rndu, MPFR_RNDD);
-        mpfr_div(mpfr_helper.a, mpfr_helper.a, Number_rndu, MPFR_RNDD);
-        double delta = exp_gamma*mpfr_get_d(mpfr_helper.a, MPFR_RNDD);
-        // Release mpfr_helper.a.
+        // Acquire mpfr_tmp[0].
+        mpfr_sub(mpfr_tmp[0], NloglogN_rndd, LHS_rndu, MPFR_RNDD);
+        mpfr_div(mpfr_tmp[0], mpfr_tmp[0], Number_rndu, MPFR_RNDD);
+        double delta = exp_gamma*mpfr_get_d(mpfr_tmp[0], MPFR_RNDD);
+        // Release mpfr_tmp[0].
 
         // Go ahead and print information.
         if(LogLogN_d > 2.5 and delta <= NextPrintDelta)
@@ -630,13 +643,13 @@ uint64_t AddPrimeFactors()
             PrimeQueueEpsilonStack.top().Epsilon_rndu,
             PrimeGroupQueue.top()->CriticalEpsilon_rndd))
         {
-            // Acquire mpfr_helper.a (holds eps_rndd)
+            // Acquire mpfr_tmp[0] (holds eps_rndd)
             ComputeEpsilon.Do_rndd(
-                mpfr_helper.a,
+                mpfr_tmp[0],
                 PrimeQueue[PrimeQueueEpsilonStack.top().index],
                 0);
             if(mpfr_lessequal_p(
-                mpfr_helper.a,
+                mpfr_tmp[0],
                 PrimeGroupQueue.top()->CriticalEpsilon_rndu))
             {
                 std::cerr << "Unable to compare epsilon for "
@@ -646,7 +659,7 @@ uint64_t AddPrimeFactors()
                           << std::endl;
                 throw std::runtime_error("Insufficient accuracy for epsilon.");
             }
-            // Release mpfr_helper.a
+            // Release mpfr_tmp[0]
 
             // Acquire mpfr_helper.a-j
             while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
@@ -654,10 +667,10 @@ uint64_t AddPrimeFactors()
                 // Iterate
 
                 // Initialize lhs.
-                mpfr_set_ui(mpfr_helper.a,
+                mpfr_set_ui(mpfr_tmp[0],
                             PrimeQueue[NextPrimeIdx]+1,
                             MPFR_RNDD);
-                mpfr_set_ui(mpfr_helper.b,
+                mpfr_set_ui(mpfr_tmp[1],
                             PrimeQueue[NextPrimeIdx]+1,
                             MPFR_RNDU);
 
@@ -689,10 +702,10 @@ uint64_t AddPrimeFactors()
                 {
                     // Initialize lhs.
                     mpfr_set(mpfr_helper.e,
-                             mpfr_helper.a,
+                             mpfr_tmp[0],
                              MPFR_RNDD);
                     mpfr_set(mpfr_helper.f,
-                             mpfr_helper.b,
+                             mpfr_tmp[1],
                              MPFR_RNDU);
 
                     // Initialize rhs.
@@ -727,10 +740,10 @@ uint64_t AddPrimeFactors()
                         {
                             // LHS < RHS is guaranteed.
                             // Save current progress and keep going.
-                            mpfr_set(mpfr_helper.a,
+                            mpfr_set(mpfr_tmp[0],
                                      mpfr_helper.e,
                                      MPFR_RNDD);
-                            mpfr_set(mpfr_helper.b,
+                            mpfr_set(mpfr_tmp[1],
                                      mpfr_helper.f,
                                      MPFR_RNDU);
                             mpfr_set(mpfr_helper.c,
@@ -759,8 +772,8 @@ uint64_t AddPrimeFactors()
                 }
 
                 // Lock in the updates from bunches.
-                mpfr_mul(LHS_rndd, mpfr_helper.a, LHS_rndd, MPFR_RNDD);
-                mpfr_mul(LHS_rndu, mpfr_helper.b, LHS_rndu, MPFR_RNDU);
+                mpfr_mul(LHS_rndd, mpfr_tmp[0], LHS_rndd, MPFR_RNDD);
+                mpfr_mul(LHS_rndu, mpfr_tmp[1], LHS_rndu, MPFR_RNDU);
                 mpfr_mul(Number_rndd, mpfr_helper.c, Number_rndd, MPFR_RNDD);
                 mpfr_mul(Number_rndu, mpfr_helper.d, Number_rndu, MPFR_RNDU);
                 mpfr_mul(NloglogN_rndd, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
@@ -859,6 +872,7 @@ int main(int argc, char *argv[])
     mpfr_init2(NloglogN_rndd, Precision);
     mpfr_init2(LHS_rndd, Precision);
     mpfr_init2(LHS_rndu, Precision);
+    mpfr_tmp.resize(4*(NumThreads+1));
 
     // Initialize everything to N = 1.
     mpfr_const_euler(LHS_rndd, MPFR_RNDU);
