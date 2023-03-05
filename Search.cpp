@@ -675,10 +675,10 @@ uint64_t AddPrimeFactors()
                             MPFR_RNDU);
 
                 // Initialize rhs.
-                mpfr_set_ui(mpfr_helper.c,
+                mpfr_set_ui(mpfr_tmp[2],
                             PrimeQueue[NextPrimeIdx],
                             MPFR_RNDD);
-                mpfr_set_ui(mpfr_helper.d,
+                mpfr_set_ui(mpfr_tmp[3],
                             PrimeQueue[NextPrimeIdx],
                             MPFR_RNDU);
 
@@ -710,10 +710,10 @@ uint64_t AddPrimeFactors()
 
                     // Initialize rhs.
                     mpfr_set(mpfr_helper.g,
-                             mpfr_helper.c,
+                             mpfr_tmp[2],
                              MPFR_RNDD);
                     mpfr_set(mpfr_helper.h,
-                             mpfr_helper.d,
+                             mpfr_tmp[3],
                              MPFR_RNDU);
 
                     while(NextPrimeIdx + BunchSize - 1 <= MaxBunchIdx)
@@ -746,10 +746,10 @@ uint64_t AddPrimeFactors()
                             mpfr_set(mpfr_tmp[1],
                                      mpfr_helper.f,
                                      MPFR_RNDU);
-                            mpfr_set(mpfr_helper.c,
+                            mpfr_set(mpfr_tmp[2],
                                      mpfr_helper.g,
                                      MPFR_RNDD);
-                            mpfr_set(mpfr_helper.d,
+                            mpfr_set(mpfr_tmp[3],
                                      mpfr_helper.h,
                                      MPFR_RNDU);
                             NextPrimeIdx += BunchSize;
@@ -774,9 +774,9 @@ uint64_t AddPrimeFactors()
                 // Lock in the updates from bunches.
                 mpfr_mul(LHS_rndd, mpfr_tmp[0], LHS_rndd, MPFR_RNDD);
                 mpfr_mul(LHS_rndu, mpfr_tmp[1], LHS_rndu, MPFR_RNDU);
-                mpfr_mul(Number_rndd, mpfr_helper.c, Number_rndd, MPFR_RNDD);
-                mpfr_mul(Number_rndu, mpfr_helper.d, Number_rndu, MPFR_RNDU);
-                mpfr_mul(NloglogN_rndd, mpfr_helper.c, NloglogN_rndd, MPFR_RNDD);
+                mpfr_mul(Number_rndd, mpfr_tmp[2], Number_rndd, MPFR_RNDD);
+                mpfr_mul(Number_rndu, mpfr_tmp[3], Number_rndu, MPFR_RNDU);
+                mpfr_mul(NloglogN_rndd, mpfr_tmp[2], NloglogN_rndd, MPFR_RNDD);
 
                 // Also check the number.
                 bool LogsWereRecomputed =  CheckNumber();
