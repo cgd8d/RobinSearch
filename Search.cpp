@@ -679,10 +679,22 @@ uint64_t AddPrimeFactors()
                             mpfr_mul_ui_fast(mpfr_tmp[4*iBunch+4].val, PrimeQueue[i], MPFR_RNDD);
                             mpfr_mul_ui_fast(mpfr_tmp[4*iBunch+5].val, PrimeQueue[i], MPFR_RNDU);
                         }
-                    }
+                    } // End loop over iBunch.
 
+                    // Run gather operation.
+                    // This part is serialized.
+                    for(size_t iBunch = 0;
+                        iBunch < NumThreads;
+                        iBunch++)
+                    {
+                        // Check if test values indicate possible violation of bound.
+                        // Compute updated lhs rounded up.
+                        mpfr_mul(mpfr_tmp[0].val, mpfr_tmp[4*iBunch+3].val, LHS_rndu, MPFR_RNDU);
+                        // Compute updated rhs rounded down.
+                        mpfr_mul(mpfr_tmp[1].val, mpfr_tmp[4*iBunch+4].val, NloglogN_rndd, MPFR_RNDD);
 
-
+                        if(mpfr_less_p(mpfr_tmp[0].val, mpfr_tmp[1].val))
+                        {
 
 
 
