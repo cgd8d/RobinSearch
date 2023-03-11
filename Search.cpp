@@ -827,7 +827,7 @@ int main(int argc, char *argv[])
     mpfr_init2(NloglogN_rndd, Precision);
     mpfr_init2(LHS_rndd, Precision);
     mpfr_init2(LHS_rndu, Precision);
-    mpfr_tmp.resize(6+4*NumThreads);
+    mpfr_tmp.resize(2+4*NumThreads);
 
     // Initialize everything to N = 1.
     mpfr_const_euler(LHS_rndd, MPFR_RNDU);
