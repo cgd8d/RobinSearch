@@ -621,21 +621,72 @@ uint64_t AddPrimeFactors()
             {
                 // Iterate
 
-                // Initialize lhs.
-                mpfr_set_ui(mpfr_tmp[0].val,
-                            PrimeQueue[NextPrimeIdx]+1,
-                            MPFR_RNDD);
-                mpfr_set_ui(mpfr_tmp[1].val,
-                            PrimeQueue[NextPrimeIdx]+1,
-                            MPFR_RNDU);
+                // Fast bunches have to throw away work when they
+                // advance too far, rather than just updating
+                // logarithms.  So we separately talk new bounds
+                // on how far we can advance with bunches.
+                size_t MaxBunchIdx = PrimeQueueEpsilonStack.top().index;
 
-                // Initialize rhs.
-                mpfr_set_ui(mpfr_tmp[2].val,
-                            PrimeQueue[NextPrimeIdx],
-                            MPFR_RNDD);
-                mpfr_set_ui(mpfr_tmp[3].val,
-                            PrimeQueue[NextPrimeIdx],
-                            MPFR_RNDU);
+
+
+                // Iterations that consist of chunks.
+                while(NextPrimeIdx <= MaxBunchIdx)
+                {
+                    // Determine chunk size this time.
+                    size_t BunchSize = (MaxBunchIdx-NextPrimeIdx+1)/NumThreads;
+                    if(BunchSize > 512)
+                    {
+                        BunchSize = 512;
+                    }
+                    elseif(BunchSize < 4)
+                    {
+                        break;
+                    }
+
+                    // Compute products on chunks.
+                    // Ensure no data dependencies
+                    // so we can run in parallel.
+                    for(size_t iBunch = 0;
+                        iBunch < NumThreads;
+                        iBunch++)
+                    {
+                        size_t beg = NextPrimeIdx+iBunch*BunchSize;
+                        size_t end = beg+BunchSize;
+
+                        // Initialize lhs.
+                        mpfr_set_ui(mpfr_tmp[4*iBunch+2].val,
+                                    PrimeQueue[beg]+1,
+                                    MPFR_RNDD);
+                        mpfr_set_ui(mpfr_tmp[4*iBunch+3].val,
+                                    PrimeQueue[beg]+1,
+                                    MPFR_RNDU);
+
+                        // Initialize rhs.
+                        mpfr_set_ui(mpfr_tmp[4*iBunch+4].val,
+                                    PrimeQueue[beg],
+                                    MPFR_RNDD);
+                        mpfr_set_ui(mpfr_tmp[4*iBunch+5].val,
+                                    PrimeQueue[beg],
+                                    MPFR_RNDU);
+
+                        // Run multiply loop.
+                        for(size_t i = beg+1;
+                            i < end;
+                            i++)
+                        {
+                            mpfr_mul_ui_fast(mpfr_tmp[4*iBunch+2].val, PrimeQueue[i]+1, MPFR_RNDD);
+                            mpfr_mul_ui_fast(mpfr_tmp[4*iBunch+3].val, PrimeQueue[i]+1, MPFR_RNDU);
+                            mpfr_mul_ui_fast(mpfr_tmp[4*iBunch+4].val, PrimeQueue[i], MPFR_RNDD);
+                            mpfr_mul_ui_fast(mpfr_tmp[4*iBunch+5].val, PrimeQueue[i], MPFR_RNDU);
+                        }
+                    }
+
+
+
+
+
+
+
 
                 // Update tracking and statistics.
                 Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx];
