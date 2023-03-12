@@ -646,9 +646,9 @@ uint64_t AddPrimeFactors()
                     // for where the log needs to be recomputed,
                     // which means we increase the divisor by one.
                     size_t BunchSize = (MaxBunchIdx-NextPrimeIdx+1)/ChunkSizeDivisor;
-                    if(BunchSize > 512)
+                    if(BunchSize > 256)
                     {
-                        BunchSize = 512;
+                        BunchSize = 256;
                     }
                     else if(BunchSize < 4)
                     {
@@ -727,7 +727,7 @@ uint64_t AddPrimeFactors()
                             // Reduce MaxBunchIdx so we won't try the same thing again.
                             MaxBunchIdx = NextPrimeIdx + BunchSize - 2;
                             ChunkSizeDivisor = NumThreads+1;
-                            cnt_FastBunchMul_wasted += BunchSize;
+                            cnt_FastBunchMul_wasted += BunchSize*(NumThreads-iBunch);
                             break;
                         }
                     } // End loop over iBunch.
