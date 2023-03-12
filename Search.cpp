@@ -636,6 +636,9 @@ uint64_t AddPrimeFactors()
                 // Iterations that consist of chunks.
                 while(NextPrimeIdx <= MaxBunchIdx)
                 {
+
+if(NextPrimeIdx>1000000) exit(0);
+
                     // Determine chunk size this time.
                     // The max chunk size is based on
                     // minimizing overhead.
