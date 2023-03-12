@@ -646,9 +646,9 @@ uint64_t AddPrimeFactors()
                     // for where the log needs to be recomputed,
                     // which means we increase the divisor by one.
                     size_t BunchSize = (MaxBunchIdx-NextPrimeIdx+1)/ChunkSizeDivisor;
-                    if(BunchSize > 256)
+                    if(BunchSize > 512)
                     {
-                        BunchSize = 256;
+                        BunchSize = 512;
                     }
                     else if(BunchSize < 4)
                     {
