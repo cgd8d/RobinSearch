@@ -658,6 +658,7 @@ uint64_t AddPrimeFactors()
                     // Compute products on chunks.
                     // Ensure no data dependencies
                     // so we can run in parallel.
+                    cnt_FastBunchMul += NumThreads;
                     for(size_t iBunch = 0;
                         iBunch < NumThreads;
                         iBunch++)
