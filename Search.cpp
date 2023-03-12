@@ -634,6 +634,7 @@ uint64_t AddPrimeFactors()
                 size_t ChunkSizeDivisor = NumThreads;
 
                 // Iterations that consist of chunks.
+                #pragma omp parallel num_threads(NumThreads)
                 while(NextPrimeIdx <= MaxBunchIdx)
                 {
                     // Determine chunk size this time.
@@ -659,7 +660,7 @@ uint64_t AddPrimeFactors()
                     // Ensure no data dependencies
                     // so we can run in parallel.
                     cnt_FastBunchMul += NumThreads;
-                    #pragma omp parallel for num_threads(NumThreads)
+                    #pragma omp for
                     for(size_t iBunch = 0;
                         iBunch < NumThreads;
                         iBunch++)
@@ -697,6 +698,7 @@ uint64_t AddPrimeFactors()
 
                     // Run gather operation.
                     // This part is serialized.
+                    #pragma omp single
                     for(size_t iBunch = 0;
                         iBunch < NumThreads;
                         iBunch++)
