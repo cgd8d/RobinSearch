@@ -659,6 +659,7 @@ uint64_t AddPrimeFactors()
                     // Ensure no data dependencies
                     // so we can run in parallel.
                     cnt_FastBunchMul += NumThreads;
+                    #pragma omp parallel for num_threads(NumThreads)
                     for(size_t iBunch = 0;
                         iBunch < NumThreads;
                         iBunch++)
