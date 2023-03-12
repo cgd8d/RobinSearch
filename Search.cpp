@@ -621,9 +621,6 @@ uint64_t AddPrimeFactors()
             {
                 // Iterate
 
-
-if(NextPrimeIdx>1000) exit(1);
-
                 // Fast bunches have to throw away work when they
                 // advance too far, rather than just updating
                 // logarithms.  So we separately talk new bounds
@@ -738,7 +735,7 @@ if(NextPrimeIdx>1000) exit(1);
 
                 // Also check the number.
                 bool LogsWereRecomputed =  CheckNumber();
-                if(LogsWereRecomputed)
+                if(LogsWereRecomputed and mpfr_cmp_d(Number_rndu, 5040.5) > 0)
                 {
                     // Maybe we can do more fast bunches.
                     continue;
@@ -757,7 +754,7 @@ if(NextPrimeIdx>1000) exit(1);
                     NextPrimeIdx++;
                     cnt_NumUniquePrimeFactors++;
                     LogsWereRecomputed =  CheckNumber();
-                    if(LogsWereRecomputed)
+                    if(LogsWereRecomputed and mpfr_cmp_d(Number_rndu, 5040.5) > 0)
                     {
                         // Maybe we can do more fast bunches.
                         break;
