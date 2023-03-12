@@ -621,6 +621,9 @@ uint64_t AddPrimeFactors()
             {
                 // Iterate
 
+
+if(NextPrimeIdx>1000) exit(1);
+
                 // Fast bunches have to throw away work when they
                 // advance too far, rather than just updating
                 // logarithms.  So we separately talk new bounds
@@ -636,9 +639,6 @@ uint64_t AddPrimeFactors()
                 // Iterations that consist of chunks.
                 while(NextPrimeIdx <= MaxBunchIdx)
                 {
-
-if(NextPrimeIdx>1000000) exit(0);
-
                     // Determine chunk size this time.
                     // The max chunk size is based on
                     // minimizing overhead.
