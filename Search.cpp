@@ -508,19 +508,15 @@ size_t NextPrimeIdx = 0;
 struct PrimeQueueEpsilonGroup
 {
     uint64_t index;
-    mpfr_t Epsilon_rndu;
+    MPFR_DECL_INIT(Epsilon_rndu, Precision);
+
     PrimeQueueEpsilonGroup(uint64_t idx)
     : index(idx)
     {
-        mpfr_init2(Epsilon_rndu, Precision);
         ComputeEpsilon.Do_rndu(
             Epsilon_rndu,
             PrimeQueueVec[PrimeQueueVecIdx][idx],
             0);
-    }
-    ~PrimeQueueEpsilonGroup()
-    {
-        mpfr_clear(Epsilon_rndu);
     }
 };
 std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
