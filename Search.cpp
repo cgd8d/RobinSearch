@@ -51,11 +51,21 @@ void CheckTypes()
 // Helper object to store initialized mpfr objects.
 struct mpfr_holder
 {
-    mpfr_t val;
+    MPFR_DECL_INIT(val, Precision);
     mpfr_holder()
     {
         mpfr_init2(val, Precision);
     }
+    mpfr_holder(mpfr_holder& src)
+    : __gmpfr_local_tab_val(src.__gmpfr_local_tab_val),
+      val(src.val)
+    {
+        val._mpfr_d = __gmpfr_local_tab_val;
+    }
+    mpfr_holder& operator=(mpfr_holder& src)
+    {
+        __gmpfr_local_tab_val = src.__gmpfr_local_tab_val;
+
     ~mpfr_holder()
     {
         mpfr_clear(val);
