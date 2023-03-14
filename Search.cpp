@@ -49,26 +49,38 @@ void CheckTypes()
 }
 
 // Helper object to store initialized mpfr objects.
+// Provide correct copy semantics.
+// Also provide implicit conversion to mpfr_ptr.
 struct mpfr_holder
 {
     MPFR_DECL_INIT(val, Precision);
-    mpfr_holder()
-    {
-        mpfr_init2(val, Precision);
-    }
+
     mpfr_holder(mpfr_holder& src)
-    : __gmpfr_local_tab_val(src.__gmpfr_local_tab_val),
-      val(src.val)
+    : val(src.val)
     {
         val._mpfr_d = __gmpfr_local_tab_val;
+        for(size_t i = 0;
+            i < NumLimbs;
+            i++)
+        {
+            __gmpfr_local_tab_val[i] = src.__gmpfr_local_tab_val[i];
+        }
     }
     mpfr_holder& operator=(mpfr_holder& src)
     {
-        __gmpfr_local_tab_val = src.__gmpfr_local_tab_val;
+        val = src.val;
+        val._mpfr_d = __gmpfr_local_tab_val;
+        for(size_t i = 0;
+            i < NumLimbs;
+            i++)
+        {
+            __gmpfr_local_tab_val[i] = src.__gmpfr_local_tab_val[i];
+        }
+    }
 
-    ~mpfr_holder()
+    operator mpfr_ptr()
     {
-        mpfr_clear(val);
+        return &val;
     }
 };
 std::vector<mpfr_holder> mpfr_tmp;
