@@ -58,7 +58,7 @@ struct mpfr_holder
     mpfr_holder(mpfr_holder& src)
     : val(src.val)
     {
-        val._mpfr_d = __gmpfr_local_tab_val;
+        val->_mpfr_d = __gmpfr_local_tab_val;
         for(size_t i = 0;
             i < NumLimbs;
             i++)
@@ -69,7 +69,7 @@ struct mpfr_holder
     mpfr_holder& operator=(mpfr_holder& src)
     {
         val = src.val;
-        val._mpfr_d = __gmpfr_local_tab_val;
+        val->_mpfr_d = __gmpfr_local_tab_val;
         for(size_t i = 0;
             i < NumLimbs;
             i++)
@@ -80,7 +80,7 @@ struct mpfr_holder
 
     operator mpfr_ptr()
     {
-        return &val;
+        return val;
     }
 };
 std::vector<mpfr_holder> mpfr_tmp;
