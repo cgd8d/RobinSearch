@@ -155,7 +155,7 @@ struct ComputeEpsilonStruct
     sigma(p^(e+1)) is computed in uint64_t, so to
     avoid any risk just do it all in mpfr_t.
     */
-    void Do_rndd(mpfr_t rop, uint64_t p, uint8_t e)
+    void Do_rndd(mpfr_ptr rop, uint64_t p, uint8_t e)
     {
         mpfr_set_ui(tmp_mpfr, p, MPFR_RNDU);
         for(uint8_t i = 0; i < e; i++)
@@ -169,7 +169,7 @@ struct ComputeEpsilonStruct
         mpfr_log(tmp_mpfr, tmp_mpfr, MPFR_RNDU);
         mpfr_div(rop, rop, tmp_mpfr, MPFR_RNDD);
     }
-    void Do_rndu(mpfr_t rop, uint64_t p, uint8_t e)
+    void Do_rndu(mpfr_ptr rop, uint64_t p, uint8_t e)
     {
         mpfr_set_ui(tmp_mpfr, p, MPFR_RNDD);
         for(uint8_t i = 0; i < e; i++)
@@ -532,7 +532,8 @@ size_t NextPrimeIdx = 0;
 struct PrimeQueueEpsilonGroup
 {
     uint64_t index;
-    MPFR_DECL_INIT(Epsilon_rndu, Precision);
+    mpfr_holder(Epsilon_rndu);
+    //MPFR_DECL_INIT(Epsilon_rndu, Precision);
 
     PrimeQueueEpsilonGroup(uint64_t idx)
     : index(idx)
