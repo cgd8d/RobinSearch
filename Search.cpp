@@ -56,8 +56,8 @@ struct mpfr_holder
     MPFR_DECL_INIT(val, Precision);
 
     mpfr_holder(mpfr_holder& src)
-    : val(src.val)
     {
+        *val = *src.val;
         val->_mpfr_d = __gmpfr_local_tab_val;
         for(size_t i = 0;
             i < NumLimbs;
@@ -68,7 +68,7 @@ struct mpfr_holder
     }
     mpfr_holder& operator=(mpfr_holder& src)
     {
-        val = src.val;
+        *val = *src.val;
         val->_mpfr_d = __gmpfr_local_tab_val;
         for(size_t i = 0;
             i < NumLimbs;
