@@ -80,7 +80,7 @@ struct mpfr_holder
         return *this;
     }
 
-    operator mpfr_ptr()
+    operator mpfr_t&()
     {
         return val;
     }
@@ -533,7 +533,6 @@ struct PrimeQueueEpsilonGroup
 {
     uint64_t index;
     mpfr_holder(Epsilon_rndu);
-    //MPFR_DECL_INIT(Epsilon_rndu, Precision);
 
     PrimeQueueEpsilonGroup(uint64_t idx)
     : index(idx)
