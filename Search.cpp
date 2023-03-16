@@ -50,7 +50,7 @@ void CheckTypes()
 
 // Helper object to store initialized mpfr objects.
 // Provide correct copy semantics.
-// Also provide implicit conversion to mpfr_ptr.
+// Also provide implicit conversion to mpfr_t.
 struct mpfr_holder
 {
     MPFR_DECL_INIT(val, Precision);
@@ -532,7 +532,7 @@ size_t NextPrimeIdx = 0;
 struct PrimeQueueEpsilonGroup
 {
     uint64_t index;
-    mpfr_holder(Epsilon_rndu);
+    mpfr_holder Epsilon_rndu;
 
     PrimeQueueEpsilonGroup(uint64_t idx)
     : index(idx)
