@@ -49,16 +49,40 @@ void CheckTypes()
 }
 
 // Helper object to store initialized mpfr objects.
+// Provide correct copy semantics.
+// Also provide implicit conversion to mpfr_t.
 struct mpfr_holder
 {
-    mpfr_t val;
-    mpfr_holder()
+    MPFR_DECL_INIT(val, Precision);
+
+    mpfr_holder() = default;
+    mpfr_holder(const mpfr_holder& src)
     {
-        mpfr_init2(val, Precision);
+        *val = *src.val;
+        val->_mpfr_d = __gmpfr_local_tab_val;
+        for(size_t i = 0;
+            i < NumLimbs;
+            i++)
+        {
+            __gmpfr_local_tab_val[i] = src.__gmpfr_local_tab_val[i];
+        }
     }
-    ~mpfr_holder()
+    mpfr_holder& operator=(mpfr_holder& src)
     {
-        mpfr_clear(val);
+        *val = *src.val;
+        val->_mpfr_d = __gmpfr_local_tab_val;
+        for(size_t i = 0;
+            i < NumLimbs;
+            i++)
+        {
+            __gmpfr_local_tab_val[i] = src.__gmpfr_local_tab_val[i];
+        }
+        return *this;
+    }
+
+    operator mpfr_t&()
+    {
+        return val;
     }
 };
 std::vector<mpfr_holder> mpfr_tmp;
@@ -131,7 +155,7 @@ struct ComputeEpsilonStruct
     sigma(p^(e+1)) is computed in uint64_t, so to
     avoid any risk just do it all in mpfr_t.
     */
-    void Do_rndd(mpfr_t rop, uint64_t p, uint8_t e)
+    void Do_rndd(mpfr_t& rop, uint64_t p, uint8_t e)
     {
         mpfr_set_ui(tmp_mpfr, p, MPFR_RNDU);
         for(uint8_t i = 0; i < e; i++)
@@ -145,7 +169,7 @@ struct ComputeEpsilonStruct
         mpfr_log(tmp_mpfr, tmp_mpfr, MPFR_RNDU);
         mpfr_div(rop, rop, tmp_mpfr, MPFR_RNDD);
     }
-    void Do_rndu(mpfr_t rop, uint64_t p, uint8_t e)
+    void Do_rndu(mpfr_t& rop, uint64_t p, uint8_t e)
     {
         mpfr_set_ui(tmp_mpfr, p, MPFR_RNDD);
         for(uint8_t i = 0; i < e; i++)
@@ -508,19 +532,15 @@ size_t NextPrimeIdx = 0;
 struct PrimeQueueEpsilonGroup
 {
     uint64_t index;
-    mpfr_t Epsilon_rndu;
+    mpfr_holder Epsilon_rndu;
+
     PrimeQueueEpsilonGroup(uint64_t idx)
     : index(idx)
     {
-        mpfr_init2(Epsilon_rndu, Precision);
         ComputeEpsilon.Do_rndu(
             Epsilon_rndu,
             PrimeQueueVec[PrimeQueueVecIdx][idx],
             0);
-    }
-    ~PrimeQueueEpsilonGroup()
-    {
-        mpfr_clear(Epsilon_rndu);
     }
 };
 std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
