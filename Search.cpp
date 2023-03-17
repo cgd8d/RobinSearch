@@ -607,200 +607,237 @@ uint64_t AddPrimeFactors()
     }
 
     // Find a safe number of primes to add.
-    uint64_t NextPrimeIdx_init = NextPrimeIdx;
-    while(true)
+    // We want to ensure the set of primes to
+    // add is maximal, meaning either that the
+    // next action will be to increase an exponent
+    // more than one or that we hit the end of
+    // a prime queue.
+    // EndPrimeToAdd is one past the last
+    // prime to add.
+    size_t EndPrimeToAdd = NextPrimeIdx;
+    while((not PrimeQueueEpsilonStack.empty()) and
+          mpfr_greaterequal_p(
+              PrimeQueueEpsilonStack.top().Epsilon_rndu,
+              PrimeGroupQueue.top()->CriticalEpsilon_rndd))
     {
-
-        // If we have already computed an epsilon
-        // which shows some primes are safe to add,
-        // do that.
-        if(mpfr_greaterequal_p(
-            PrimeQueueEpsilonStack.top().Epsilon_rndu,
-            PrimeGroupQueue.top()->CriticalEpsilon_rndd))
-        {
-            // Acquire mpfr_tmp[0] (holds eps_rndd)
-            ComputeEpsilon.Do_rndd(
-                mpfr_tmp[0].val,
-                PrimeQueue[PrimeQueueEpsilonStack.top().index],
-                0);
-            if(mpfr_lessequal_p(
-                mpfr_tmp[0].val,
-                PrimeGroupQueue.top()->CriticalEpsilon_rndu))
-            {
-                std::cerr << "Unable to compare epsilon for "
-                          << PrimeQueue[PrimeQueueEpsilonStack.top().index] << "^0"
-                          << " and "
-                          << PrimeGroupQueue.top()->PrimeLo << "^" << int(PrimeGroupQueue.top()->Exp)
-                          << std::endl;
-                throw std::runtime_error("Insufficient accuracy for epsilon.");
-            }
-            // Release mpfr_tmp[0]
-
-            // Acquire mpfr_tmp
-            while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
-            {
-                // Iterate
-
-                // Initialize lhs.
-                mpfr_set_ui(mpfr_tmp[0].val,
-                            PrimeQueue[NextPrimeIdx]+1,
-                            MPFR_RNDD);
-                mpfr_set_ui(mpfr_tmp[1].val,
-                            PrimeQueue[NextPrimeIdx]+1,
-                            MPFR_RNDU);
-
-                // Initialize rhs.
-                mpfr_set_ui(mpfr_tmp[2].val,
-                            PrimeQueue[NextPrimeIdx],
-                            MPFR_RNDD);
-                mpfr_set_ui(mpfr_tmp[3].val,
-                            PrimeQueue[NextPrimeIdx],
-                            MPFR_RNDU);
-
-                // Update tracking and statistics.
-                Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx];
-                NextPrimeIdx++;
-                cnt_NumUniquePrimeFactors++;
-
-                // Before we check the value,
-                // try to multiply by additional
-                // fast bunches.
-
-                // Fast bunches have to throw away work when they
-                // advance too far, rather than just updating
-                // logarithms.  So we separately talk new bounds
-                // on how far we can advance with bunches.
-                size_t MaxBunchIdx = PrimeQueueEpsilonStack.top().index;
-
-                // Run with sequence bunch sizes.
-                for(uint64_t BunchSize : {512, 64, 32, 16, 8, 4})
-                {
-                    // Initialize lhs.
-                    mpfr_set(mpfr_tmp[6].val,
-                             mpfr_tmp[0].val,
-                             MPFR_RNDD);
-                    mpfr_set(mpfr_tmp[7].val,
-                             mpfr_tmp[1].val,
-                             MPFR_RNDU);
-
-                    // Initialize rhs.
-                    mpfr_set(mpfr_tmp[8].val,
-                             mpfr_tmp[2].val,
-                             MPFR_RNDD);
-                    mpfr_set(mpfr_tmp[9].val,
-                             mpfr_tmp[3].val,
-                             MPFR_RNDU);
-
-                    while(NextPrimeIdx + BunchSize - 1 <= MaxBunchIdx)
-                    {
-                        cnt_FastBunchMul++;
-
-                        for(size_t i = NextPrimeIdx;
-                            i < NextPrimeIdx + BunchSize;
-                            i++)
-                        {
-                            mpfr_mul_ui_fast(mpfr_tmp[6].val, PrimeQueue[i]+1, MPFR_RNDD);
-                            mpfr_mul_ui_fast(mpfr_tmp[7].val, PrimeQueue[i]+1, MPFR_RNDU);
-                            mpfr_mul_ui_fast(mpfr_tmp[8].val, PrimeQueue[i], MPFR_RNDD);
-                            mpfr_mul_ui_fast(mpfr_tmp[9].val, PrimeQueue[i], MPFR_RNDU);
-                        }
-
-                        // Check if test values indicate possible violation of bound.
-                        // Compute updated lhs rounded up.
-                        mpfr_mul(mpfr_tmp[4].val, mpfr_tmp[7].val, LHS_rndu, MPFR_RNDU);
-                        // Compute updated rhs rounded down.
-                        mpfr_mul(mpfr_tmp[5].val, mpfr_tmp[8].val, NloglogN_rndd, MPFR_RNDD);
-
-                        if(mpfr_less_p(mpfr_tmp[4].val, mpfr_tmp[5].val))
-                        {
-                            // LHS < RHS is guaranteed.
-                            // Save current progress and keep going.
-                            mpfr_set(mpfr_tmp[0].val,
-                                     mpfr_tmp[6].val,
-                                     MPFR_RNDD);
-                            mpfr_set(mpfr_tmp[1].val,
-                                     mpfr_tmp[7].val,
-                                     MPFR_RNDU);
-                            mpfr_set(mpfr_tmp[2].val,
-                                     mpfr_tmp[8].val,
-                                     MPFR_RNDD);
-                            mpfr_set(mpfr_tmp[3].val,
-                                     mpfr_tmp[9].val,
-                                     MPFR_RNDU);
-                            NextPrimeIdx += BunchSize;
-                            cnt_NumUniquePrimeFactors += BunchSize;
-                            Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx-1];
-                            cnt_NumPrimeFactors += BunchSize;
-                            cnt_FastBunchMul_keep++;
-                            cnt_FastBunchMul_used += BunchSize;
-                        }
-                        else
-                        {
-                            // Possibly LHS >= RHS.
-                            // We need to drop that last bunch and go more carefully.
-                            // Reduce MaxBunchIdx so we won't try the same thing again.
-                            MaxBunchIdx = NextPrimeIdx + BunchSize - 2;
-                            cnt_FastBunchMul_wasted += BunchSize;
-                            break;
-                        }
-                    }
-                }
-
-                // Lock in the updates from bunches.
-                mpfr_mul(LHS_rndd, mpfr_tmp[0].val, LHS_rndd, MPFR_RNDD);
-                mpfr_mul(LHS_rndu, mpfr_tmp[1].val, LHS_rndu, MPFR_RNDU);
-                mpfr_mul(Number_rndd, mpfr_tmp[2].val, Number_rndd, MPFR_RNDD);
-                mpfr_mul(Number_rndu, mpfr_tmp[3].val, Number_rndu, MPFR_RNDU);
-                mpfr_mul(NloglogN_rndd, mpfr_tmp[2].val, NloglogN_rndd, MPFR_RNDD);
-
-                // Also check the number.
-                bool LogsWereRecomputed =  CheckNumber();
-                if(LogsWereRecomputed)
-                {
-                    // Maybe we can do more fast bunches.
-                    continue;
-                }
-                        
-                // Iterate factor by factor until we update logs.
-                while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
-                {
-                    uint64_t this_p = PrimeQueue[NextPrimeIdx];
-                    mpfr_mul_ui_fast(Number_rndd, this_p, MPFR_RNDD);
-                    mpfr_mul_ui_fast(Number_rndu, this_p, MPFR_RNDU);
-                    mpfr_mul_ui_fast(NloglogN_rndd, this_p, MPFR_RNDD);
-                    mpfr_mul_ui_fast(LHS_rndd, this_p+1, MPFR_RNDD);
-                    mpfr_mul_ui_fast(LHS_rndu, this_p+1, MPFR_RNDU);
-                    Number_factors.back().PrimeHi = this_p;
-                    NextPrimeIdx++;
-                    cnt_NumUniquePrimeFactors++;
-                    LogsWereRecomputed =  CheckNumber();
-                    if(LogsWereRecomputed)
-                    {
-                        // Maybe we can do more fast bunches.
-                        break;
-                    }
-                }
-            }
-            // Release mpfr_tmp
-
-            uint64_t retval = NextPrimeIdx - NextPrimeIdx_init;
-            PrimeQueueEpsilonStack.pop();
-            return retval;
-        }
-
-        // Have we already shown that no primes can be
-        // safely added?
-        if(PrimeQueueEpsilonStack.top().index == NextPrimeIdx)
-        {
-            return 0;
-        }
-
-        // The last possibility is that we should compute
-        // another epsilon.
-        uint64_t new_idx = (NextPrimeIdx + PrimeQueueEpsilonStack.top().index)/2;
-        PrimeQueueEpsilonStack.emplace(new_idx);
-        cnt_EpsEvalForExpZero++;
+        // PrimeQueueEpsilonStack.top() is safe
+        // to add, but it's not necessarily
+        // the last one safe to add.
+        EndPrimeToAdd = PrimeQueueEpsilonStack.top().index+1;
+        PrimeQueueEpsilonStack.pop();
     }
+    // Now we have a lower bound (possibly still
+    // NextPrimeIdx which would add no primes)
+    // and either an upper bound from
+    // PrimeQueueEpsilonStack.top() or we've
+    // popped the whole stack.
+    // If the stack is empty then we're done.
+    if(PrimeQueueEpsilonStack.empty())
+    {
+        assert(EndPrimeToAdd == PrimeQueue.size());
+    }
+    else
+    {
+        size_t EndPrimeToAdd_ub = PrimeQueueEpsilonStack.top().index;
+        while(EndPrimeToAdd < EndPrimeToAdd_ub)
+        {
+            size_t Trial_idx = (EndPrimeToAdd+EndPrimeToAdd_ub)/2;
+            PrimeQueueEpsilonGroup Trial_eps(Trial_idx);
+            cnt_EpsEvalForExpZero++;
+            if(mpfr_greaterequal_p(
+                Trial_eps.Epsilon_rndu,
+                PrimeGroupQueue.top()->CriticalEpsilon_rndd))
+            {
+                // Trial_idx is safe to add.
+                EndPrimeToAdd = Trial_idx+1;
+            }
+            else
+            {
+                // Trial_idx is definitely not safe to add.
+                PrimeQueueEpsilonStack.push(Trial_eps);
+                EndPrimeToAdd_ub = Trial_idx;
+            }
+        }
+    }
+
+    // Detect unlikely case where we can't add anything.
+    if(NextPrimeIdx == EndPrimeToAdd)
+    {
+        return 0;
+    }
+
+    // Double-check that we are computing epsilon
+    // with enough accuracy to be sure about
+    // ordering.
+    // Acquire mpfr_tmp[0] (holds eps_rndd)
+    ComputeEpsilon.Do_rndd(
+        mpfr_tmp[0].val,
+        PrimeQueue[EndPrimeToAdd-1],
+        0);
+    if(mpfr_lessequal_p(
+        mpfr_tmp[0].val,
+        PrimeGroupQueue.top()->CriticalEpsilon_rndu))
+    {
+        std::cerr << "Unable to compare epsilon for "
+                  << PrimeQueue[PrimeQueueEpsilonStack.top().index] << "^0"
+                  << " and "
+                  << PrimeGroupQueue.top()->PrimeLo << "^" << int(PrimeGroupQueue.top()->Exp)
+                  << std::endl;
+        throw std::runtime_error("Insufficient accuracy for epsilon.");
+    }
+    // Release mpfr_tmp[0]
+
+    // Iterate and do multiplication.
+    // Acquire mpfr_tmp
+    uint64_t NextPrimeIdx_init = NextPrimeIdx;
+    while(NextPrimeIdx < EndPrimeToAdd)
+    {
+        // Iterate
+
+        // Initialize lhs.
+        mpfr_set_ui(mpfr_tmp[0].val,
+                    PrimeQueue[NextPrimeIdx]+1,
+                    MPFR_RNDD);
+        mpfr_set_ui(mpfr_tmp[1].val,
+                    PrimeQueue[NextPrimeIdx]+1,
+                    MPFR_RNDU);
+
+        // Initialize rhs.
+        mpfr_set_ui(mpfr_tmp[2].val,
+                    PrimeQueue[NextPrimeIdx],
+                    MPFR_RNDD);
+        mpfr_set_ui(mpfr_tmp[3].val,
+                    PrimeQueue[NextPrimeIdx],
+                    MPFR_RNDU);
+
+        // Update tracking and statistics.
+        Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx];
+        NextPrimeIdx++;
+        cnt_NumUniquePrimeFactors++;
+
+        // Before we check the value,
+        // try to multiply by additional
+        // fast bunches.
+
+        // Fast bunches have to throw away work when they
+        // advance too far, rather than just updating
+        // logarithms.  So we separately talk new bounds
+        // on how far we can advance with bunches.
+        size_t MaxBunchIdx = EndPrimeToAdd-1;
+
+        // Run with sequence bunch sizes.
+        for(uint64_t BunchSize : {512, 64, 32, 16, 8, 4})
+        {
+            // Initialize lhs.
+            mpfr_set(mpfr_tmp[6].val,
+                     mpfr_tmp[0].val,
+                     MPFR_RNDD);
+            mpfr_set(mpfr_tmp[7].val,
+                     mpfr_tmp[1].val,
+                     MPFR_RNDU);
+
+            // Initialize rhs.
+            mpfr_set(mpfr_tmp[8].val,
+                     mpfr_tmp[2].val,
+                     MPFR_RNDD);
+            mpfr_set(mpfr_tmp[9].val,
+                     mpfr_tmp[3].val,
+                     MPFR_RNDU);
+
+            while(NextPrimeIdx + BunchSize - 1 <= MaxBunchIdx)
+            {
+                cnt_FastBunchMul++;
+
+                for(size_t i = NextPrimeIdx;
+                    i < NextPrimeIdx + BunchSize;
+                    i++)
+                {
+                    mpfr_mul_ui_fast(mpfr_tmp[6].val, PrimeQueue[i]+1, MPFR_RNDD);
+                    mpfr_mul_ui_fast(mpfr_tmp[7].val, PrimeQueue[i]+1, MPFR_RNDU);
+                    mpfr_mul_ui_fast(mpfr_tmp[8].val, PrimeQueue[i], MPFR_RNDD);
+                    mpfr_mul_ui_fast(mpfr_tmp[9].val, PrimeQueue[i], MPFR_RNDU);
+                }
+
+                // Check if test values indicate possible violation of bound.
+                // Compute updated lhs rounded up.
+                mpfr_mul(mpfr_tmp[4].val, mpfr_tmp[7].val, LHS_rndu, MPFR_RNDU);
+                // Compute updated rhs rounded down.
+                mpfr_mul(mpfr_tmp[5].val, mpfr_tmp[8].val, NloglogN_rndd, MPFR_RNDD);
+
+                if(mpfr_less_p(mpfr_tmp[4].val, mpfr_tmp[5].val))
+                {
+                    // LHS < RHS is guaranteed.
+                    // Save current progress and keep going.
+                    mpfr_set(mpfr_tmp[0].val,
+                             mpfr_tmp[6].val,
+                             MPFR_RNDD);
+                    mpfr_set(mpfr_tmp[1].val,
+                             mpfr_tmp[7].val,
+                             MPFR_RNDU);
+                    mpfr_set(mpfr_tmp[2].val,
+                             mpfr_tmp[8].val,
+                             MPFR_RNDD);
+                    mpfr_set(mpfr_tmp[3].val,
+                             mpfr_tmp[9].val,
+                             MPFR_RNDU);
+                    NextPrimeIdx += BunchSize;
+                    cnt_NumUniquePrimeFactors += BunchSize;
+                    Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx-1];
+                    cnt_NumPrimeFactors += BunchSize;
+                    cnt_FastBunchMul_keep++;
+                    cnt_FastBunchMul_used += BunchSize;
+                }
+                else
+                {
+                    // Possibly LHS >= RHS.
+                    // We need to drop that last bunch and go more carefully.
+                    // Reduce MaxBunchIdx so we won't try the same thing again.
+                    MaxBunchIdx = NextPrimeIdx + BunchSize - 2;
+                    cnt_FastBunchMul_wasted += BunchSize;
+                    break;
+                }
+            }
+        }
+
+        // Lock in the updates from bunches.
+        mpfr_mul(LHS_rndd, mpfr_tmp[0].val, LHS_rndd, MPFR_RNDD);
+        mpfr_mul(LHS_rndu, mpfr_tmp[1].val, LHS_rndu, MPFR_RNDU);
+        mpfr_mul(Number_rndd, mpfr_tmp[2].val, Number_rndd, MPFR_RNDD);
+        mpfr_mul(Number_rndu, mpfr_tmp[3].val, Number_rndu, MPFR_RNDU);
+        mpfr_mul(NloglogN_rndd, mpfr_tmp[2].val, NloglogN_rndd, MPFR_RNDD);
+
+        // Also check the number.
+        bool LogsWereRecomputed =  CheckNumber();
+        if(LogsWereRecomputed)
+        {
+            // Maybe we can do more fast bunches.
+            continue;
+        }
+                        
+        // Iterate factor by factor until we update logs.
+        while(NextPrimeIdx < EndPrimeToAdd)
+        {
+            uint64_t this_p = PrimeQueue[NextPrimeIdx];
+            mpfr_mul_ui_fast(Number_rndd, this_p, MPFR_RNDD);
+            mpfr_mul_ui_fast(Number_rndu, this_p, MPFR_RNDU);
+            mpfr_mul_ui_fast(NloglogN_rndd, this_p, MPFR_RNDD);
+            mpfr_mul_ui_fast(LHS_rndd, this_p+1, MPFR_RNDD);
+            mpfr_mul_ui_fast(LHS_rndu, this_p+1, MPFR_RNDU);
+            Number_factors.back().PrimeHi = this_p;
+            NextPrimeIdx++;
+            cnt_NumUniquePrimeFactors++;
+            LogsWereRecomputed = CheckNumber();
+            if(LogsWereRecomputed)
+            {
+                // Maybe we can do more fast bunches.
+                break;
+            }
+        }
+    }
+    // Release mpfr_tmp
+
+    uint64_t retval = NextPrimeIdx - NextPrimeIdx_init;
+    return retval;
 }
 
 int main(int argc, char *argv[])
