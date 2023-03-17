@@ -804,43 +804,40 @@ uint64_t AddPrimeFactors()
         mpfr_mul(LHS_rndu, mpfr_tmp[1].val, LHS_rndu, MPFR_RNDU);
         mpfr_mul(Number_rndd, mpfr_tmp[2].val, Number_rndd, MPFR_RNDD);
         mpfr_mul(Number_rndu, mpfr_tmp[3].val, Number_rndu, MPFR_RNDU);
-                mpfr_mul(NloglogN_rndd, mpfr_tmp[2].val, NloglogN_rndd, MPFR_RNDD);
+        mpfr_mul(NloglogN_rndd, mpfr_tmp[2].val, NloglogN_rndd, MPFR_RNDD);
 
-                // Also check the number.
-                bool LogsWereRecomputed =  CheckNumber();
-                if(LogsWereRecomputed)
-                {
-                    // Maybe we can do more fast bunches.
-                    continue;
-                }
+        // Also check the number.
+        bool LogsWereRecomputed =  CheckNumber();
+        if(LogsWereRecomputed)
+        {
+            // Maybe we can do more fast bunches.
+            continue;
+        }
                         
-                // Iterate factor by factor until we update logs.
-                while(NextPrimeIdx < EndPrimeToAdd)
-                {
-                    uint64_t this_p = PrimeQueue[NextPrimeIdx];
-                    mpfr_mul_ui_fast(Number_rndd, this_p, MPFR_RNDD);
-                    mpfr_mul_ui_fast(Number_rndu, this_p, MPFR_RNDU);
-                    mpfr_mul_ui_fast(NloglogN_rndd, this_p, MPFR_RNDD);
-                    mpfr_mul_ui_fast(LHS_rndd, this_p+1, MPFR_RNDD);
-                    mpfr_mul_ui_fast(LHS_rndu, this_p+1, MPFR_RNDU);
-                    Number_factors.back().PrimeHi = this_p;
-                    NextPrimeIdx++;
-                    cnt_NumUniquePrimeFactors++;
-                    LogsWereRecomputed =  CheckNumber();
-                    if(LogsWereRecomputed)
-                    {
-                        // Maybe we can do more fast bunches.
-                        break;
-                    }
-                }
+        // Iterate factor by factor until we update logs.
+        while(NextPrimeIdx < EndPrimeToAdd)
+        {
+            uint64_t this_p = PrimeQueue[NextPrimeIdx];
+            mpfr_mul_ui_fast(Number_rndd, this_p, MPFR_RNDD);
+            mpfr_mul_ui_fast(Number_rndu, this_p, MPFR_RNDU);
+            mpfr_mul_ui_fast(NloglogN_rndd, this_p, MPFR_RNDD);
+            mpfr_mul_ui_fast(LHS_rndd, this_p+1, MPFR_RNDD);
+            mpfr_mul_ui_fast(LHS_rndu, this_p+1, MPFR_RNDU);
+            Number_factors.back().PrimeHi = this_p;
+            NextPrimeIdx++;
+            cnt_NumUniquePrimeFactors++;
+            LogsWereRecomputed = CheckNumber();
+            if(LogsWereRecomputed)
+            {
+                // Maybe we can do more fast bunches.
+                break;
             }
-            // Release mpfr_tmp
+        }
+    }
+    // Release mpfr_tmp
 
-            uint64_t retval = NextPrimeIdx - NextPrimeIdx_init;
-            return retval;
-
-
-
+    uint64_t retval = NextPrimeIdx - NextPrimeIdx_init;
+    return retval;
 }
 
 int main(int argc, char *argv[])
