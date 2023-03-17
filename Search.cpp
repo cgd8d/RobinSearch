@@ -607,6 +607,52 @@ uint64_t AddPrimeFactors()
     }
 
     // Find a safe number of primes to add.
+    // We want to ensure the set of primes to
+    // add is maximal, meaning either that the
+    // next action will be to increase an exponent
+    // more than one or that we hit the end of
+    // a prime queue.
+    // EndPrimeToAdd is one past the last
+    // prime to add.
+    size_t EndPrimeToAdd = NextPrimeIdx;
+    while((not PrimeQueueEpsilonStack.empty()) and
+          mpfr_greaterequal_p(
+              PrimeQueueEpsilonStack.top().Epsilon_rndu,
+              PrimeGroupQueue.top()->CriticalEpsilon_rndd)
+    {
+        // PrimeQueueEpsilonStack.top() is safe
+        // to add, but it's not necessarily
+        // the last one safe to add.
+        EndPrimeToAdd = PrimeQueueEpsilonStack.top().index+1;
+        PrimeQueueEpsilonStack.pop();
+    }
+    // Now we have a lower bound (possibly still
+    // NextPrimeIdx which would add no primes)
+    // and either an upper bound from
+    // PrimeQueueEpsilonStack.top() or we've
+    // popped the whole stack.
+    // If the stack is empty then we're done.
+    if(PrimeQueueEpsilonStack.empty())
+    {
+        assert(EndPrimeToAdd == PrimeQueue.size());
+    }
+    else
+    {
+        size_t EndPrimeToAdd_ub = PrimeQueueEpsilonStack.top().index;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     uint64_t NextPrimeIdx_init = NextPrimeIdx;
     while(true)
     {
