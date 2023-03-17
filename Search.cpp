@@ -690,7 +690,7 @@ uint64_t AddPrimeFactors()
     // Iterate and do multiplication.
     // Acquire mpfr_tmp
     uint64_t NextPrimeIdx_init = NextPrimeIdx;
-    while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
+    while(NextPrimeIdx < EndPrimeToAdd)
     {
         // Iterate
 
@@ -723,7 +723,7 @@ uint64_t AddPrimeFactors()
                 // advance too far, rather than just updating
                 // logarithms.  So we separately talk new bounds
                 // on how far we can advance with bunches.
-                size_t MaxBunchIdx = PrimeQueueEpsilonStack.top().index;
+                size_t MaxBunchIdx = EndPrimeToAdd-1;
 
                 // Run with sequence bunch sizes.
                 for(uint64_t BunchSize : {512, 64, 32, 16, 8, 4})
@@ -815,7 +815,7 @@ uint64_t AddPrimeFactors()
                 }
                         
                 // Iterate factor by factor until we update logs.
-                while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
+                while(NextPrimeIdx < EndPrimeToAdd)
                 {
                     uint64_t this_p = PrimeQueue[NextPrimeIdx];
                     mpfr_mul_ui_fast(Number_rndd, this_p, MPFR_RNDD);
@@ -837,7 +837,6 @@ uint64_t AddPrimeFactors()
             // Release mpfr_tmp
 
             uint64_t retval = NextPrimeIdx - NextPrimeIdx_init;
-            PrimeQueueEpsilonStack.pop();
             return retval;
 
 
