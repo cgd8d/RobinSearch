@@ -642,19 +642,29 @@ uint64_t AddPrimeFactors()
         while(EndPrimeToAdd < EndPrimeToAdd_ub)
         {
             size_t Trial_idx = (EndPrimeToAdd+EndPrimeToAdd_ub)/2;
-            PrimeQueueEpsilonGroup Trial_eps(Trial_idx);
+
+            // Emplace directly on stack and then
+            // pop if we don't need it.
+            // This is cheaper than copying
+            // if we DO need it.
+            PrimeQueueEpsilonStack.emplace(Trial_idx);
+
+
+            //PrimeQueueEpsilonGroup Trial_eps(Trial_idx);
             cnt_EpsEvalForExpZero++;
             if(mpfr_greaterequal_p(
-                Trial_eps.Epsilon_rndu,
+                PrimeQueueEpsilonStack.top().Epsilon_rndu,
+               // Trial_eps.Epsilon_rndu,
                 PrimeGroupQueue.top()->CriticalEpsilon_rndd))
             {
                 // Trial_idx is safe to add.
                 EndPrimeToAdd = Trial_idx+1;
+                PrimeQueueEpsilonStack.pop();
             }
             else
             {
                 // Trial_idx is definitely not safe to add.
-                PrimeQueueEpsilonStack.push(Trial_eps);
+               // PrimeQueueEpsilonStack.push(Trial_eps);
                 EndPrimeToAdd_ub = Trial_idx;
             }
         }
