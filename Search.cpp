@@ -643,6 +643,7 @@ uint64_t AddPrimeFactors()
         {
             size_t Trial_idx = (EndPrimeToAdd+EndPrimeToAdd_ub)/2;
             PrimeQueueEpsilonGroup Trial_eps(Trial_idx);
+            cnt_EpsEvalForExpZero++;
             if(mpfr_greaterequal_p(
                 Trial_eps.Epsilon_rndu,
                 PrimeGroupQueue.top()->CriticalEpsilon_rndd))
@@ -659,59 +660,47 @@ uint64_t AddPrimeFactors()
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    uint64_t NextPrimeIdx_init = NextPrimeIdx;
-    while(true)
+    // Detect unlikely case where we can't add anything.
+    if(NextPrimeIdx == EndPrimeToAdd)
     {
+        return 0;
+    }
 
-        // If we have already computed an epsilon
-        // which shows some primes are safe to add,
-        // do that.
-        if(mpfr_greaterequal_p(
-            PrimeQueueEpsilonStack.top().Epsilon_rndu,
-            PrimeGroupQueue.top()->CriticalEpsilon_rndd))
-        {
-            // Acquire mpfr_tmp[0] (holds eps_rndd)
-            ComputeEpsilon.Do_rndd(
-                mpfr_tmp[0].val,
-                PrimeQueue[PrimeQueueEpsilonStack.top().index],
-                0);
-            if(mpfr_lessequal_p(
-                mpfr_tmp[0].val,
-                PrimeGroupQueue.top()->CriticalEpsilon_rndu))
-            {
-                std::cerr << "Unable to compare epsilon for "
-                          << PrimeQueue[PrimeQueueEpsilonStack.top().index] << "^0"
-                          << " and "
-                          << PrimeGroupQueue.top()->PrimeLo << "^" << int(PrimeGroupQueue.top()->Exp)
-                          << std::endl;
-                throw std::runtime_error("Insufficient accuracy for epsilon.");
-            }
-            // Release mpfr_tmp[0]
+    // Double-check that we are computing epsilon
+    // with enough accuracy to be sure about
+    // ordering.
+    // Acquire mpfr_tmp[0] (holds eps_rndd)
+    ComputeEpsilon.Do_rndd(
+        mpfr_tmp[0].val,
+        PrimeQueue[EndPrimeToAdd-1],
+        0);
+    if(mpfr_lessequal_p(
+        mpfr_tmp[0].val,
+        PrimeGroupQueue.top()->CriticalEpsilon_rndu))
+    {
+        std::cerr << "Unable to compare epsilon for "
+                  << PrimeQueue[PrimeQueueEpsilonStack.top().index] << "^0"
+                  << " and "
+                  << PrimeGroupQueue.top()->PrimeLo << "^" << int(PrimeGroupQueue.top()->Exp)
+                  << std::endl;
+        throw std::runtime_error("Insufficient accuracy for epsilon.");
+    }
+    // Release mpfr_tmp[0]
 
-            // Acquire mpfr_tmp
-            while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
-            {
-                // Iterate
+    // Iterate and do multiplication.
+    // Acquire mpfr_tmp
+    uint64_t NextPrimeIdx_init = NextPrimeIdx;
+    while(NextPrimeIdx <= PrimeQueueEpsilonStack.top().index)
+    {
+        // Iterate
 
-                // Initialize lhs.
-                mpfr_set_ui(mpfr_tmp[0].val,
-                            PrimeQueue[NextPrimeIdx]+1,
-                            MPFR_RNDD);
-                mpfr_set_ui(mpfr_tmp[1].val,
-                            PrimeQueue[NextPrimeIdx]+1,
-                            MPFR_RNDU);
+        // Initialize lhs.
+        mpfr_set_ui(mpfr_tmp[0].val,
+                    PrimeQueue[NextPrimeIdx]+1,
+                    MPFR_RNDD);
+        mpfr_set_ui(mpfr_tmp[1].val,
+                    PrimeQueue[NextPrimeIdx]+1,
+                    MPFR_RNDU);
 
                 // Initialize rhs.
                 mpfr_set_ui(mpfr_tmp[2].val,
@@ -850,21 +839,9 @@ uint64_t AddPrimeFactors()
             uint64_t retval = NextPrimeIdx - NextPrimeIdx_init;
             PrimeQueueEpsilonStack.pop();
             return retval;
-        }
 
-        // Have we already shown that no primes can be
-        // safely added?
-        if(PrimeQueueEpsilonStack.top().index == NextPrimeIdx)
-        {
-            return 0;
-        }
 
-        // The last possibility is that we should compute
-        // another epsilon.
-        uint64_t new_idx = (NextPrimeIdx + PrimeQueueEpsilonStack.top().index)/2;
-        PrimeQueueEpsilonStack.emplace(new_idx);
-        cnt_EpsEvalForExpZero++;
-    }
+
 }
 
 int main(int argc, char *argv[])
