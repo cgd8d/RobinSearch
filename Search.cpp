@@ -618,7 +618,7 @@ uint64_t AddPrimeFactors()
     while((not PrimeQueueEpsilonStack.empty()) and
           mpfr_greaterequal_p(
               PrimeQueueEpsilonStack.top().Epsilon_rndu,
-              PrimeGroupQueue.top()->CriticalEpsilon_rndd)
+              PrimeGroupQueue.top()->CriticalEpsilon_rndd))
     {
         // PrimeQueueEpsilonStack.top() is safe
         // to add, but it's not necessarily
@@ -639,7 +639,25 @@ uint64_t AddPrimeFactors()
     else
     {
         size_t EndPrimeToAdd_ub = PrimeQueueEpsilonStack.top().index;
-
+        while(EndPrimeToAdd < EndPrimeToAdd_ub)
+        {
+            size_t Trial_idx = (EndPrimeToAdd+EndPrimeToAdd_ub)/2;
+            PrimeQueueEpsilonGroup Trial_eps(Trial_idx);
+            if(mpfr_greaterequal_p(
+                Trial_eps.Epsilon_rndu,
+                PrimeGroupQueue.top()->CriticalEpsilon_rndd))
+            {
+                // Trial_idx is safe to add.
+                EndPrimeToAdd = Trial_idx+1;
+            }
+            else
+            {
+                // Trial_idx is definitely not safe to add.
+                PrimeQueueEpsilonStack.push(Trial_eps);
+                EndPrimeToAdd_ub = Trial_idx;
+            }
+        }
+    }
 
 
 
