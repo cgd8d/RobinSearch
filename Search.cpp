@@ -758,6 +758,58 @@ uint64_t AddPrimeFactors()
     {
         // Iterate
 
+        // Iterate factor by factor until we get
+        // to use precomputed bunches.
+        while(NextPrimeIdx < EndPrimeToAdd and
+            NextPrimeIdx%ProductGroupSize != 0)
+        {
+            uint64_t this_p = PrimeQueue[NextPrimeIdx];
+            mpfr_mul_ui_fast(Number_rndd, this_p, MPFR_RNDD);
+            mpfr_mul_ui_fast(Number_rndu, this_p, MPFR_RNDU);
+            mpfr_mul_ui_fast(NloglogN_rndd, this_p, MPFR_RNDD);
+            mpfr_mul_ui_fast(LHS_rndd, this_p+1, MPFR_RNDD);
+            mpfr_mul_ui_fast(LHS_rndu, this_p+1, MPFR_RNDU);
+            Number_factors.back().PrimeHi = this_p;
+            NextPrimeIdx++;
+            cnt_NumUniquePrimeFactors++;
+            CheckNumber();
+            // We don't care if logs were
+            // recomputed.
+        }
+
+        // If we stopped because we're done, break.
+        if(NextPrimeIdx == EndPrimeToAdd)
+        {
+            break;
+        }
+
+        // Use precomputed bunches.
+        // Stop when we are going past the end
+        // or when we need to update logs.
+        // We do get one shot at updating logs
+        // on bunch boundaries, but that isn't
+        // guaranteed to work.
+        bool LogsAreUpdated = true;
+        while(NextPrimeIdx + ProductGroupSize <= EndPrimeToAdd)
+        {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // Initialize lhs.
         mpfr_set_ui(mpfr_tmp[0].val,
                     PrimeQueue[NextPrimeIdx]+1,
@@ -780,8 +832,7 @@ uint64_t AddPrimeFactors()
         cnt_NumUniquePrimeFactors++;
 
         // Before we check the value,
-        // try to multiply by additional
-        // fast bunches.
+        // try to multiply by precomputed bunches.
 
         // Fast bunches have to throw away work when they
         // advance too far, rather than just updating
@@ -790,6 +841,7 @@ uint64_t AddPrimeFactors()
         size_t MaxBunchIdx = EndPrimeToAdd-1;
 
         // Run with sequence bunch sizes.
+        const uint64_t BunchSize = 
         for(uint64_t BunchSize : {512, 64, 32, 16, 8, 4})
         {
             // Initialize lhs.
