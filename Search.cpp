@@ -664,6 +664,11 @@ uint64_t AddPrimeFactors()
         assert(NextPrimeIdx == 0);
     }
     std::vector<uint64_t>& PrimeQueue = PrimeQueueVec[PrimeQueueVecIdx];
+    std::vector<std::tuple<
+        mpfr_holder,
+        mpfr_holder,
+        mpfr_holder,
+        mpfr_holder>>& ThisTempProd = TmpProducts[PrimeQueueVecIdx];
     if(PrimeQueueEpsilonStack.empty())
     {
         PrimeQueueEpsilonStack.emplace(PrimeQueue.size() - 1);
@@ -792,6 +797,16 @@ uint64_t AddPrimeFactors()
         bool LogsAreUpdated = true;
         while(NextPrimeIdx + ProductGroupSize <= EndPrimeToAdd)
         {
+
+            // Check if test values indicate possible violation of bound.
+            // Compute updated lhs rounded up.
+            mpfr_mul(
+                mpfr_tmp[4].val,
+                ThisTempProd[NextPrimeIdx/ProductGroupSize].val,
+                LHS_rndu,
+                MPFR_RNDU);
+            // Compute updated rhs rounded down.
+            mpfr_mul(mpfr_tmp[5].val, mpfr_tmp[8].val, NloglogN_rndd, MPFR_RNDD);
 
 
 
