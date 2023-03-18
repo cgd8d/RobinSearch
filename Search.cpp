@@ -544,6 +544,14 @@ struct PrimeQueueEpsilonGroup
     }
 };
 std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
+
+// Store intermediate products of groups of primes.
+const size_t ProductGroupSize = 128;
+std::array<std::vector<std::tuple<
+    mpfr_holder,
+    mpfr_holder,
+    mpfr_holder,
+    mpfr_holder>>, NumThreads> TmpProducts;
 uint64_t AddPrimeFactors()
 {
     // Basic requirement - the last prime group should
@@ -580,6 +588,57 @@ uint64_t AddPrimeFactors()
                 NextPrimeToGen + i*PrimeQueueStep,
                 NextPrimeToGen + (i+1)*PrimeQueueStep - 1,
                 &PrimeQueueVec[i]);
+
+            // Within threads, also compute
+            // intermediate products.
+            TmpProducts[i].clear();
+            TmpProducts[i].reserve(
+                TargetPrimeQueueSize/ProductGroupSize);
+            TmpProducts[i].resize(
+                PrimeQueueVec[i].size()/ProductGroupSize);
+            for(size_t j = 0;
+                j < TmpProducts[i].size();
+                j++)
+            {
+                // Initialize lhs.
+                mpfr_set_ui(
+                    std::get<0>(TmpProducts[i][j]),
+                    PrimeQueueVec[i][j*ProductGroupSize]+1,
+                    MPFR_RNDD);
+                mpfr_set_ui(
+                    std::get<1>(TmpProducts[i][j]),
+                    PrimeQueueVec[i][j*ProductGroupSize]+1,
+                    MPFR_RNDU);
+
+                // Initialize rhs.
+                mpfr_set_ui(
+                    std::get<2>(TmpProducts[i][j]),
+                    PrimeQueueVec[i][j*ProductGroupSize],
+                    MPFR_RNDD);
+                mpfr_set_ui(
+                    std::get<3>(TmpProducts[i][j]),
+                    PrimeQueueVec[i][j*ProductGroupSize],
+                    MPFR_RNDU);
+
+                // Iterate on multiplication.
+                for(size_t k = 1;
+                    k < ProductGroupSize;
+                    k++)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
         if(PrimeQueueVec.back().back() > (1ull<<63))
         {
