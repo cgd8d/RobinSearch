@@ -807,7 +807,10 @@ uint64_t AddPrimeFactors()
                 MPFR_RNDU);
             // Compute updated rhs rounded down.
             mpfr_mul(
-                mpfr_tmp[5].val, mpfr_tmp[8].val, NloglogN_rndd, MPFR_RNDD);
+                mpfr_tmp[5].val,
+                std::get<2>(ThisTempProd[NextPrimeIdx/ProductGroupSize]),
+                NloglogN_rndd,
+                MPFR_RNDD);
 
 
 
