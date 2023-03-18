@@ -624,22 +624,27 @@ uint64_t AddPrimeFactors()
                 for(size_t k = 1;
                     k < ProductGroupSize;
                     k++)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        }
+                {
+                    uint64_t pval = PrimeQueueVec[i][j*ProductGroupSize+k];
+                    mpfr_mul_ui_fast(
+                        std::get<0>(TmpProducts[i][j]),
+                        pval+1,
+                        MPFR_RNDD);
+                    mpfr_mul_ui_fast(
+                        std::get<1>(TmpProducts[i][j]),
+                        pval+1,
+                        MPFR_RNDU);
+                    mpfr_mul_ui_fast(
+                        std::get<2>(TmpProducts[i][j]),
+                        pval,
+                        MPFR_RNDD);
+                    mpfr_mul_ui_fast(
+                        std::get<3>(TmpProducts[i][j]),
+                        pval,
+                        MPFR_RNDU);
+                }
+            } // End loop over group j.
+        } // End parallel region.
         if(PrimeQueueVec.back().back() > (1ull<<63))
         {
             std::cout << "we can't use prime "
