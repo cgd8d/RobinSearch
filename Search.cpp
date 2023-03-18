@@ -543,7 +543,8 @@ struct PrimeQueueEpsilonGroup
             0);
     }
 };
-std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
+std::stack<PrimeQueueEpsilonGroup,
+           std::vector<PrimeQueueEpsilonGroup>> PrimeQueueEpsilonStack;
 uint64_t AddPrimeFactors()
 {
     // Basic requirement - the last prime group should
