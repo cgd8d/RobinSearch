@@ -779,7 +779,8 @@ uint64_t AddPrimeFactors()
         // to use precomputed bunches.
         while(NextPrimeIdx < EndPrimeToAdd and
             (NextPrimeIdx%ProductGroupSize != 0 or
-             ForceSingleMul))
+             ForceSingleMul or
+             NextPrimeIdx + ProductGroupSize > EndPrimeToAdd))
         {
             uint64_t this_p = PrimeQueue[NextPrimeIdx];
             mpfr_mul_ui_fast(Number_rndd, this_p, MPFR_RNDD);
