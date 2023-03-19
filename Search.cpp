@@ -125,11 +125,9 @@ Counters for optimization.
 uint64_t cnt_NumPrimeFactors = 0;
 uint64_t cnt_NumUniquePrimeFactors = 0;
 uint64_t cnt_EpsEvalForExpZero = 0;
-uint64_t cnt_LogLogNUpdates = 0;
+uint64_t cnt_LogLogNUpdates = 0
 uint64_t cnt_FastBunchMul = 0;
-uint64_t cnt_FastBunchMul_keep = 0;
-uint64_t cnt_FastBunchMul_used = 0;
-uint64_t cnt_FastBunchMul_wasted = 0;
+uint64_t cnt_SlowMulExpOne = 0;
 
 /*
 Struct to compute critical epsilon values and
@@ -793,6 +791,7 @@ uint64_t AddPrimeFactors()
             // We don't care if logs were
             // recomputed.
             ForceSingleMul = false;
+            cnt_SlowMulExpOne++;
         }
 
         // If we stopped because we're done, break.
@@ -850,8 +849,7 @@ uint64_t AddPrimeFactors()
                 cnt_NumUniquePrimeFactors += ProductGroupSize;
                 Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx-1];
                 cnt_NumPrimeFactors += ProductGroupSize;
-                cnt_FastBunchMul_keep++;
-                cnt_FastBunchMul_used += ProductGroupSize;
+                cnt_FastBunchMul += ProductGroupSize;
 
                 LogsAreUpdated = false;
             }
@@ -966,9 +964,7 @@ int main(int argc, char *argv[])
     std::cout << "cnt_EpsEvalForExpZero = " << cnt_EpsEvalForExpZero << std::endl;
     std::cout << "cnt_LogLogNUpdates = " << cnt_LogLogNUpdates << std::endl;
     std::cout << "cnt_FastBunchMul = " << cnt_FastBunchMul << std::endl;
-    std::cout << "cnt_FastBunchMul_drop = " << cnt_FastBunchMul-cnt_FastBunchMul_keep << std::endl;
-    std::cout << "cnt_FastBunchMul_used = " << cnt_FastBunchMul_used << std::endl;
-    std::cout << "cnt_FastBunchMul_wasted = " << cnt_FastBunchMul_wasted << std::endl;
+    std::cout << "cnt_SlowMulExpOne = " << cnt_SlowMulExpOne << std::endl;
 
     mpfr_clear(Number_rndd);
     mpfr_clear(Number_rndu);
