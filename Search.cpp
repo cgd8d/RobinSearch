@@ -17,7 +17,7 @@
 
 const mpfr_prec_t Precision = 128;
 const size_t NumLimbs = 2;
-const int NumThreads = omp_get_max_threads();
+const int NumThreads = 2;
 
 /*
 Convention: All mpfr_t values should have their rounding
@@ -32,6 +32,13 @@ void CheckTypes()
         std::cerr << "mpfr_get_emax() = " << mpfr_get_emax() << std::endl;
         std::cerr << "mpfr_get_emax_max() = " << mpfr_get_emax_max() << std::endl;
         throw std::logic_error("mpfr_get_emax is unexpected");
+    }
+
+    if(NumThreads != omp_get_max_threads())
+    {
+        std::cerr << "NumThreads = " << NumThreads << std::endl;
+        std::cerr << "omp_get_max_threads() = " << omp_get_max_threads() << std::endl;
+        throw std::logic_error("NumThreads is wrong.");
     }
 
     static_assert(8 == sizeof(uint64_t),
@@ -827,11 +834,11 @@ uint64_t AddPrimeFactors()
                 mpfr_set(LHS_rndu,
                          mpfr_tmp[4].val,
                          MPFR_RNDU);
-                mpfr_set(Number_rndd,
+                mpfr_mul(Number_rndd,
                          Number_rndd,
                          std::get<2>(ThisTempProd[NextPrimeIdx/ProductGroupSize]),
                          MPFR_RNDD);
-                mpfr_set(Number_rndu,
+                mpfr_mul(Number_rndu,
                          Number_rndu,
                          std::get<3>(ThisTempProd[NextPrimeIdx/ProductGroupSize]),
                          MPFR_RNDU);
