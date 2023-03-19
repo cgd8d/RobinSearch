@@ -591,6 +591,7 @@ uint64_t AddPrimeFactors()
         #pragma omp parallel for num_threads(NumThreads)
         for(int i = 0; i < NumThreads; i++)
         {
+            std::cout << "Starting parallel work, thread " << i << std::endl;
             PrimeQueueVec[i].clear();
             PrimeQueueVec[i].reserve(TargetPrimeQueueSize);
             primesieve::generate_primes(
@@ -653,6 +654,7 @@ uint64_t AddPrimeFactors()
                         MPFR_RNDU);
                 }
             } // End loop over group j.
+            std::cout << "Finishing parallel work, thread " << i << std::endl;
         } // End parallel region.
         if(PrimeQueueVec.back().back() > (1ull<<63))
         {
