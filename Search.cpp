@@ -7,6 +7,8 @@
 #include <list>
 #include <queue>
 #include <stack>
+#include <array>
+#include <tuple>
 #include <mpfr.h>
 #include <omp.h>
 #include <primesieve.hpp>
@@ -15,7 +17,7 @@
 
 const mpfr_prec_t Precision = 128;
 const size_t NumLimbs = 2;
-const int NumThreads = omp_get_max_threads();
+const int NumThreads = 2;
 
 /*
 Convention: All mpfr_t values should have their rounding
@@ -30,6 +32,13 @@ void CheckTypes()
         std::cerr << "mpfr_get_emax() = " << mpfr_get_emax() << std::endl;
         std::cerr << "mpfr_get_emax_max() = " << mpfr_get_emax_max() << std::endl;
         throw std::logic_error("mpfr_get_emax is unexpected");
+    }
+
+    if(NumThreads != omp_get_max_threads())
+    {
+        std::cerr << "NumThreads = " << NumThreads << std::endl;
+        std::cerr << "omp_get_max_threads() = " << omp_get_max_threads() << std::endl;
+        throw std::logic_error("NumThreads is wrong.");
     }
 
     static_assert(8 == sizeof(uint64_t),
@@ -118,9 +127,7 @@ uint64_t cnt_NumUniquePrimeFactors = 0;
 uint64_t cnt_EpsEvalForExpZero = 0;
 uint64_t cnt_LogLogNUpdates = 0;
 uint64_t cnt_FastBunchMul = 0;
-uint64_t cnt_FastBunchMul_keep = 0;
-uint64_t cnt_FastBunchMul_used = 0;
-uint64_t cnt_FastBunchMul_wasted = 0;
+uint64_t cnt_SlowMulExpOne = 0;
 
 /*
 Struct to compute critical epsilon values and
@@ -544,6 +551,14 @@ struct PrimeQueueEpsilonGroup
     }
 };
 std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
+
+// Store intermediate products of groups of primes.
+const size_t ProductGroupSize = 128;
+std::array<std::vector<std::tuple<
+    mpfr_holder,
+    mpfr_holder,
+    mpfr_holder,
+    mpfr_holder>>, NumThreads> TmpProducts;
 uint64_t AddPrimeFactors()
 {
     // Basic requirement - the last prime group should
@@ -580,7 +595,63 @@ uint64_t AddPrimeFactors()
                 NextPrimeToGen + i*PrimeQueueStep,
                 NextPrimeToGen + (i+1)*PrimeQueueStep - 1,
                 &PrimeQueueVec[i]);
-        }
+
+            // Within threads, also compute
+            // intermediate products.
+            TmpProducts[i].clear();
+            TmpProducts[i].reserve(
+                TargetPrimeQueueSize/ProductGroupSize);
+            TmpProducts[i].resize(
+                PrimeQueueVec[i].size()/ProductGroupSize);
+            for(size_t j = 0;
+                j < TmpProducts[i].size();
+                j++)
+            {
+                // Initialize lhs.
+                mpfr_set_ui(
+                    std::get<0>(TmpProducts[i][j]),
+                    PrimeQueueVec[i][j*ProductGroupSize]+1,
+                    MPFR_RNDD);
+                mpfr_set_ui(
+                    std::get<1>(TmpProducts[i][j]),
+                    PrimeQueueVec[i][j*ProductGroupSize]+1,
+                    MPFR_RNDU);
+
+                // Initialize rhs.
+                mpfr_set_ui(
+                    std::get<2>(TmpProducts[i][j]),
+                    PrimeQueueVec[i][j*ProductGroupSize],
+                    MPFR_RNDD);
+                mpfr_set_ui(
+                    std::get<3>(TmpProducts[i][j]),
+                    PrimeQueueVec[i][j*ProductGroupSize],
+                    MPFR_RNDU);
+
+                // Iterate on multiplication.
+                for(size_t k = 1;
+                    k < ProductGroupSize;
+                    k++)
+                {
+                    uint64_t pval = PrimeQueueVec[i][j*ProductGroupSize+k];
+                    mpfr_mul_ui_fast(
+                        std::get<0>(TmpProducts[i][j]),
+                        pval+1,
+                        MPFR_RNDD);
+                    mpfr_mul_ui_fast(
+                        std::get<1>(TmpProducts[i][j]),
+                        pval+1,
+                        MPFR_RNDU);
+                    mpfr_mul_ui_fast(
+                        std::get<2>(TmpProducts[i][j]),
+                        pval,
+                        MPFR_RNDD);
+                    mpfr_mul_ui_fast(
+                        std::get<3>(TmpProducts[i][j]),
+                        pval,
+                        MPFR_RNDU);
+                }
+            } // End loop over group j.
+        } // End parallel region.
         if(PrimeQueueVec.back().back() > (1ull<<63))
         {
             std::cout << "we can't use prime "
@@ -600,6 +671,11 @@ uint64_t AddPrimeFactors()
         assert(NextPrimeIdx == 0);
     }
     std::vector<uint64_t>& PrimeQueue = PrimeQueueVec[PrimeQueueVecIdx];
+    std::vector<std::tuple<
+        mpfr_holder,
+        mpfr_holder,
+        mpfr_holder,
+        mpfr_holder>>& ThisTempProd = TmpProducts[PrimeQueueVecIdx];
     if(PrimeQueueEpsilonStack.empty())
     {
         PrimeQueueEpsilonStack.emplace(PrimeQueue.size() - 1);
@@ -690,132 +766,17 @@ uint64_t AddPrimeFactors()
     // Iterate and do multiplication.
     // Acquire mpfr_tmp
     uint64_t NextPrimeIdx_init = NextPrimeIdx;
+    bool ForceSingleMul = false;
     while(NextPrimeIdx < EndPrimeToAdd)
     {
         // Iterate
 
-        // Initialize lhs.
-        mpfr_set_ui(mpfr_tmp[0].val,
-                    PrimeQueue[NextPrimeIdx]+1,
-                    MPFR_RNDD);
-        mpfr_set_ui(mpfr_tmp[1].val,
-                    PrimeQueue[NextPrimeIdx]+1,
-                    MPFR_RNDU);
-
-        // Initialize rhs.
-        mpfr_set_ui(mpfr_tmp[2].val,
-                    PrimeQueue[NextPrimeIdx],
-                    MPFR_RNDD);
-        mpfr_set_ui(mpfr_tmp[3].val,
-                    PrimeQueue[NextPrimeIdx],
-                    MPFR_RNDU);
-
-        // Update tracking and statistics.
-        Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx];
-        NextPrimeIdx++;
-        cnt_NumUniquePrimeFactors++;
-
-        // Before we check the value,
-        // try to multiply by additional
-        // fast bunches.
-
-        // Fast bunches have to throw away work when they
-        // advance too far, rather than just updating
-        // logarithms.  So we separately talk new bounds
-        // on how far we can advance with bunches.
-        size_t MaxBunchIdx = EndPrimeToAdd-1;
-
-        // Run with sequence bunch sizes.
-        for(uint64_t BunchSize : {512, 64, 32, 16, 8, 4})
-        {
-            // Initialize lhs.
-            mpfr_set(mpfr_tmp[6].val,
-                     mpfr_tmp[0].val,
-                     MPFR_RNDD);
-            mpfr_set(mpfr_tmp[7].val,
-                     mpfr_tmp[1].val,
-                     MPFR_RNDU);
-
-            // Initialize rhs.
-            mpfr_set(mpfr_tmp[8].val,
-                     mpfr_tmp[2].val,
-                     MPFR_RNDD);
-            mpfr_set(mpfr_tmp[9].val,
-                     mpfr_tmp[3].val,
-                     MPFR_RNDU);
-
-            while(NextPrimeIdx + BunchSize - 1 <= MaxBunchIdx)
-            {
-                cnt_FastBunchMul++;
-
-                for(size_t i = NextPrimeIdx;
-                    i < NextPrimeIdx + BunchSize;
-                    i++)
-                {
-                    mpfr_mul_ui_fast(mpfr_tmp[6].val, PrimeQueue[i]+1, MPFR_RNDD);
-                    mpfr_mul_ui_fast(mpfr_tmp[7].val, PrimeQueue[i]+1, MPFR_RNDU);
-                    mpfr_mul_ui_fast(mpfr_tmp[8].val, PrimeQueue[i], MPFR_RNDD);
-                    mpfr_mul_ui_fast(mpfr_tmp[9].val, PrimeQueue[i], MPFR_RNDU);
-                }
-
-                // Check if test values indicate possible violation of bound.
-                // Compute updated lhs rounded up.
-                mpfr_mul(mpfr_tmp[4].val, mpfr_tmp[7].val, LHS_rndu, MPFR_RNDU);
-                // Compute updated rhs rounded down.
-                mpfr_mul(mpfr_tmp[5].val, mpfr_tmp[8].val, NloglogN_rndd, MPFR_RNDD);
-
-                if(mpfr_less_p(mpfr_tmp[4].val, mpfr_tmp[5].val))
-                {
-                    // LHS < RHS is guaranteed.
-                    // Save current progress and keep going.
-                    mpfr_set(mpfr_tmp[0].val,
-                             mpfr_tmp[6].val,
-                             MPFR_RNDD);
-                    mpfr_set(mpfr_tmp[1].val,
-                             mpfr_tmp[7].val,
-                             MPFR_RNDU);
-                    mpfr_set(mpfr_tmp[2].val,
-                             mpfr_tmp[8].val,
-                             MPFR_RNDD);
-                    mpfr_set(mpfr_tmp[3].val,
-                             mpfr_tmp[9].val,
-                             MPFR_RNDU);
-                    NextPrimeIdx += BunchSize;
-                    cnt_NumUniquePrimeFactors += BunchSize;
-                    Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx-1];
-                    cnt_NumPrimeFactors += BunchSize;
-                    cnt_FastBunchMul_keep++;
-                    cnt_FastBunchMul_used += BunchSize;
-                }
-                else
-                {
-                    // Possibly LHS >= RHS.
-                    // We need to drop that last bunch and go more carefully.
-                    // Reduce MaxBunchIdx so we won't try the same thing again.
-                    MaxBunchIdx = NextPrimeIdx + BunchSize - 2;
-                    cnt_FastBunchMul_wasted += BunchSize;
-                    break;
-                }
-            }
-        }
-
-        // Lock in the updates from bunches.
-        mpfr_mul(LHS_rndd, mpfr_tmp[0].val, LHS_rndd, MPFR_RNDD);
-        mpfr_mul(LHS_rndu, mpfr_tmp[1].val, LHS_rndu, MPFR_RNDU);
-        mpfr_mul(Number_rndd, mpfr_tmp[2].val, Number_rndd, MPFR_RNDD);
-        mpfr_mul(Number_rndu, mpfr_tmp[3].val, Number_rndu, MPFR_RNDU);
-        mpfr_mul(NloglogN_rndd, mpfr_tmp[2].val, NloglogN_rndd, MPFR_RNDD);
-
-        // Also check the number.
-        bool LogsWereRecomputed =  CheckNumber();
-        if(LogsWereRecomputed)
-        {
-            // Maybe we can do more fast bunches.
-            continue;
-        }
-                        
-        // Iterate factor by factor until we update logs.
-        while(NextPrimeIdx < EndPrimeToAdd)
+        // Iterate factor by factor until we get
+        // to use precomputed bunches.
+        while(NextPrimeIdx < EndPrimeToAdd and
+            (NextPrimeIdx%ProductGroupSize != 0 or
+             ForceSingleMul or
+             NextPrimeIdx + ProductGroupSize > EndPrimeToAdd))
         {
             uint64_t this_p = PrimeQueue[NextPrimeIdx];
             mpfr_mul_ui_fast(Number_rndd, this_p, MPFR_RNDD);
@@ -826,15 +787,89 @@ uint64_t AddPrimeFactors()
             Number_factors.back().PrimeHi = this_p;
             NextPrimeIdx++;
             cnt_NumUniquePrimeFactors++;
-            LogsWereRecomputed = CheckNumber();
-            if(LogsWereRecomputed)
+            CheckNumber();
+            // We don't care if logs were
+            // recomputed.
+            ForceSingleMul = false;
+            cnt_SlowMulExpOne++;
+        }
+
+        // If we stopped because we're done, break.
+        if(NextPrimeIdx == EndPrimeToAdd)
+        {
+            break;
+        }
+
+        // Use precomputed bunches.
+        // Stop when we are going past the end
+        // or when we need to update logs.
+        // We do get one shot at updating logs
+        // on bunch boundaries, but that isn't
+        // guaranteed to work.
+        bool LogsAreUpdated = false;
+        while(NextPrimeIdx + ProductGroupSize <= EndPrimeToAdd)
+        {
+            // Check if test values indicate possible violation of bound.
+            // Compute updated lhs rounded up.
+            mpfr_mul(
+                mpfr_tmp[4].val,
+                std::get<1>(ThisTempProd[NextPrimeIdx/ProductGroupSize]),
+                LHS_rndu,
+                MPFR_RNDU);
+            // Compute updated rhs rounded down.
+            mpfr_mul(
+                mpfr_tmp[5].val,
+                std::get<2>(ThisTempProd[NextPrimeIdx/ProductGroupSize]),
+                NloglogN_rndd,
+                MPFR_RNDD);
+
+            if(mpfr_less_p(mpfr_tmp[4].val, mpfr_tmp[5].val))
             {
-                // Maybe we can do more fast bunches.
+                // LHS < RHS is guaranteed.
+                // Save current progress and keep going.
+                mpfr_mul(LHS_rndd,
+                         LHS_rndd,
+                         std::get<0>(ThisTempProd[NextPrimeIdx/ProductGroupSize]),
+                         MPFR_RNDD);
+                mpfr_set(LHS_rndu,
+                         mpfr_tmp[4].val,
+                         MPFR_RNDU);
+                mpfr_mul(Number_rndd,
+                         Number_rndd,
+                         std::get<2>(ThisTempProd[NextPrimeIdx/ProductGroupSize]),
+                         MPFR_RNDD);
+                mpfr_mul(Number_rndu,
+                         Number_rndu,
+                         std::get<3>(ThisTempProd[NextPrimeIdx/ProductGroupSize]),
+                         MPFR_RNDU);
+                mpfr_set(NloglogN_rndd,
+                         mpfr_tmp[5].val,
+                         MPFR_RNDD);
+                NextPrimeIdx += ProductGroupSize;
+                cnt_NumUniquePrimeFactors += ProductGroupSize;
+                Number_factors.back().PrimeHi = PrimeQueue[NextPrimeIdx-1];
+                cnt_NumPrimeFactors += ProductGroupSize;
+                cnt_FastBunchMul += ProductGroupSize;
+
+                LogsAreUpdated = false;
+            }
+            else if(not LogsAreUpdated)
+            {
+                // Update logs and try one more time.
+                // The update is handled by Check number.
+                CheckNumber();
+                cnt_NumPrimeFactors--;
+                LogsAreUpdated = true;
+            }
+            else
+            {
+                // Unable to proceed so fall
+                // back to incremental muls.
+                ForceSingleMul = true;
                 break;
             }
-        }
-    }
-    // Release mpfr_tmp
+        } // End loop over bunches.
+    } // End iterating muls.
 
     uint64_t retval = NextPrimeIdx - NextPrimeIdx_init;
     return retval;
@@ -929,9 +964,7 @@ int main(int argc, char *argv[])
     std::cout << "cnt_EpsEvalForExpZero = " << cnt_EpsEvalForExpZero << std::endl;
     std::cout << "cnt_LogLogNUpdates = " << cnt_LogLogNUpdates << std::endl;
     std::cout << "cnt_FastBunchMul = " << cnt_FastBunchMul << std::endl;
-    std::cout << "cnt_FastBunchMul_drop = " << cnt_FastBunchMul-cnt_FastBunchMul_keep << std::endl;
-    std::cout << "cnt_FastBunchMul_used = " << cnt_FastBunchMul_used << std::endl;
-    std::cout << "cnt_FastBunchMul_wasted = " << cnt_FastBunchMul_wasted << std::endl;
+    std::cout << "cnt_SlowMulExpOne = " << cnt_SlowMulExpOne << std::endl;
 
     mpfr_clear(Number_rndd);
     mpfr_clear(Number_rndu);
