@@ -7,6 +7,8 @@
 #include <list>
 #include <queue>
 #include <stack>
+#include <array>
+#include <tuple>
 #include <mpfr.h>
 #include <omp.h>
 #include <primesieve.hpp>
