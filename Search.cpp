@@ -125,7 +125,7 @@ Counters for optimization.
 uint64_t cnt_NumPrimeFactors = 0;
 uint64_t cnt_NumUniquePrimeFactors = 0;
 uint64_t cnt_EpsEvalForExpZero = 0;
-uint64_t cnt_LogLogNUpdates = 0
+uint64_t cnt_LogLogNUpdates = 0;
 uint64_t cnt_FastBunchMul = 0;
 uint64_t cnt_SlowMulExpOne = 0;
 
