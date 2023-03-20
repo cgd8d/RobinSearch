@@ -598,7 +598,6 @@ uint64_t AddPrimeFactors()
 
             // Within threads, also compute
             // intermediate products.
-            TmpProducts[i].clear();
             TmpProducts[i].reserve(
                 TargetPrimeQueueSize/ProductGroupSize);
             TmpProducts[i].resize(
