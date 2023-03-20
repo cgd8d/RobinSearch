@@ -553,7 +553,7 @@ struct PrimeQueueEpsilonGroup
 std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
 
 // Store intermediate products of groups of primes.
-const size_t ProductGroupSize = 64;
+const size_t ProductGroupSize = 256;
 std::array<std::vector<std::tuple<
     mpfr_holder,
     mpfr_holder,
