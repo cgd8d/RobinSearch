@@ -15,18 +15,23 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # Set up environment
       - name: Setup
         run: |
           sudo apt-get update
-          sudo apt-get install gnuplot llvm-12 clang-12 autoconf-archive libomp-12-dev
+          sudo apt-get install gnuplot llvm-15 clang-15 autoconf-archive libomp-15-dev
+          perf config llvm.clang-path=clang-15
+          chmod a+x addr2line
+          chmod a+x objdump
+          PATH=`pwd`:$PATH which addr2line
+          PATH=`pwd`:$PATH which objdump
           # perf list
 
       # build libprimesieve
@@ -41,25 +46,9 @@ jobs:
       - name: SetupMPFR
         run: bash scripts/SetupMPFR.sh
 
-      # Compile test segments to assembly
-      #- name: CompileAsmTest
-      #  run: |
-      #    llc-12 -O3 -o - CheckAssembly/LLVM_WideInt.ll
-
-      # Run tests.
-      - name: RunTests
-        run: |
-          clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native $MY_DEPENDENCY_FLAGS test/TestBigFloat.cpp -lmpfr -lgmp -o TestBigFloat
-          ./TestBigFloat
-
       # Compile code
       - name: Compile
-        run: |
-          clang++-12 --version
-          /usr/bin/ld -v
-          lscpu
-          clang++-12 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility -fopenmp $MY_DEPENDENCY_FLAGS Search.cpp -lmpfr -lgmp -lprimesieve -o Search
-          #clang++ -std=c++20 -DNDEBUG -Wall -O3 -flto -march=native -lmpfr -lprimesieve Search.cpp -o Search_ndebug
+        run: bash scripts/CompileRobinSearch.sh
 
       # Run code straight, no profiling.
       # Skip this - experience shows that the overhead from
@@ -79,11 +68,11 @@ jobs:
 
       # Print perf report.
       - name: Report from perf
-        run: sudo perf report -i perf.data --call-graph=graph,0.1
+        run: sudo PATH=`pwd`:$PATH perf report -i perf.data --call-graph=graph,0.1
 
       # Print perf source annotations.
       - name: Source annotations from perf
-        run: sudo perf annotate -i perf.data
+        run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data
 
       # Run code
       # - name: Run
@@ -91,7 +80,7 @@ jobs:
 
       # Save plot of deltas.
       - name: Save delta plot
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: delta_plots
           path: |
