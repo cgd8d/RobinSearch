@@ -565,6 +565,8 @@ std::array<std::vector<std::tuple<
 // and down, multiply the whole group with
 // rounding down and then compute a conservative
 // upper bound with a scaling factor.
+// This approach roughly doubles interval size
+// but gives significant speedup.
 mpfr_holder ratio_ub_to_lb;
 
 uint64_t AddPrimeFactors()
@@ -620,20 +622,12 @@ uint64_t AddPrimeFactors()
                     std::get<0>(TmpProducts[i][j]),
                     PrimeQueueVec[i][j*ProductGroupSize]+1,
                     MPFR_RNDD);
-                mpfr_set_ui(
-                    std::get<1>(TmpProducts[i][j]),
-                    PrimeQueueVec[i][j*ProductGroupSize]+1,
-                    MPFR_RNDU);
 
                 // Initialize rhs.
                 mpfr_set_ui(
                     std::get<2>(TmpProducts[i][j]),
                     PrimeQueueVec[i][j*ProductGroupSize],
                     MPFR_RNDD);
-                mpfr_set_ui(
-                    std::get<3>(TmpProducts[i][j]),
-                    PrimeQueueVec[i][j*ProductGroupSize],
-                    MPFR_RNDU);
 
                 // Iterate on multiplication.
                 for(size_t k = 1;
@@ -645,18 +639,10 @@ uint64_t AddPrimeFactors()
                         std::get<0>(TmpProducts[i][j]),
                         pval+1,
                         MPFR_RNDD);
-                    /*mpfr_mul_ui_fast(
-                        std::get<1>(TmpProducts[i][j]),
-                        pval+1,
-                        MPFR_RNDU);*/
                     mpfr_mul_ui_fast(
                         std::get<2>(TmpProducts[i][j]),
                         pval,
                         MPFR_RNDD);
-                    /*mpfr_mul_ui_fast(
-                        std::get<3>(TmpProducts[i][j]),
-                        pval,
-                        MPFR_RNDU);*/
                 }
                 // Compute upper bounds based
                 // on lower bounds.
