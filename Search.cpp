@@ -559,6 +559,14 @@ std::array<std::vector<std::tuple<
     mpfr_holder,
     mpfr_holder,
     mpfr_holder>>, NumThreads> TmpProducts;
+
+// For groups of values to multiply, rather than
+// separately multiplying with rounding up
+// and down, multiply the whole group with
+// rounding down and then compute a conservative
+// upper bound with a scaling factor.
+mpfr_holder ratio_ub_to_lb;
+
 uint64_t AddPrimeFactors()
 {
     // Basic requirement - the last prime group should
@@ -637,19 +645,31 @@ uint64_t AddPrimeFactors()
                         std::get<0>(TmpProducts[i][j]),
                         pval+1,
                         MPFR_RNDD);
-                    mpfr_mul_ui_fast(
+                    /*mpfr_mul_ui_fast(
                         std::get<1>(TmpProducts[i][j]),
                         pval+1,
-                        MPFR_RNDU);
+                        MPFR_RNDU);*/
                     mpfr_mul_ui_fast(
                         std::get<2>(TmpProducts[i][j]),
                         pval,
                         MPFR_RNDD);
-                    mpfr_mul_ui_fast(
+                    /*mpfr_mul_ui_fast(
                         std::get<3>(TmpProducts[i][j]),
                         pval,
-                        MPFR_RNDU);
+                        MPFR_RNDU);*/
                 }
+                // Compute upper bounds based
+                // on lower bounds.
+                mpfr_mul(
+                    std::get<1>(TmpProducts[i][j]),
+                    std::get<0>(TmpProducts[i][j]),
+                    ratio_ub_to_lb,
+                    MPFR_RNDU);
+                mpfr_mul(
+                    std::get<3>(TmpProducts[i][j]),
+                    std::get<2>(TmpProducts[i][j]),
+                    ratio_ub_to_lb,
+                    MPFR_RNDU);
             } // End loop over group j.
         } // End parallel region.
         if(PrimeQueueVec.back().back() > (1ull<<63))
@@ -920,6 +940,24 @@ int main(int argc, char *argv[])
     mpfr_init2(LHS_rndd, Precision);
     mpfr_init2(LHS_rndu, Precision);
     mpfr_tmp.resize(6+4*NumThreads);
+
+    // Compute the ratio between upper and
+    // lower bound for a product of
+    // ProductGroupSize values.
+    {
+        mpfr_holder tmp_1pluseps;
+        mpfr_set_ui(ratio_ub_to_lb, 1, MPFR_RNDU);
+        mpfr_set_ui(tmp_1pluseps, 1, MPFR_RNDU);
+        mpfr_nextabove(tmp_1pluseps);
+        for(size_t i= 0; i < ProductGroupSize; i++)
+        {
+            mpfr_mul(
+                ratio_ub_to_lb,
+                ratio_ub_to_lb,
+                tmp_1pluseps,
+                MPFR_RNDU);
+        }
+    }
 
     // Initialize everything to N = 1.
     mpfr_const_euler(LHS_rndd, MPFR_RNDU);
