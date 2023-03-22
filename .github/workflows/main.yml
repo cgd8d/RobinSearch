@@ -64,46 +64,46 @@ jobs:
           ./TestMulUIFast
 
       # Time the summing of primes.
-      - name: RunTimerSumPrimes
-        run: |
-          clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerSumPrimes.cpp -lmpfr -lgmp -lprimesieve -o TimerSumPrimes
-          ./TimerSumPrimes
+      #- name: RunTimerSumPrimes
+      #  run: |
+      #    clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerSumPrimes.cpp -lmpfr -lgmp -lprimesieve -o TimerSumPrimes
+      #    ./TimerSumPrimes
 
       # Time the summing of primes.
-      - name: RunTimerSumPrimes2
-        run: |
-          clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerSumPrimes2.cpp -lmpfr -lgmp -lprimesieve -o TimerSumPrimes2
-          ./TimerSumPrimes2
+      #- name: RunTimerSumPrimes2
+      #  run: |
+      #    clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerSumPrimes2.cpp -lmpfr -lgmp -lprimesieve -o TimerSumPrimes2
+      #    ./TimerSumPrimes2
 
       # Time the summing of primes.
-      - name: RunTimerSumPrimes3
-        run: |
-          clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerSumPrimes3.cpp -lmpfr -lgmp -lprimesieve -o TimerSumPrimes3
-          ./TimerSumPrimes3
+      #- name: RunTimerSumPrimes3
+      #  run: |
+      #    clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerSumPrimes3.cpp -lmpfr -lgmp -lprimesieve -o TimerSumPrimes3
+      #    ./TimerSumPrimes3
 
       # Time the summing of primes.
-      - name: RunTimerSumPrimes4
-        run: |
-          clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerSumPrimes4.cpp -lmpfr -lgmp -lprimesieve -o TimerSumPrimes4
-          ./TimerSumPrimes4
+      #- name: RunTimerSumPrimes4
+      #  run: |
+      #    clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerSumPrimes4.cpp -lmpfr -lgmp -lprimesieve -o TimerSumPrimes4
+      #    ./TimerSumPrimes4
 
       # Time the multiplication of primes.
-      - name: RunTimerMulPrimes1
-        run: |
-          clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerMulPrimes1.cpp -lmpfr -lgmp -lprimesieve -o TimerMulPrimes1
-          ./TimerMulPrimes1
+      #- name: RunTimerMulPrimes1
+      #  run: |
+      #    clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerMulPrimes1.cpp -lmpfr -lgmp -lprimesieve -o TimerMulPrimes1
+      #    ./TimerMulPrimes1
 
       # Time the multiplication of primes.
-      - name: RunTimerMulPrimes2
-        run: |
-          clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerMulPrimes2.cpp -lmpfr -lgmp -lprimesieve -o TimerMulPrimes2
-          ./TimerMulPrimes2
+      #- name: RunTimerMulPrimes2
+      #  run: |
+      #    clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerMulPrimes2.cpp -lmpfr -lgmp -lprimesieve -o TimerMulPrimes2
+      #    ./TimerMulPrimes2
 
       # Time the multiplication of primes.
-      - name: RunTimerMulPrimes3
-        run: |
-          clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerMulPrimes3.cpp -lmpfr -lgmp -lprimesieve -o TimerMulPrimes3
-          ./TimerMulPrimes3
+      #- name: RunTimerMulPrimes3
+      #  run: |
+      #    clang++-15 -std=c++20 -fuse-ld=gold -g -Wall -O3 -flto=thin -march=native -Wl,-plugin-opt=whole-program-visibility $MY_DEPENDENCY_FLAGS test/TimerMulPrimes3.cpp -lmpfr -lgmp -lprimesieve -o TimerMulPrimes3
+      #    ./TimerMulPrimes3
 
       # Compile code
       - name: Compile
@@ -123,7 +123,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search 43
+        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search 44
 
       # Print perf report.
       - name: Report from perf
