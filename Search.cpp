@@ -909,7 +909,12 @@ int main(int argc, char *argv[])
               << std::endl;
 
     // Sieve size check.
-    std::cout << "Prime sieve size is "
+    std::cout << "Prime sieve default size is "
+              << primesieve::get_sieve_size()
+              << " KiB (kibibytes)."
+              << std::endl;
+    primesieve::set_sieve_size(1<<10);
+    std::cout << "Prime sieve size changed to "
               << primesieve::get_sieve_size()
               << " KiB (kibibytes)."
               << std::endl;
