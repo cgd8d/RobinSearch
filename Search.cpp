@@ -912,6 +912,7 @@ int main(int argc, char *argv[])
     // Block signals.
     signal(SIGINT, handler);
     signal(SIGTERM, handler);
+    signal(SIGHUP, handler);
 
     // Print library versions.
     std::cout << "Primesieve version is "
