@@ -9,6 +9,7 @@
 #include <stack>
 #include <array>
 #include <tuple>
+#include <csignal>
 #include <mpfr.h>
 #include <omp.h>
 #include <primesieve.hpp>
@@ -55,6 +56,14 @@ void CheckTypes()
 
     static_assert(Precision == 64*NumLimbs,
         "Precision and NumLimbs are not consistent.");
+}
+
+// Signal handling. Take approach from:
+// https://www.gnu.org/software/libc/manual/html_node/Remembering-a-Signal.html
+volatile sig_atomic_t signal_pending = 0;
+void handler (int signum)
+{
+    signal_pending++;
 }
 
 // Helper object to store initialized mpfr objects.
@@ -900,6 +909,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    // Block signals.
+    signal(SIGINT, handler);
+    signal(SIGTERM, handler);
+
     // Print library versions.
     std::cout << "Primesieve version is "
               << primesieve::primesieve_version()
@@ -981,6 +994,13 @@ int main(int argc, char *argv[])
         while(true)
         {
             uint64_t NumFactors = AddPrimeFactors();
+
+            // This is a decent time to check
+            // for interrupt signals.
+            if(signal_pending)
+            {
+                std::cout << "Catching a signal, exciting now..." << std::endl;
+            }
             if(NumFactors == 0) break;
         }
         IncrementExp();
