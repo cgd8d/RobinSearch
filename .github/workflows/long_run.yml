@@ -65,7 +65,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search 49 $JOB_START_TIME
+        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search 55 $JOB_START_TIME
 
       # Print perf report.
       - name: Report from perf
