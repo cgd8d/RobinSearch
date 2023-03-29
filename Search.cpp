@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <cassert>
+#include <ctime>
 #include <iostream>
 #include <list>
 #include <queue>
@@ -883,7 +884,7 @@ uint64_t AddPrimeFactors()
 
 int main(int argc, char *argv[])
 {
-    if(argc != 2)
+    if(argc != 2 and argc != 3)
     {
         std::cerr << "Incorrect number of command-line arguments: "
                   << argc
@@ -898,6 +899,20 @@ int main(int argc, char *argv[])
                   << ")"
                   << std::endl;
         return 1;
+    }
+    unsigned long start_time = -1;
+    unsigned long end_time = -1;
+    if(argc >= 3)
+    {
+        start_time = std::strtoul(argv[2], nullptr, 0);
+        std::cout << "Job start time is "
+                  << start_time
+                  << std::endl;
+        // Run for 5hr 45min.
+        end_time = start_time + (5*60+45)*60;
+        std::cout << "Job end time will be "
+                  << end_time
+                  << std::endl;
     }
 
     // Print library versions.
@@ -981,11 +996,21 @@ int main(int argc, char *argv[])
         while(true)
         {
             uint64_t NumFactors = AddPrimeFactors();
+            if(time(nullptr) > end_time)
+            {
+                std::cout << "out of time at "
+                          << time(nullptr)
+                          << ", exiting."
+                          << std::endl;
+                CheckNumber();
+                goto exit_loop;
+            }
             if(NumFactors == 0) break;
         }
         IncrementExp();
         CheckNumber();
     }
+    exit_loop:
 
     // Print counters.
     std::cout << "cnt_NumPrimeFactors = " << cnt_NumPrimeFactors << std::endl;

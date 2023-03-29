@@ -25,6 +25,7 @@ jobs:
       # Set up environment
       - name: Setup
         run: |
+          echo "JOB_START_TIME=`date +%s`" >> $GITHUB_ENV
           sudo apt-get update
           sudo apt-get install gnuplot llvm-15 clang-15 autoconf-archive libomp-15-dev
           perf config llvm.clang-path=clang-15
@@ -64,7 +65,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search 49
+        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search 55 $JOB_START_TIME
 
       # Print perf report.
       - name: Report from perf
