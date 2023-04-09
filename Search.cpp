@@ -13,6 +13,8 @@
 #include <mpfr.h>
 #include <omp.h>
 #include <primesieve.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 #include "PlotDelta.hpp"
 #include "mpfr_mul_ui_fast.hpp"
 
@@ -93,6 +95,13 @@ struct mpfr_holder
     operator mpfr_t&()
     {
         return val;
+    }
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & latitude;
+        ar & longitude;
     }
 };
 std::vector<mpfr_holder> mpfr_tmp;
