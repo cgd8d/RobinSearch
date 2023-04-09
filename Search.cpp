@@ -100,8 +100,9 @@ struct mpfr_holder
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-        ar & latitude;
-        ar & longitude;
+        ar & val->_mpfr_exp;
+        ar & val->_mpfr_sign;
+        ar & __gmpfr_local_tab_val;
     }
 };
 std::vector<mpfr_holder> mpfr_tmp;
