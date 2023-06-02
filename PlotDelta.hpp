@@ -5,8 +5,13 @@
 #include <vector>
 #include <utility>
 
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/utility.hpp>
+
 /*
-Accept days points and pipe them into gnuplot.
+Accept data points and pipe them into gnuplot.
 The goal is to plot log delta vs log log n,
 as in figure 3 (top) of Briggs 2006.
 */
@@ -18,7 +23,7 @@ struct PlotDeltaStruct
     std::vector<std::pair<double, double>> data;
 
     PlotDeltaStruct()
-    
+
     {
 
         loglogn_step = 0.001;
@@ -83,14 +88,20 @@ struct PlotDeltaStruct
             fprintf(plotpipe2, "%.5g %.5g\n", loglogn, logdelta+loglogn/2-0.323336);
         }
         
-        
-        
         fprintf(plotpipe, "e\n");
         fflush(plotpipe);
         pclose(plotpipe);
         fprintf(plotpipe2, "e\n");
         fflush(plotpipe2);
         pclose(plotpipe2);
+    }
+    
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & loglogn_step;
+        ar & loglogn_next;
+        ar & data;
     }
 };
 
