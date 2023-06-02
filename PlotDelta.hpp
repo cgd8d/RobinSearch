@@ -12,8 +12,7 @@ as in figure 3 (top) of Briggs 2006.
 */
 struct PlotDeltaStruct
 {
-    FILE* plotpipe;
-    FILE* plotpipe2;
+
     double loglogn_step;
     double loglogn_next;
     std::vector<std::pair<double, double>> data;
