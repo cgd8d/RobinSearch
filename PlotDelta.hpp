@@ -2,6 +2,8 @@
 #define PlotDelta_hpp
 
 #include <iostream>
+#include <vector>
+#include <utility>
 
 /*
 Accept days points and pipe them into gnuplot.
@@ -14,10 +16,28 @@ struct PlotDeltaStruct
     FILE* plotpipe2;
     double loglogn_step;
     double loglogn_next;
+    std::vector<std::pair<double, double>> data;
 
     PlotDeltaStruct()
+    
     {
-        plotpipe = popen("gnuplot", "w");
+
+        loglogn_step = 0.001;
+        loglogn_next = 5;
+    }
+
+    void AddPoint(double loglogn, double logdelta)
+    {
+        if(loglogn >= loglogn_next)
+        {
+            data.push_back(loglogn, logdelta);
+            loglogn_next = loglogn + loglogn_step;
+        }
+    }
+
+    ~PlotDeltaStruct()
+    {
+        FILE* plotpipe = popen("gnuplot", "w");
         if(not plotpipe)
         {
             std::cerr << "Failed to open gnuplot pipe." << std::endl;
@@ -35,7 +55,7 @@ struct PlotDeltaStruct
         fprintf(plotpipe, "set grid xtics mxtics ytics mytics\n");
         fprintf(plotpipe, "plot '-' with points pt 0\n");
 
-        plotpipe2 = popen("gnuplot", "w");
+        FILE* plotpipe2 = popen("gnuplot", "w");
         if(not plotpipe2)
         {
             std::cerr << "Failed to open gnuplot pipe." << std::endl;
@@ -54,23 +74,18 @@ struct PlotDeltaStruct
         fprintf(plotpipe2, "set grid xtics mxtics ytics mytics\n");
         fprintf(plotpipe2, "plot '-' with points pt 0\n");
 
-
-        loglogn_step = 0.001;
-        loglogn_next = 5;
-    }
-
-    void AddPoint(double loglogn, double logdelta)
-    {
-        if(loglogn >= loglogn_next)
+        for(size_t i = 0;
+            i < data.size();
+            i++)
         {
+            double loglogn = data[i].first;
+            double logdelta = data[i].second;
             fprintf(plotpipe, "%.5g %.5g\n", loglogn, logdelta);
             fprintf(plotpipe2, "%.5g %.5g\n", loglogn, logdelta+loglogn/2-0.323336);
-            loglogn_next = loglogn + loglogn_step;
         }
-    }
-
-    ~PlotDeltaStruct()
-    {
+        
+        
+        
         fprintf(plotpipe, "e\n");
         fflush(plotpipe);
         pclose(plotpipe);
