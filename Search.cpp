@@ -220,7 +220,12 @@ struct PrimeGroup
     uint64_t PrimeLo;
     uint64_t PrimeHi;
     uint8_t Exp;
-    primesieve::iterator PrimeIter;
+    
+    // mutable: hackish way to check current
+    // status so we can save it.
+    // better would be to track last retrieved value.
+    // to revisit.
+    mutable primesieve::iterator PrimeIter;
     mpfr_holder CriticalEpsilon_rndd;
     mpfr_holder CriticalEpsilon_rndu;
 
@@ -232,14 +237,14 @@ struct PrimeGroup
     PrimeGroup()
     : PrimeIter(0, 1000)
     {
-        mpfr_init2(CriticalEpsilon_rndd, Precision);
-        mpfr_init2(CriticalEpsilon_rndu, Precision);
+
+
     }
 
     ~PrimeGroup()
     {
-        mpfr_clear(CriticalEpsilon_rndd);
-        mpfr_clear(CriticalEpsilon_rndu);
+
+
     }
 
 
@@ -296,6 +301,39 @@ struct PrimeGroup
     PrimeGroup(PrimeGroup && ) = delete;
     PrimeGroup& operator=(const PrimeGroup & ) = delete;
     PrimeGroup& operator=(PrimeGroup && ) = delete;
+    
+    template<class Archive>
+    void save(Archive & ar, const unsigned int version) const
+    {
+        // note, version is always the latest when saving
+        ar & PrimeLo;
+        ar & PrimeHi;
+        ar & Exp;
+        ar & PrimeIter.next_prime(); // Modifies status so now we have to exit.
+        ar & CriticalEpsilon_rndd;
+        ar & CriticalEpsilon_rndu;
+    }
+    template<class Archive>
+    void load(Archive & ar, const unsigned int version)
+    {
+        ar & PrimeLo;
+        ar & PrimeHi;
+        ar & Exp;
+        uint64_t nextprime;
+        ar & nextprime;
+        if(nextprime < 500)
+        {
+            // provide hint that this will probably start small.
+            PrimeIter.jump_to(nextprime, 1000);
+        }
+        else
+        {
+            PrimeIter.jump_to(nextprime);
+        }
+        ar & CriticalEpsilon_rndd;
+        ar & CriticalEpsilon_rndu;
+    }
+    BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
 std::ostream& operator<<(std::ostream& os, const PrimeGroup & pg)
