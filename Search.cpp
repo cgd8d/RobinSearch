@@ -13,8 +13,8 @@
 #include <mpfr.h>
 #include <omp.h>
 #include <primesieve.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
 #include "PlotDelta.hpp"
 #include "mpfr_mul_ui_fast.hpp"
 
@@ -100,9 +100,13 @@ struct mpfr_holder
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
+        // I'm not completely sure what the default
+        // constructor catches, so being conservative here.
+        ar & val->_mpfr_prec; // might be redundant
         ar & val->_mpfr_exp;
         ar & val->_mpfr_sign;
         ar & __gmpfr_local_tab_val;
+        val->_mpfr_d = __gmpfr_local_tab_val; // might be redundant...
     }
 };
 std::vector<mpfr_holder> mpfr_tmp;
@@ -217,8 +221,8 @@ struct PrimeGroup
     uint64_t PrimeHi;
     uint8_t Exp;
     primesieve::iterator PrimeIter;
-    mpfr_t CriticalEpsilon_rndd;
-    mpfr_t CriticalEpsilon_rndu;
+    mpfr_holder CriticalEpsilon_rndd;
+    mpfr_holder CriticalEpsilon_rndu;
 
     /*
     Initialize the PrimeIter with a modest stop_hint,
