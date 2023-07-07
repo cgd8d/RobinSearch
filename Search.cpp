@@ -225,7 +225,7 @@ struct PrimeGroup
     // status so we can save it.
     // better would be to track last retrieved value.
     // to revisit.
-    mutable primesieve::iterator PrimeIter;
+    primesieve::iterator PrimeIter;
     mpfr_holder CriticalEpsilon_rndd;
     mpfr_holder CriticalEpsilon_rndu;
 
@@ -309,7 +309,6 @@ struct PrimeGroup
         ar & PrimeLo;
         ar & PrimeHi;
         ar & Exp;
-        ar & PrimeIter.next_prime(); // Modifies status so now we have to exit.
         ar & CriticalEpsilon_rndd;
         ar & CriticalEpsilon_rndu;
     }
@@ -319,19 +318,17 @@ struct PrimeGroup
         ar & PrimeLo;
         ar & PrimeHi;
         ar & Exp;
-        uint64_t nextprime;
-        ar & nextprime;
-        if(nextprime < 500)
+        ar & CriticalEpsilon_rndd;
+        ar & CriticalEpsilon_rndu;
+        if(PrimeLo < 500)
         {
             // provide hint that this will probably start small.
-            PrimeIter.jump_to(nextprime, 1000);
+            PrimeIter.jump_to(PrimeLo+1, 1000);
         }
         else
         {
-            PrimeIter.jump_to(nextprime);
+            PrimeIter.jump_to(PrimeLo+1);
         }
-        ar & CriticalEpsilon_rndd;
-        ar & CriticalEpsilon_rndu;
     }
     BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
