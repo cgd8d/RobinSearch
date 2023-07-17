@@ -354,16 +354,16 @@ std::ostream& operator<<(std::ostream& os, const PrimeGroup & pg)
 // Store the current number as an exact form (factorized)
 // and mpfr interval.
 std::list<PrimeGroup> Number_factors;
-mpfr_t Number_rndd;
-mpfr_t Number_rndu;
+mpfr_holder Number_rndd;
+mpfr_holder Number_rndu;
 
 // Store NloglogN.  We only maintain a lower bound on this.
-mpfr_t NloglogN_rndd;
+mpfr_holder NloglogN_rndd;
 
 // Store sigma(N)/exp(gamma).
 // I just call it LHS since in my mind it is on the left.
-mpfr_t LHS_rndd;
-mpfr_t LHS_rndu;
+mpfr_holder LHS_rndd;
+mpfr_holder LHS_rndu;
 
 // Store a priority queue of PrimeGroups, where the top
 // is the next group to increment.
@@ -989,11 +989,6 @@ int main(int argc, char *argv[])
               << std::endl;
 
     CheckTypes();
-    mpfr_init2(Number_rndd, Precision);
-    mpfr_init2(Number_rndu, Precision);
-    mpfr_init2(NloglogN_rndd, Precision);
-    mpfr_init2(LHS_rndd, Precision);
-    mpfr_init2(LHS_rndu, Precision);
     mpfr_tmp.resize(6+4*NumThreads);
 
     // Compute the ratio between upper and
@@ -1068,10 +1063,4 @@ int main(int argc, char *argv[])
     std::cout << "cnt_LogLogNUpdates = " << cnt_LogLogNUpdates << std::endl;
     std::cout << "cnt_FastBunchMul = " << cnt_FastBunchMul << std::endl;
     std::cout << "cnt_SlowMulExpOne = " << cnt_SlowMulExpOne << std::endl;
-
-    mpfr_clear(Number_rndd);
-    mpfr_clear(Number_rndu);
-    mpfr_clear(NloglogN_rndd);
-    mpfr_clear(LHS_rndd);
-    mpfr_clear(LHS_rndu);
 }
