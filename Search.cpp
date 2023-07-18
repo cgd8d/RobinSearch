@@ -931,9 +931,12 @@ uint64_t AddPrimeFactors()
     return retval;
 }
 
+// argv[1] is max exp.
+// argv[2] is start time in sec.
+// argv[3] is out filename for results.
 int main(int argc, char *argv[])
 {
-    if(argc != 2 and argc != 3)
+    if(argc < 2 or argc > 4)
     {
         std::cerr << "Incorrect number of command-line arguments: "
                   << argc
@@ -1063,4 +1066,7 @@ int main(int argc, char *argv[])
     std::cout << "cnt_LogLogNUpdates = " << cnt_LogLogNUpdates << std::endl;
     std::cout << "cnt_FastBunchMul = " << cnt_FastBunchMul << std::endl;
     std::cout << "cnt_SlowMulExpOne = " << cnt_SlowMulExpOne << std::endl;
+
+    // save info to file if requested.
+    if(argc >= 4 and ... check that it's not an empty string
 }
