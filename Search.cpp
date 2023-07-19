@@ -933,7 +933,8 @@ uint64_t AddPrimeFactors()
 
 // argv[1] is max exp.
 // argv[2] is start time in sec.
-// argv[3] is out filename for results.
+// argv[3] is in filename for results.
+// argv[4] is out filename for results.
 int main(int argc, char *argv[])
 {
     if(argc < 2 or argc > 4)
@@ -1068,5 +1069,8 @@ int main(int argc, char *argv[])
     std::cout << "cnt_SlowMulExpOne = " << cnt_SlowMulExpOne << std::endl;
 
     // save info to file if requested.
-    if(argc >= 4 and ... check that it's not an empty string
+    if(argc >= 5 and
+        not std::string(argv[4]).empty())
+    {
+        
 }
