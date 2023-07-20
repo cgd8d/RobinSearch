@@ -13,8 +13,8 @@
 #include <mpfr.h>
 #include <omp.h>
 #include <primesieve.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 #include "PlotDelta.hpp"
 #include "mpfr_mul_ui_fast.hpp"
 
@@ -931,6 +931,32 @@ uint64_t AddPrimeFactors()
     return retval;
 }
 
+// serialize all necessary entries
+// in this program.  Depending on the
+// type of archive provided, this could
+// be reading from or writing to file.
+template<class Archive>
+void DoSerializeAll(Archive& ar)
+{
+    ar & PlotDelta;
+    ar & cnt_NumPrimeFactors;
+    ar & cnt_NumUniquePrimeFactors;
+    ar & cnt_EpsEvalForExpZero;
+    ar & cnt_LogLogNUpdates;
+    ar & cnt_FastBunchMul;
+    ar & cnt_SlowMulExpOne;
+    ar & Number_factors;
+    ar & Number_rndd;
+    ar & Number_rndu;
+    ar & NloglogN_rndd; // not strictly necessary
+    ar & LHS_rndd;
+    ar & LHS_rndu;
+
+
+
+
+
+
 // argv[1] is max exp.
 // argv[2] is start time in sec.
 // argv[3] is in filename for results.
@@ -1038,6 +1064,18 @@ int main(int argc, char *argv[])
     cnt_NumPrimeFactors++;
     cnt_NumUniquePrimeFactors++;
 
+    if(argc >= 4 and
+        not std::string(argv[3]).empty())
+    {
+        // read values from file.
+        // this will overwrite all of the
+        // initiations we just did,
+        // as intended.
+        std::ifstream ifs(argv[3]);
+        boost::archive::text_iarchive ia(ifs);
+        DoSerializeAll(ia);
+    }
+
     // Continue processing.
     while(Number_factors.front().Exp < MaxExp)
     {
@@ -1072,5 +1110,8 @@ int main(int argc, char *argv[])
     if(argc >= 5 and
         not std::string(argv[4]).empty())
     {
-        
+        std::ofstream ofs(argv[4]);
+        boost::archive::text_oarchive oa(ofs);
+        DoSerializeAll(oa);
+    }
 }
