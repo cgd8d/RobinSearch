@@ -935,6 +935,9 @@ uint64_t AddPrimeFactors()
 // in this program.  Depending on the
 // type of archive provided, this could
 // be reading from or writing to file.
+// some of these aren't strictly needed
+// but help size processing correctly
+// from the beginning (like PrimeQueueStep).
 template<class Archive>
 void DoSerializeAll(Archive& ar)
 {
@@ -951,11 +954,11 @@ void DoSerializeAll(Archive& ar)
     ar & NloglogN_rndd; // not strictly necessary
     ar & LHS_rndd;
     ar & LHS_rndu;
-
-
-
-
-
+    ar & PrimeGroupQueue;
+    ar & PrintNum_DeltaRatio;
+    ar & NextPrintDelta;
+    ar & PrimeQueueStep;
+}
 
 // argv[1] is max exp.
 // argv[2] is start time in sec.
@@ -1074,6 +1077,10 @@ int main(int argc, char *argv[])
         std::ifstream ifs(argv[3]);
         boost::archive::text_iarchive ia(ifs);
         DoSerializeAll(ia);
+
+        // We also need to manually set up
+        // the queue for new primes.
+        NextPrimeToGen = Number_factors.back().PrimeHi+1;
     }
 
     // Continue processing.
