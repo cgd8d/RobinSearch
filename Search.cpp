@@ -10,6 +10,7 @@
 #include <stack>
 #include <array>
 #include <tuple>
+#include <fstream>
 #include <mpfr.h>
 #include <omp.h>
 #include <primesieve.hpp>
@@ -93,6 +94,11 @@ struct mpfr_holder
     }
 
     operator mpfr_t&()
+    {
+        return val;
+    }
+
+    operator const mpfr_t&() const
     {
         return val;
     }
