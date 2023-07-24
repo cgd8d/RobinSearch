@@ -34,7 +34,7 @@ struct PlotDeltaStruct
     {
         if(loglogn >= loglogn_next)
         {
-            data.push_back(loglogn, logdelta);
+            data.emplace_back(loglogn, logdelta);
             loglogn_next = loglogn + loglogn_step;
         }
     }
