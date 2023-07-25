@@ -16,6 +16,7 @@
 #include <primesieve.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/list.hpp>
 #include "PlotDelta.hpp"
 #include "mpfr_mul_ui_fast.hpp"
 
