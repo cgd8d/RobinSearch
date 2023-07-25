@@ -45,7 +45,10 @@ struct PlotDeltaStruct
         if(not plotpipe)
         {
             std::cerr << "Failed to open gnuplot pipe." << std::endl;
-            throw std::runtime_error("Failed to open gnuplot pipe.");
+            //can't throw exception from destructor, no matter
+            //how much we want to.
+            //throw std::runtime_error("Failed to open gnuplot pipe.");
+            return;
         }
         fprintf(plotpipe, "set term pngcairo\n");
         fprintf(plotpipe, "set output 'DeltaPlot.png'\n");
@@ -63,7 +66,11 @@ struct PlotDeltaStruct
         if(not plotpipe2)
         {
             std::cerr << "Failed to open gnuplot pipe." << std::endl;
-            throw std::runtime_error("Failed to open gnuplot pipe.");
+            //can't throw exception from destructor, no matter
+            //how much we want to.
+            //throw std::runtime_error("Failed to open gnuplot pipe.");
+            pclose(plotpipe);
+            return;
         }
         fprintf(plotpipe2, "set term pngcairo\n");
         fprintf(plotpipe2, "set output 'DeltaPlotScaled.png'\n");
