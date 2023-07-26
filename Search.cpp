@@ -963,7 +963,6 @@ void DoSerializeAll(Archive& ar)
     ar & NloglogN_rndd; // not strictly necessary
     ar & LHS_rndd;
     ar & LHS_rndu;
-    ar & PrimeGroupQueue;
     ar & PrintNum_DeltaRatio;
     ar & NextPrintDelta;
     ar & PrimeQueueStep;
@@ -1090,6 +1089,20 @@ int main(int argc, char *argv[])
         // We also need to manually set up
         // the queue for new primes.
         NextPrimeToGen = Number_factors.back().PrimeHi+1;
+
+        // We already need to regenerate the
+        // prime group priority queue. serialization
+        // cannot handle iterators.
+        while(not PrimeGroupQueue.empty())
+        {
+            PrimeGroupQueue.pop();
+        }
+        for(auto it = Number_factors.begin();
+            it != Number_factors.end();
+            it++)
+        {
+            PrimeGroupQueue.push(it);
+        }
     }
 
     // Continue processing.
