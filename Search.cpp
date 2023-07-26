@@ -17,8 +17,6 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/list.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/priority_queue.hpp>
 #include "PlotDelta.hpp"
 #include "mpfr_mul_ui_fast.hpp"
 
