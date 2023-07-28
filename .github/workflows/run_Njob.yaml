@@ -1,0 +1,159 @@
+# Long run, extending across multiple jobs.
+
+name: Run_Njobs
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.2.1/.libs  -Wl,-rpath=gmp-6.2.1/.libs"
+
+
+jobs:
+
+  job1:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-22.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Set up environment
+      - name: Setup
+        run: |
+          echo "JOB_START_TIME=`date +%s`" >> $GITHUB_ENV
+          sudo apt-get update
+          sudo apt-get install gnuplot llvm-15 clang-15 autoconf-archive libomp-15-dev libboost-serialization-dev
+          perf config llvm.clang-path=clang-15
+          chmod a+x addr2line
+          chmod a+x objdump
+          PATH=`pwd`:$PATH which addr2line
+          PATH=`pwd`:$PATH which objdump
+
+
+      # build libprimesieve
+      - name: SetupPrimeSieve
+        run: bash scripts/SetupPrimeSieve.sh
+
+      # Build GMP
+      - name: SetupGMP
+        run: bash scripts/SetupGMP.sh
+
+      # Build MPFR
+      - name: SetupMPFR
+        run: bash scripts/SetupMPFR.sh
+
+      # Compile code
+      - name: Compile
+        run: bash scripts/CompileRobinSearch.sh
+
+
+
+      # Run code (perf)
+      - name: Run (perf)
+        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search 55 $JOB_START_TIME "" "job1.bin"
+
+      # Print perf report.
+      - name: Report from perf
+        run: sudo PATH=`pwd`:$PATH perf report -i perf.data --call-graph=graph,0.1
+
+      # Print perf source annotations.
+      - name: Source annotations from perf
+        run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data
+
+
+      # Save plot of deltas.
+      - name: Save delta plot
+        uses: actions/upload-artifact@v3
+        with:
+          name: delta_plots_1
+          path: |
+            DeltaPlot.png
+            DeltaPlotScaled.png
+            
+      # Save output file 
+      - name: Save job1 output
+        uses: actions/upload-artifact@v3
+        with:
+          name: out1
+          path: |
+            job1.bin
+
+
+  job2:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-22.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Set up environment
+      - name: Setup
+        run: |
+          echo "JOB_START_TIME=`date +%s`" >> $GITHUB_ENV
+          sudo apt-get update
+          sudo apt-get install gnuplot llvm-15 clang-15 autoconf-archive libomp-15-dev libboost-serialization-dev
+          perf config llvm.clang-path=clang-15
+          chmod a+x addr2line
+          chmod a+x objdump
+          PATH=`pwd`:$PATH which addr2line
+          PATH=`pwd`:$PATH which objdump
+
+
+      # build libprimesieve
+      - name: SetupPrimeSieve
+        run: bash scripts/SetupPrimeSieve.sh
+
+      # Build GMP
+      - name: SetupGMP
+        run: bash scripts/SetupGMP.sh
+
+      # Build MPFR
+      - name: SetupMPFR
+        run: bash scripts/SetupMPFR.sh
+
+      # Compile code
+      - name: Compile
+        run: bash scripts/CompileRobinSearch.sh
+
+      # Download artifact from last job.
+      - name: Download last output
+        uses: actions/download-artifact@v3
+        with:
+          name: job1.bin
+
+      # Run code (perf)
+      - name: Run (perf)
+        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search 55 $JOB_START_TIME "job1.bin" "job2.bin"
+
+      # Print perf report.
+      - name: Report from perf
+        run: sudo PATH=`pwd`:$PATH perf report -i perf.data --call-graph=graph,0.1
+
+      # Print perf source annotations.
+      - name: Source annotations from perf
+        run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data
+
+
+      # Save plot of deltas.
+      - name: Save delta plot
+        uses: actions/upload-artifact@v3
+        with:
+          name: delta_plots_1
+          path: |
+            DeltaPlot.png
+            DeltaPlotScaled.png
+            
+      # Save output file 
+      - name: Save job2 output
+        uses: actions/upload-artifact@v3
+        with:
+          name: out2
+          path: |
+            job2.bin
