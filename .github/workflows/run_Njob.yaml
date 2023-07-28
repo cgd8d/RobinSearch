@@ -126,7 +126,7 @@ jobs:
       - name: Download last output
         uses: actions/download-artifact@v3
         with:
-          name: job1.bin
+          name: out1
 
       # Run code (perf)
       - name: Run (perf)
