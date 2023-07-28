@@ -2,26 +2,53 @@
 #define PlotDelta_hpp
 
 #include <iostream>
+#include <vector>
+#include <utility>
+
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/utility.hpp>
 
 /*
-Accept days points and pipe them into gnuplot.
+Accept data points and pipe them into gnuplot.
 The goal is to plot log delta vs log log n,
 as in figure 3 (top) of Briggs 2006.
 */
 struct PlotDeltaStruct
 {
-    FILE* plotpipe;
-    FILE* plotpipe2;
+
     double loglogn_step;
     double loglogn_next;
+    std::vector<std::pair<double, double>> data;
 
     PlotDeltaStruct()
+
     {
-        plotpipe = popen("gnuplot", "w");
+
+        loglogn_step = 0.001;
+        loglogn_next = 5;
+    }
+
+    void AddPoint(double loglogn, double logdelta)
+    {
+        if(loglogn >= loglogn_next)
+        {
+            data.emplace_back(loglogn, logdelta);
+            loglogn_next = loglogn + loglogn_step;
+        }
+    }
+
+    ~PlotDeltaStruct()
+    {
+        FILE* plotpipe = popen("gnuplot", "w");
         if(not plotpipe)
         {
             std::cerr << "Failed to open gnuplot pipe." << std::endl;
-            throw std::runtime_error("Failed to open gnuplot pipe.");
+            //can't throw exception from destructor, no matter
+            //how much we want to.
+            //throw std::runtime_error("Failed to open gnuplot pipe.");
+            return;
         }
         fprintf(plotpipe, "set term pngcairo\n");
         fprintf(plotpipe, "set output 'DeltaPlot.png'\n");
@@ -35,11 +62,15 @@ struct PlotDeltaStruct
         fprintf(plotpipe, "set grid xtics mxtics ytics mytics\n");
         fprintf(plotpipe, "plot '-' with points pt 0\n");
 
-        plotpipe2 = popen("gnuplot", "w");
+        FILE* plotpipe2 = popen("gnuplot", "w");
         if(not plotpipe2)
         {
             std::cerr << "Failed to open gnuplot pipe." << std::endl;
-            throw std::runtime_error("Failed to open gnuplot pipe.");
+            //can't throw exception from destructor, no matter
+            //how much we want to.
+            //throw std::runtime_error("Failed to open gnuplot pipe.");
+            pclose(plotpipe);
+            return;
         }
         fprintf(plotpipe2, "set term pngcairo\n");
         fprintf(plotpipe2, "set output 'DeltaPlotScaled.png'\n");
@@ -54,29 +85,30 @@ struct PlotDeltaStruct
         fprintf(plotpipe2, "set grid xtics mxtics ytics mytics\n");
         fprintf(plotpipe2, "plot '-' with points pt 0\n");
 
-
-        loglogn_step = 0.001;
-        loglogn_next = 5;
-    }
-
-    void AddPoint(double loglogn, double logdelta)
-    {
-        if(loglogn >= loglogn_next)
+        for(size_t i = 0;
+            i < data.size();
+            i++)
         {
+            double loglogn = data[i].first;
+            double logdelta = data[i].second;
             fprintf(plotpipe, "%.5g %.5g\n", loglogn, logdelta);
             fprintf(plotpipe2, "%.5g %.5g\n", loglogn, logdelta+loglogn/2-0.323336);
-            loglogn_next = loglogn + loglogn_step;
         }
-    }
-
-    ~PlotDeltaStruct()
-    {
+        
         fprintf(plotpipe, "e\n");
         fflush(plotpipe);
         pclose(plotpipe);
         fprintf(plotpipe2, "e\n");
         fflush(plotpipe2);
         pclose(plotpipe2);
+    }
+    
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & loglogn_step;
+        ar & loglogn_next;
+        ar & data;
     }
 };
 

@@ -10,9 +10,13 @@
 #include <stack>
 #include <array>
 #include <tuple>
+#include <fstream>
 #include <mpfr.h>
 #include <omp.h>
 #include <primesieve.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/list.hpp>
 #include "PlotDelta.hpp"
 #include "mpfr_mul_ui_fast.hpp"
 
@@ -93,6 +97,23 @@ struct mpfr_holder
     operator mpfr_t&()
     {
         return val;
+    }
+
+    operator const mpfr_t&() const
+    {
+        return val;
+    }
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        // I'm not completely sure what the default
+        // constructor catches, so being conservative here.
+        ar & val->_mpfr_prec; // might be redundant
+        ar & val->_mpfr_exp;
+        ar & val->_mpfr_sign;
+        ar & __gmpfr_local_tab_val;
+        val->_mpfr_d = __gmpfr_local_tab_val; // might be redundant...
     }
 };
 std::vector<mpfr_holder> mpfr_tmp;
@@ -206,9 +227,14 @@ struct PrimeGroup
     uint64_t PrimeLo;
     uint64_t PrimeHi;
     uint8_t Exp;
+    
+    // mutable: hackish way to check current
+    // status so we can save it.
+    // better would be to track last retrieved value.
+    // to revisit.
     primesieve::iterator PrimeIter;
-    mpfr_t CriticalEpsilon_rndd;
-    mpfr_t CriticalEpsilon_rndu;
+    mpfr_holder CriticalEpsilon_rndd;
+    mpfr_holder CriticalEpsilon_rndu;
 
     /*
     Initialize the PrimeIter with a modest stop_hint,
@@ -218,14 +244,14 @@ struct PrimeGroup
     PrimeGroup()
     : PrimeIter(0, 1000)
     {
-        mpfr_init2(CriticalEpsilon_rndd, Precision);
-        mpfr_init2(CriticalEpsilon_rndu, Precision);
+
+
     }
 
     ~PrimeGroup()
     {
-        mpfr_clear(CriticalEpsilon_rndd);
-        mpfr_clear(CriticalEpsilon_rndu);
+
+
     }
 
 
@@ -282,6 +308,36 @@ struct PrimeGroup
     PrimeGroup(PrimeGroup && ) = delete;
     PrimeGroup& operator=(const PrimeGroup & ) = delete;
     PrimeGroup& operator=(PrimeGroup && ) = delete;
+    
+    template<class Archive>
+    void save(Archive & ar, const unsigned int version) const
+    {
+        // note, version is always the latest when saving
+        ar & PrimeLo;
+        ar & PrimeHi;
+        ar & Exp;
+        ar & CriticalEpsilon_rndd;
+        ar & CriticalEpsilon_rndu;
+    }
+    template<class Archive>
+    void load(Archive & ar, const unsigned int version)
+    {
+        ar & PrimeLo;
+        ar & PrimeHi;
+        ar & Exp;
+        ar & CriticalEpsilon_rndd;
+        ar & CriticalEpsilon_rndu;
+        if(PrimeLo < 500)
+        {
+            // provide hint that this will probably start small.
+            PrimeIter.jump_to(PrimeLo+1, 1000);
+        }
+        else
+        {
+            PrimeIter.jump_to(PrimeLo+1);
+        }
+    }
+    BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
 std::ostream& operator<<(std::ostream& os, const PrimeGroup & pg)
@@ -305,16 +361,16 @@ std::ostream& operator<<(std::ostream& os, const PrimeGroup & pg)
 // Store the current number as an exact form (factorized)
 // and mpfr interval.
 std::list<PrimeGroup> Number_factors;
-mpfr_t Number_rndd;
-mpfr_t Number_rndu;
+mpfr_holder Number_rndd;
+mpfr_holder Number_rndu;
 
 // Store NloglogN.  We only maintain a lower bound on this.
-mpfr_t NloglogN_rndd;
+mpfr_holder NloglogN_rndd;
 
 // Store sigma(N)/exp(gamma).
 // I just call it LHS since in my mind it is on the left.
-mpfr_t LHS_rndd;
-mpfr_t LHS_rndu;
+mpfr_holder LHS_rndd;
+mpfr_holder LHS_rndu;
 
 // Store a priority queue of PrimeGroups, where the top
 // is the next group to increment.
@@ -882,9 +938,41 @@ uint64_t AddPrimeFactors()
     return retval;
 }
 
+// serialize all necessary entries
+// in this program.  Depending on the
+// type of archive provided, this could
+// be reading from or writing to file.
+// some of these aren't strictly needed
+// but help size processing correctly
+// from the beginning (like PrimeQueueStep).
+template<class Archive>
+void DoSerializeAll(Archive& ar)
+{
+    ar & PlotDelta;
+    ar & cnt_NumPrimeFactors;
+    ar & cnt_NumUniquePrimeFactors;
+    ar & cnt_EpsEvalForExpZero;
+    ar & cnt_LogLogNUpdates;
+    ar & cnt_FastBunchMul;
+    ar & cnt_SlowMulExpOne;
+    ar & Number_factors;
+    ar & Number_rndd;
+    ar & Number_rndu;
+    ar & NloglogN_rndd; // not strictly necessary
+    ar & LHS_rndd;
+    ar & LHS_rndu;
+    ar & PrintNum_DeltaRatio;
+    ar & NextPrintDelta;
+    ar & PrimeQueueStep;
+}
+
+// argv[1] is max exp.
+// argv[2] is start time in sec.
+// argv[3] is in filename for results.
+// argv[4] is out filename for results.
 int main(int argc, char *argv[])
 {
-    if(argc != 2 and argc != 3)
+    if(argc < 2 or argc > 4)
     {
         std::cerr << "Incorrect number of command-line arguments: "
                   << argc
@@ -940,11 +1028,6 @@ int main(int argc, char *argv[])
               << std::endl;
 
     CheckTypes();
-    mpfr_init2(Number_rndd, Precision);
-    mpfr_init2(Number_rndu, Precision);
-    mpfr_init2(NloglogN_rndd, Precision);
-    mpfr_init2(LHS_rndd, Precision);
-    mpfr_init2(LHS_rndu, Precision);
     mpfr_tmp.resize(6+4*NumThreads);
 
     // Compute the ratio between upper and
@@ -990,6 +1073,36 @@ int main(int argc, char *argv[])
     cnt_NumPrimeFactors++;
     cnt_NumUniquePrimeFactors++;
 
+    if(argc >= 4 and
+        not std::string(argv[3]).empty())
+    {
+        // read values from file.
+        // this will overwrite all of the
+        // initiations we just did,
+        // as intended.
+        std::ifstream ifs(argv[3]);
+        boost::archive::text_iarchive ia(ifs);
+        DoSerializeAll(ia);
+
+        // We also need to manually set up
+        // the queue for new primes.
+        NextPrimeToGen = Number_factors.back().PrimeHi+1;
+
+        // We already need to regenerate the
+        // prime group priority queue. serialization
+        // cannot handle iterators.
+        while(not PrimeGroupQueue.empty())
+        {
+            PrimeGroupQueue.pop();
+        }
+        for(auto it = Number_factors.begin();
+            it != Number_factors.end();
+            it++)
+        {
+            PrimeGroupQueue.push(it);
+        }
+    }
+
     // Continue processing.
     while(Number_factors.front().Exp < MaxExp)
     {
@@ -1020,9 +1133,12 @@ int main(int argc, char *argv[])
     std::cout << "cnt_FastBunchMul = " << cnt_FastBunchMul << std::endl;
     std::cout << "cnt_SlowMulExpOne = " << cnt_SlowMulExpOne << std::endl;
 
-    mpfr_clear(Number_rndd);
-    mpfr_clear(Number_rndu);
-    mpfr_clear(NloglogN_rndd);
-    mpfr_clear(LHS_rndd);
-    mpfr_clear(LHS_rndu);
+    // save info to file if requested.
+    if(argc >= 5 and
+        not std::string(argv[4]).empty())
+    {
+        std::ofstream ofs(argv[4]);
+        boost::archive::text_oarchive oa(ofs);
+        DoSerializeAll(oa);
+    }
 }
