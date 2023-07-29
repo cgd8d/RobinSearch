@@ -972,7 +972,7 @@ void DoSerializeAll(Archive& ar)
 // argv[4] is out filename for results.
 int main(int argc, char *argv[])
 {
-    if(argc < 2 or argc > 4)
+    if(argc < 2 or argc > 5)
     {
         std::cerr << "Incorrect number of command-line arguments: "
                   << argc
