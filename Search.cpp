@@ -1108,6 +1108,9 @@ int main(int argc, char *argv[])
         {
             PrimeGroupQueue.push(it);
         }
+
+        std::cout << "Resuming work with status:" << std::endl;
+        PrintNumber();
     }
 
     // Continue processing.
@@ -1132,6 +1135,9 @@ int main(int argc, char *argv[])
     }
     exit_loop:
 
+    std::cout << "Ending process with status:" << std::endl;
+    PrintNumber();
+
     // Print counters.
     std::cout << "cnt_NumPrimeFactors = " << cnt_NumPrimeFactors << std::endl;
     std::cout << "cnt_NumUniquePrimeFactors = " << cnt_NumUniquePrimeFactors << std::endl;
@@ -1144,6 +1150,8 @@ int main(int argc, char *argv[])
     if(argc >= 5 and
         not std::string(argv[4]).empty())
     {
+        std::cout << "Saving progress to: "
+            << argv[4] << std::endl;
         std::ofstream ofs(argv[4]);
         boost::archive::text_oarchive oa(ofs);
         DoSerializeAll(oa);
