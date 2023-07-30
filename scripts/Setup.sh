@@ -7,7 +7,14 @@ chmod a+x objdump
 PATH=`pwd`:$PATH which addr2line
 PATH=`pwd`:$PATH which objdump
 
-bash scripts/SetupPrimeSieve.sh
-bash scripts/SetupGMP.sh
-bash scripts/SetupMPFR.sh
-bash scripts/CompileRobinSearch.sh
+echo "Setting up libprimesieve..."
+time bash scripts/SetupPrimeSieve.sh
+
+echo "Setting up GMP..."
+time bash scripts/SetupGMP.sh
+
+echo "Setting up MPFR..."
+time bash scripts/SetupMPFR.sh
+
+echo "Compiling RobinSearch..."
+time bash scripts/CompileRobinSearch.sh
