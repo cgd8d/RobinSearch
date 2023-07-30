@@ -24,34 +24,7 @@ jobs:
 
       # Set up environment
       - name: Setup
-        run: |
-          echo "JOB_START_TIME=`date +%s`" >> $GITHUB_ENV
-          sudo apt-get update
-          sudo apt-get install gnuplot llvm-15 clang-15 autoconf-archive libomp-15-dev libboost-serialization-dev
-          perf config llvm.clang-path=clang-15
-          chmod a+x addr2line
-          chmod a+x objdump
-          PATH=`pwd`:$PATH which addr2line
-          PATH=`pwd`:$PATH which objdump
-
-
-      # build libprimesieve
-      - name: SetupPrimeSieve
-        run: bash scripts/SetupPrimeSieve.sh
-
-      # Build GMP
-      - name: SetupGMP
-        run: bash scripts/SetupGMP.sh
-
-      # Build MPFR
-      - name: SetupMPFR
-        run: bash scripts/SetupMPFR.sh
-
-      # Compile code
-      - name: Compile
-        run: bash scripts/CompileRobinSearch.sh
-
-
+        run: . ./scripts/Setup.sh
 
       # Run code (perf)
       - name: Run (perf)
@@ -96,32 +69,7 @@ jobs:
 
       # Set up environment
       - name: Setup
-        run: |
-          echo "JOB_START_TIME=`date +%s`" >> $GITHUB_ENV
-          sudo apt-get update
-          sudo apt-get install gnuplot llvm-15 clang-15 autoconf-archive libomp-15-dev libboost-serialization-dev
-          perf config llvm.clang-path=clang-15
-          chmod a+x addr2line
-          chmod a+x objdump
-          PATH=`pwd`:$PATH which addr2line
-          PATH=`pwd`:$PATH which objdump
-
-
-      # build libprimesieve
-      - name: SetupPrimeSieve
-        run: bash scripts/SetupPrimeSieve.sh
-
-      # Build GMP
-      - name: SetupGMP
-        run: bash scripts/SetupGMP.sh
-
-      # Build MPFR
-      - name: SetupMPFR
-        run: bash scripts/SetupMPFR.sh
-
-      # Compile code
-      - name: Compile
-        run: bash scripts/CompileRobinSearch.sh
+        run: . ./scripts/Setup.sh
 
       # Download artifact from last job.
       - name: Download last output
