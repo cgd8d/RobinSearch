@@ -489,6 +489,27 @@ void IncrementExp()
     }
 }
 
+// Print the current number without any computation
+// or checks.
+void PrintNumber()
+{
+    std::cout << "N = ";
+    auto it = Number_factors.begin();
+    while(true)
+    {
+        std::cout << *it;
+        it++;
+        if(it == Number_factors.end())
+        {
+            break;
+        }
+        std::cout << " * ";
+    }
+    std::cout << std::endl;
+    std::cout << "  = (" << Number_rndd
+              << ", " << Number_rndu << ")" << std::endl;
+}
+
 // Deal with checking the values and logging as appropriate.
 // Return true when the logarithms are recomputed,
 // false otherwise; this helps other parts of the code
@@ -519,21 +540,7 @@ bool CheckNumber()
         if(LogLogN_d > 2.5 and delta <= NextPrintDelta)
         {
             std::cout << "Updating logs on:" << std::endl;
-            std::cout << "N = ";
-            auto it = Number_factors.begin();
-            while(true)
-            {
-                std::cout << *it;
-                it++;
-                if(it == Number_factors.end())
-                {
-                    break;
-                }
-                std::cout << " * ";
-            }
-            std::cout << std::endl;
-            std::cout << "  = (" << Number_rndd
-                      << ", " << Number_rndu << ")" << std::endl;
+            PrintNumber();
             std::cout << "exp(gamma)*loglogN - sigma(N)/N > ";
             std::cout << delta << std::endl;
             NextPrintDelta = delta/PrintNum_DeltaRatio;
