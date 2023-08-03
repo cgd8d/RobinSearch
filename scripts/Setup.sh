@@ -1,4 +1,3 @@
-echo "JOB_START_TIME=`date +%s`" >> $GITHUB_ENV
 sudo apt-get update
 sudo apt-get install gnuplot llvm-15 clang-15 autoconf-archive libomp-15-dev libboost-serialization-dev
 perf config llvm.clang-path=clang-15
