@@ -995,16 +995,10 @@ int main(int argc, char *argv[])
                   << std::endl;
         return 1;
     }
-    unsigned long start_time = -1;
     unsigned long end_time = -1;
     if(argc >= 3)
     {
-        start_time = std::strtoul(argv[2], nullptr, 0);
-        std::cout << "Job start time is "
-                  << start_time
-                  << std::endl;
-        // Run for 5hr 45min.
-        end_time = start_time + (5*60+45)*60;
+        end_time = std::strtoul(argv[2], nullptr, 0);
         std::cout << "Job end time will be "
                   << end_time
                   << std::endl;
