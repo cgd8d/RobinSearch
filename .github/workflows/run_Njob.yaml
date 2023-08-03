@@ -19,6 +19,12 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      # Define stop time.
+      - name: SetStopTime
+        run: |
+          JOB_STOP_TIME=`date --date="+6 hours -10 mins" +%s`
+          echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
+    
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
@@ -64,6 +70,12 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      # Define stop time.
+      - name: SetStopTime
+        run: |
+          JOB_STOP_TIME=`date --date="+6 hours -10 mins" +%s`
+          echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
+    
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
