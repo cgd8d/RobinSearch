@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.2.1/.libs  -Wl,-rpath=gmp-6.2.1/.libs"
+  MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.3.0/.libs  -Wl,-rpath=gmp-6.3.0/.libs"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -27,44 +27,21 @@ jobs:
       # Set up environment
       - name: Setup
         run: |
-          sudo apt-get update
-          sudo apt-get install gnuplot llvm-15 clang-15 autoconf-archive libomp-15-dev libboost-serialization-dev
-          perf config llvm.clang-path=clang-15
-          chmod a+x addr2line
-          chmod a+x objdump
-          PATH=`pwd`:$PATH which addr2line
-          PATH=`pwd`:$PATH which objdump
-
-      # build libprimesieve
-      - name: SetupPrimeSieve
-        run: bash scripts/SetupPrimeSieve.sh
-
-      # Build GMP
-      - name: SetupGMP
-        run: bash scripts/SetupGMP.sh
-
-      # Build MPFR
-      - name: SetupMPFR
-        run: bash scripts/SetupMPFR.sh
-
-      # Compile code
-      - name: Compile
-        run: |
           git rev-parse --short HEAD
-          bash scripts/CompileRobinSearch.sh
+          . ./scripts/Setup.sh
 
       # Run code straight, no profiling.
       - name: Run
-        run: ./Search 44
+        run: /usr/bin/time -v ./Search 44
 
      # Compile code from main branch
       - name: Compile main
         run: |
-          rm Search code.profdata default.profraw
+          rm -rf Search code.profdata default.profraw primesieve mpfr gmp-6.3.0
           git checkout main
           git rev-parse --short HEAD
-          bash scripts/CompileRobinSearch.sh
+          . ./scripts/Setup.sh
 
       # Run main code straight, no profiling.
       - name: Run main
-        run: ./Search 44
+        run: /usr/bin/time -v ./Search 44
