@@ -32,7 +32,7 @@ jobs:
 
       # Run code straight, no profiling.
       - name: Run
-        run: /usr/bin/time -v ./Search 44
+        run: /usr/bin/time -v ./Search 47
 
      # Compile code from main branch
       - name: Compile main
@@ -44,4 +44,4 @@ jobs:
 
       # Run main code straight, no profiling.
       - name: Run main
-        run: /usr/bin/time -v ./Search 44
+        run: /usr/bin/time -v ./Search 47
