@@ -1026,11 +1026,11 @@ int main(int argc, char *argv[])
               << primesieve::cpuInfo.l2CacheBytes()
               << " bytes (L2)"
               << std::endl;
-    primesieve::set_sieve_size(1<<8);
+    /*primesieve::set_sieve_size(1<<8);
     std::cout << "Prime sieve size changed to "
               << primesieve::get_sieve_size()
               << " KiB (kibibytes)."
-              << std::endl;
+              << std::endl;*/
 
     // Number of threads.
     std::cout << "Max number of threads: "
