@@ -1017,7 +1017,7 @@ int main(int argc, char *argv[])
               << primesieve::get_sieve_size()
               << " KiB (kibibytes)."
               << std::endl;
-    primesieve::set_sieve_size(1<<10);
+    primesieve::set_sieve_size(1<<8);
     std::cout << "Prime sieve size changed to "
               << primesieve::get_sieve_size()
               << " KiB (kibibytes)."
