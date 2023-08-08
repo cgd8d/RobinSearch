@@ -1035,7 +1035,7 @@ int main(int argc, char *argv[])
     std::cout << "Prime sieve size changed to "
               << primesieve::get_sieve_size()
               << " KiB (kibibytes)."
-              << std::endl;*/
+              << std::endl;
 
     // Number of threads.
     std::cout << "Max number of threads: "
