@@ -1030,7 +1030,7 @@ int main(int argc, char *argv[])
               << " bytes (L3)"
               << std::endl;
     primesieve::set_sieve_size(
-        primesieve::cpuInfo.l3CacheBytes() << 12
+        primesieve::cpuInfo.l3CacheBytes() >> 12
     );
     std::cout << "Prime sieve size changed to "
               << primesieve::get_sieve_size()
