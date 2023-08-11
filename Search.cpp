@@ -14,6 +14,7 @@
 #include <mpfr.h>
 #include <omp.h>
 #include <primesieve.hpp>
+#include <primesieve/CpuInfo.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/list.hpp>
@@ -1016,6 +1017,17 @@ int main(int argc, char *argv[])
     std::cout << "Prime sieve default size is "
               << primesieve::get_sieve_size()
               << " KiB (kibibytes)."
+              << std::endl;
+    std::cout << "Primesieve reports cache sizes:"
+              << std::endl
+              << primesieve::cpuInfo.l1CacheBytes()
+              << " bytes (L1d)"
+              << std::endl
+              << primesieve::cpuInfo.l2CacheBytes()
+              << " bytes (L2)"
+              << std::endl
+              << primesieve::cpuInfo.l3CacheBytes()
+              << " bytes (L3)"
               << std::endl;
     primesieve::set_sieve_size(1<<10);
     std::cout << "Prime sieve size changed to "
