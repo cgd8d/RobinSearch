@@ -9,8 +9,10 @@ cd primesieve
 sed -i 's/private/public/g' include/primesieve/iterator.hpp
 #sed -i 's/BUCKET_BYTES = 8 << 10/BUCKET_BYTES = 8 << 11/' include/primesieve/config.hpp
 #sed -i 's/FACTOR_ERATSMALL = 0.2/FACTOR_ERATSMALL = 0.25/' include/primesieve/config.hpp
-sed -i 's/FACTOR_ERATMEDIUM = 1.75/FACTOR_ERATMEDIUM = 1.25/' include/primesieve/config.hpp
+#sed -i 's/FACTOR_ERATMEDIUM = 1.75/FACTOR_ERATMEDIUM = 1.25/' include/primesieve/config.hpp
+sed -i 's/maxSize = 1 << 10/maxSize = 1 << 11/' src/PrimeGenerator.cpp
 cat include/primesieve/config.hpp
+cat src/PrimeGenerator.cpp
 CC="clang-15 -march=native" CXX="clang++-15 -march=native" cmake -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .
 make -j VERBOSE=1
 ctest
