@@ -10,7 +10,6 @@ on:
 env:
   MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.3.0/.libs  -Wl,-rpath=gmp-6.3.0/.libs"
 
-
 jobs:
 
   job1:
@@ -44,7 +43,6 @@ jobs:
       - name: Source annotations from perf
         run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data
 
-
       # Save plot of deltas.
       - name: Save delta plot
         uses: actions/upload-artifact@v3
@@ -55,13 +53,12 @@ jobs:
             DeltaPlotScaled.png
             
       # Save output file 
-      - name: Save job1 output
+      - name: Save job output
         uses: actions/upload-artifact@v3
         with:
           name: out1
           path: |
             job1.bin
-
 
   job2:
     # The type of runner that the job will run on
@@ -101,7 +98,6 @@ jobs:
       - name: Source annotations from perf
         run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data
 
-
       # Save plot of deltas.
       - name: Save delta plot
         uses: actions/upload-artifact@v3
@@ -112,9 +108,284 @@ jobs:
             DeltaPlotScaled.png
             
       # Save output file 
-      - name: Save job2 output
+      - name: Save job output
         uses: actions/upload-artifact@v3
         with:
           name: out2
           path: |
             job2.bin
+
+  job3:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-22.04
+    needs: job2
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Define stop time.
+      - name: SetStopTime
+        run: |
+          JOB_STOP_TIME=`date --date="+6 hours -10 mins" +%s`
+          echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
+    
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Set up environment
+      - name: Setup
+        run: . ./scripts/Setup.sh
+
+      # Download artifact from last job.
+      - name: Download last output
+        uses: actions/download-artifact@v3
+        with:
+          name: out2
+
+      # Run code (perf)
+      - name: Run (perf)
+        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search 55 $JOB_STOP_TIME "job1.bin" "job2.bin"
+
+      # Print perf report.
+      - name: Report from perf
+        run: sudo PATH=`pwd`:$PATH perf report -i perf.data --call-graph=graph,0.1
+
+      # Print perf source annotations.
+      - name: Source annotations from perf
+        run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data
+
+      # Save plot of deltas.
+      - name: Save delta plot
+        uses: actions/upload-artifact@v3
+        with:
+          name: delta_plots_3
+          path: |
+            DeltaPlot.png
+            DeltaPlotScaled.png
+            
+      # Save output file 
+      - name: Save job output
+        uses: actions/upload-artifact@v3
+        with:
+          name: out3
+          path: |
+            job3.bin
+
+  job4:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-22.04
+    needs: job3
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Define stop time.
+      - name: SetStopTime
+        run: |
+          JOB_STOP_TIME=`date --date="+6 hours -10 mins" +%s`
+          echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
+    
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Set up environment
+      - name: Setup
+        run: . ./scripts/Setup.sh
+
+      # Download artifact from last job.
+      - name: Download last output
+        uses: actions/download-artifact@v3
+        with:
+          name: out3
+
+      # Run code (perf)
+      - name: Run (perf)
+        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search 55 $JOB_STOP_TIME "job1.bin" "job2.bin"
+
+      # Print perf report.
+      - name: Report from perf
+        run: sudo PATH=`pwd`:$PATH perf report -i perf.data --call-graph=graph,0.1
+
+      # Print perf source annotations.
+      - name: Source annotations from perf
+        run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data
+
+      # Save plot of deltas.
+      - name: Save delta plot
+        uses: actions/upload-artifact@v3
+        with:
+          name: delta_plots_4
+          path: |
+            DeltaPlot.png
+            DeltaPlotScaled.png
+            
+      # Save output file 
+      - name: Save job output
+        uses: actions/upload-artifact@v3
+        with:
+          name: out4
+          path: |
+            job4.bin
+
+  job5:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-22.04
+    needs: job4
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Define stop time.
+      - name: SetStopTime
+        run: |
+          JOB_STOP_TIME=`date --date="+6 hours -10 mins" +%s`
+          echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
+    
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Set up environment
+      - name: Setup
+        run: . ./scripts/Setup.sh
+
+      # Download artifact from last job.
+      - name: Download last output
+        uses: actions/download-artifact@v3
+        with:
+          name: out4
+
+      # Run code (perf)
+      - name: Run (perf)
+        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search 55 $JOB_STOP_TIME "job1.bin" "job2.bin"
+
+      # Print perf report.
+      - name: Report from perf
+        run: sudo PATH=`pwd`:$PATH perf report -i perf.data --call-graph=graph,0.1
+
+      # Print perf source annotations.
+      - name: Source annotations from perf
+        run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data
+
+      # Save plot of deltas.
+      - name: Save delta plot
+        uses: actions/upload-artifact@v3
+        with:
+          name: delta_plots_5
+          path: |
+            DeltaPlot.png
+            DeltaPlotScaled.png
+            
+      # Save output file 
+      - name: Save job output
+        uses: actions/upload-artifact@v3
+        with:
+          name: out5
+          path: |
+            job5.bin
+
+  job6:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-22.04
+    needs: job5
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Define stop time.
+      - name: SetStopTime
+        run: |
+          JOB_STOP_TIME=`date --date="+6 hours -10 mins" +%s`
+          echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
+    
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Set up environment
+      - name: Setup
+        run: . ./scripts/Setup.sh
+
+      # Download artifact from last job.
+      - name: Download last output
+        uses: actions/download-artifact@v3
+        with:
+          name: out5
+
+      # Run code (perf)
+      - name: Run (perf)
+        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search 55 $JOB_STOP_TIME "job1.bin" "job2.bin"
+
+      # Print perf report.
+      - name: Report from perf
+        run: sudo PATH=`pwd`:$PATH perf report -i perf.data --call-graph=graph,0.1
+
+      # Print perf source annotations.
+      - name: Source annotations from perf
+        run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data
+
+      # Save plot of deltas.
+      - name: Save delta plot
+        uses: actions/upload-artifact@v3
+        with:
+          name: delta_plots_6
+          path: |
+            DeltaPlot.png
+            DeltaPlotScaled.png
+            
+      # Save output file 
+      - name: Save job output
+        uses: actions/upload-artifact@v3
+        with:
+          name: out6
+          path: |
+            job6.bin
+
+  job7:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-22.04
+    needs: job6
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Define stop time.
+      - name: SetStopTime
+        run: |
+          JOB_STOP_TIME=`date --date="+6 hours -10 mins" +%s`
+          echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
+    
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Set up environment
+      - name: Setup
+        run: . ./scripts/Setup.sh
+
+      # Download artifact from last job.
+      - name: Download last output
+        uses: actions/download-artifact@v3
+        with:
+          name: out6
+
+      # Run code (perf)
+      - name: Run (perf)
+        run: sudo perf record --call-graph dwarf -F 10 -o perf.data ./Search 55 $JOB_STOP_TIME "job1.bin" "job2.bin"
+
+      # Print perf report.
+      - name: Report from perf
+        run: sudo PATH=`pwd`:$PATH perf report -i perf.data --call-graph=graph,0.1
+
+      # Print perf source annotations.
+      - name: Source annotations from perf
+        run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data
+
+      # Save plot of deltas.
+      - name: Save delta plot
+        uses: actions/upload-artifact@v3
+        with:
+          name: delta_plots_7
+          path: |
+            DeltaPlot.png
+            DeltaPlotScaled.png
+            
+      # Save output file 
+      - name: Save job output
+        uses: actions/upload-artifact@v3
+        with:
+          name: out7
+          path: |
+            job7.bin
