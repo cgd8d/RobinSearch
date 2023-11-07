@@ -44,7 +44,15 @@ void CheckTypes()
     {
         std::cerr << "NumThreads = " << NumThreads << std::endl;
         std::cerr << "omp_get_max_threads() = " << omp_get_max_threads() << std::endl;
-        throw std::logic_error("NumThreads is wrong.");
+        // Do not throw an error and fail.
+        // On AMD EPYC machines (which are available
+        // among the GitHub runners), omp_get_max_threads
+        // can be four even though there are still
+        // only two physical cores.  I don't know why
+        // OMP is doing this or whether it would benefit
+        // performance to follow suit, but killing the
+        // process is not the answer.
+        //throw std::logic_error("NumThreads is wrong.");
     }
 
     static_assert(8 == sizeof(uint64_t),
