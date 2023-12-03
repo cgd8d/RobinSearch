@@ -143,7 +143,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job1.bin" "job2.bin"
+        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job2.bin" "job3.bin"
 
       # Print perf report.
       - name: Report from perf
@@ -198,7 +198,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job1.bin" "job2.bin"
+        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job3.bin" "job4.bin"
 
       # Print perf report.
       - name: Report from perf
@@ -253,7 +253,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job1.bin" "job2.bin"
+        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job4.bin" "job5.bin"
 
       # Print perf report.
       - name: Report from perf
@@ -308,7 +308,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job1.bin" "job2.bin"
+        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job5.bin" "job6.bin"
 
       # Print perf report.
       - name: Report from perf
@@ -363,7 +363,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job1.bin" "job2.bin"
+        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job6.bin" "job7.bin"
 
       # Print perf report.
       - name: Report from perf
