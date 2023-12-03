@@ -964,21 +964,37 @@ uint64_t AddPrimeFactors()
 template<class Archive>
 void DoSerializeAll(Archive& ar)
 {
+    std::cout << "About to serialize PlotDelta." << std::endl;
     ar & PlotDelta;
+    std::cout << "About to serialize cnt_NumPrimeFactors." << std::endl;
     ar & cnt_NumPrimeFactors;
+    std::cout << "About to serialize cnt_NumUniquePrimeFactors." << std::endl;
     ar & cnt_NumUniquePrimeFactors;
+    std::cout << "About to serialize cnt_EpsEvalForExpZero." << std::endl;
     ar & cnt_EpsEvalForExpZero;
+    std::cout << "About to serialize cnt_LogLogNUpdates." << std::endl;
     ar & cnt_LogLogNUpdates;
+    std::cout << "About to serialize cnt_FastBunchMul." << std::endl;
     ar & cnt_FastBunchMul;
+    std::cout << "About to serialize cnt_SlowMulExpOne." << std::endl;
     ar & cnt_SlowMulExpOne;
+    std::cout << "About to serialize Number_factors." << std::endl;
     ar & Number_factors;
+    std::cout << "About to serialize Number_rndd." << std::endl;
     ar & Number_rndd;
+    std::cout << "About to serialize Number_rndu." << std::endl;
     ar & Number_rndu;
+    std::cout << "About to serialize NloglogN_rndd." << std::endl;
     ar & NloglogN_rndd; // not strictly necessary
+    std::cout << "About to serialize LHS_rndd." << std::endl;
     ar & LHS_rndd;
+    std::cout << "About to serialize LHS_rndu." << std::endl;
     ar & LHS_rndu;
+    std::cout << "About to serialize PrintNum_DeltaRatio." << std::endl;
     ar & PrintNum_DeltaRatio;
+    std::cout << "About to serialize NextPrintDelta." << std::endl;
     ar & NextPrintDelta;
+    std::cout << "About to serialize PrimeQueueStep." << std::endl;
     ar & PrimeQueueStep;
 }
 
