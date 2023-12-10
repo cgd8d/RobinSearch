@@ -20,13 +20,19 @@ struct PlotDeltaStruct
 
     double loglogn_step;
     double loglogn_next;
-    std::vector<std::pair<double, double>> data;
+
+    // Store values to float precision.
+    // This is only for plotting, and
+    // the size of the serialized file
+    // can become annoyingly big.
+    std::vector<std::pair<float, float>> data;
 
     PlotDeltaStruct()
 
     {
-
-        loglogn_step = 0.001;
+        // Configure to save 100
+        // points per unit of loglogn.
+        loglogn_step = 0.01;
         loglogn_next = 5;
     }
 
