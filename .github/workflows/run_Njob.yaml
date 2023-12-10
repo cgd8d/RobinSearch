@@ -33,7 +33,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "" "job1.bin"
+        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "" "job1.txt"
 
       # Print perf report.
       - name: Report from perf
@@ -58,7 +58,7 @@ jobs:
         with:
           name: out1
           path: |
-            job1.bin
+            job1.txt
 
   job2:
     # The type of runner that the job will run on
@@ -88,7 +88,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job1.bin" "job2.bin"
+        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job1.txt" "job2.txt"
 
       # Print perf report.
       - name: Report from perf
@@ -113,7 +113,7 @@ jobs:
         with:
           name: out2
           path: |
-            job2.bin
+            job2.txt
 
   job3:
     # The type of runner that the job will run on
@@ -143,7 +143,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job2.bin" "job3.bin"
+        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job2.txt" "job3.txt"
 
       # Print perf report.
       - name: Report from perf
@@ -168,7 +168,7 @@ jobs:
         with:
           name: out3
           path: |
-            job3.bin
+            job3.txt
 
   job4:
     # The type of runner that the job will run on
@@ -198,7 +198,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job3.bin" "job4.bin"
+        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job3.txt" "job4.txt"
 
       # Print perf report.
       - name: Report from perf
@@ -223,7 +223,7 @@ jobs:
         with:
           name: out4
           path: |
-            job4.bin
+            job4.txt
 
   job5:
     # The type of runner that the job will run on
@@ -253,7 +253,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job4.bin" "job5.bin"
+        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job4.txt" "job5.txt"
 
       # Print perf report.
       - name: Report from perf
@@ -278,7 +278,7 @@ jobs:
         with:
           name: out5
           path: |
-            job5.bin
+            job5.txt
 
   job6:
     # The type of runner that the job will run on
@@ -308,7 +308,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job5.bin" "job6.bin"
+        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job5.txt" "job6.txt"
 
       # Print perf report.
       - name: Report from perf
@@ -333,7 +333,7 @@ jobs:
         with:
           name: out6
           path: |
-            job6.bin
+            job6.txt
 
   job7:
     # The type of runner that the job will run on
@@ -363,7 +363,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job6.bin" "job7.bin"
+        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "job6.txt" "job7.txt"
 
       # Print perf report.
       - name: Report from perf
@@ -388,4 +388,4 @@ jobs:
         with:
           name: out7
           path: |
-            job7.bin
+            job7.txt
