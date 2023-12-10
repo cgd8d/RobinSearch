@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <utility>
+#include <cmath>
 
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
@@ -20,6 +21,8 @@ struct PlotDeltaStruct
 
     double loglogn_step;
     double loglogn_next;
+    double last_yval; // log delta + loglogn/2
+    double max_yval_change;
 
     // Store values to float precision.
     // This is only for plotting, and
@@ -30,18 +33,30 @@ struct PlotDeltaStruct
     PlotDeltaStruct()
 
     {
-        // Configure to save 100
+        // Configure to save 20
         // points per unit of loglogn.
-        loglogn_step = 0.01;
+        loglogn_step = 0.05;
         loglogn_next = 5;
+
+        // Additionally, we want to save
+        // a point whenever
+        // log delta + loglogn/2 has changed
+        // by enough.
+        // Configure to save 20
+        // points per y-axis grid mark (0.01).
+        last_yval = -1000; // dummy value.
+        max_yval_change = 0.0005;
     }
 
     void AddPoint(double loglogn, double logdelta)
     {
-        if(loglogn >= loglogn_next)
+        double this_yval = logdelta+loglogn/2;
+        if(loglogn >= loglogn_next
+            or std::fabs(this_yval-last_yval) >= max_yval_change)
         {
             data.emplace_back(loglogn, logdelta);
             loglogn_next = loglogn + loglogn_step;
+            last_yval = this_yval;
         }
     }
 
