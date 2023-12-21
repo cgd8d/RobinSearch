@@ -33,7 +33,7 @@ jobs:
 
       # Run code (perf)
       - name: Run (perf)
-        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "" "job1.txt"
+        run: sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 55 $JOB_STOP_TIME "checkpoints/Checkpoint_42hrs_20231211.txt" "job1.txt"
 
       # Print perf report.
       - name: Report from perf
