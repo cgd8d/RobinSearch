@@ -10,6 +10,7 @@ on:
 env:
   MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.3.0/.libs  -Wl,-rpath=gmp-6.3.0/.libs"
   IN_FILE: "checkpoints/Checkpoint_42hrs_20231211.txt"
+  RUNTIME_MIN: 30
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -33,7 +34,9 @@ jobs:
 
       # Run code straight, no profiling.
       - name: Run
-        run: /usr/bin/time -v ./Search 47 -1 $IN_FILE
+        run: |
+          JOB_STOP_TIME=`date --date="+$RUNTIME_MIN mins" +%s`
+          /usr/bin/time -v ./Search 60 $JOB_STOP_TIME $IN_FILE
 
      # Compile code from main branch
       - name: Compile main
@@ -45,4 +48,6 @@ jobs:
 
       # Run main code straight, no profiling.
       - name: Run main
-        run: /usr/bin/time -v ./Search 47 -1 $IN_FILE
+        run: |
+          JOB_STOP_TIME=`date --date="+$RUNTIME_MIN mins" +%s`
+          /usr/bin/time -v ./Search 60 $JOB_STOP_TIME $IN_FILE
