@@ -1143,6 +1143,8 @@ int main(int argc, char *argv[])
         PrintNumber();
     }
 
+    uint64_t cnt_NumPrimeFactors_orig = cnt_NumPrimeFactors;
+
     // Continue processing.
     while(Number_factors.front().Exp < MaxExp)
     {
@@ -1175,6 +1177,9 @@ int main(int argc, char *argv[])
     std::cout << "cnt_LogLogNUpdates = " << cnt_LogLogNUpdates << std::endl;
     std::cout << "cnt_FastBunchMul = " << cnt_FastBunchMul << std::endl;
     std::cout << "cnt_SlowMulExpOne = " << cnt_SlowMulExpOne << std::endl;
+    std::cout << "Number of prime factors added in this run: "
+              << cnt_NumPrimeFactors-cnt_NumPrimeFactors_orig
+              << std::endl;
 
     // save info to file if requested.
     if(argc >= 5 and
