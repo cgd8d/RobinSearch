@@ -674,10 +674,26 @@ uint64_t AddPrimeFactors()
         {
             PrimeQueueVec[i].clear();
             PrimeQueueVec[i].reserve(TargetPrimeQueueSize);
-            primesieve::generate_primes(
+
+            // Make a new prime iterator.
+            // This has a large startup cost.
+            // Mimic the approach of
+            // primesieve::store_primes
+            // so we can do extra calculation
+            // along the way.
+            uint64_t limit = NextPrimeToGen + (i+1)*PrimeQueueStep - 1;
+            primesieve::iterator this_prime_it(
                 NextPrimeToGen + i*PrimeQueueStep,
-                NextPrimeToGen + (i+1)*PrimeQueueStep - 1,
-                &PrimeQueueVec[i]);
+                limit);
+            this_prime_it.generate_next_primes();
+            for (; this_prime_it.primes_[this_prime_it.size_ - 1] <= limit; this_prime_it.generate_next_primes())
+            {
+                PrimeQueueVec[i].insert(PrimeQueueVec[i].end(), this_prime_it.primes_, this_prime_it.primes_ + this_prime_it.size_);
+            }
+            for (std::size_t j = 0; this_prime_it.primes_[j] <= limit; j++)
+            {
+                PrimeQueueVec[i].push_back(this_prime_it.primes_[j]);
+            }
 
             // Within threads, also compute
             // intermediate products.
