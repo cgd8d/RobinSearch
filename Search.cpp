@@ -818,58 +818,6 @@ uint64_t AddPrimeFactors()
             {
                 TmpProducts[i].pop_back();
             }
-
-            // Within threads, also compute
-            // intermediate products.
-            TmpProducts[i].clear();
-            TmpProducts[i].reserve(
-                TargetPrimeQueueSize/ProductGroupSize);
-            TmpProducts[i].resize(
-                PrimeQueueVec[i].size()/ProductGroupSize);
-            for(size_t j = 0;
-                j < TmpProducts[i].size();
-                j++)
-            {
-                // Initialize lhs.
-                mpfr_set_ui(
-                    std::get<0>(TmpProducts[i][j]),
-                    PrimeQueueVec[i][j*ProductGroupSize]+1,
-                    MPFR_RNDD);
-
-                // Initialize rhs.
-                mpfr_set_ui(
-                    std::get<2>(TmpProducts[i][j]),
-                    PrimeQueueVec[i][j*ProductGroupSize],
-                    MPFR_RNDD);
-
-                // Iterate on multiplication.
-                for(size_t k = 1;
-                    k < ProductGroupSize;
-                    k++)
-                {
-                    uint64_t pval = PrimeQueueVec[i][j*ProductGroupSize+k];
-                    mpfr_mul_ui_fast(
-                        std::get<0>(TmpProducts[i][j]),
-                        pval+1,
-                        MPFR_RNDD);
-                    mpfr_mul_ui_fast(
-                        std::get<2>(TmpProducts[i][j]),
-                        pval,
-                        MPFR_RNDD);
-                }
-                // Compute upper bounds based
-                // on lower bounds.
-                mpfr_mul(
-                    std::get<1>(TmpProducts[i][j]),
-                    std::get<0>(TmpProducts[i][j]),
-                    ratio_ub_to_lb,
-                    MPFR_RNDU);
-                mpfr_mul(
-                    std::get<3>(TmpProducts[i][j]),
-                    std::get<2>(TmpProducts[i][j]),
-                    ratio_ub_to_lb,
-                    MPFR_RNDU);
-            } // End loop over group j.
         } // End parallel region.
         if(PrimeQueueVec.back().back() > (1ull<<63))
         {
