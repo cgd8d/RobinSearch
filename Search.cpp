@@ -669,11 +669,27 @@ uint64_t AddPrimeFactors()
     if(PrimeQueueVecIdx >= NumThreads)
     {
         // Need to generate more primes.
+        // Concurrently multiply batches together,
+        // since we can do it multithreaded
+        // and take advantage of fast access
+        // from cache at the same time.
         #pragma omp parallel for num_threads(NumThreads)
         for(int i = 0; i < NumThreads; i++)
         {
+            // Reserve space for prime numbers.
+            // Typically this is cheap because
+            // we already have enough space.
             PrimeQueueVec[i].clear();
             PrimeQueueVec[i].reserve(TargetPrimeQueueSize);
+
+            // Also reserve space for intermediate
+            // products. This also is typically cheap.
+            TmpProducts[i].clear();
+            TmpProducts[i].reserve(
+                TargetPrimeQueueSize/ProductGroupSize);
+            size_t next_prime_idx_to_mul = 0;
+            size_t num_factors_in_this_prod = 0;
+            //TmpProducts[i].resize(1);
 
             // Make a new prime iterator.
             // This has a large startup cost.
@@ -688,11 +704,71 @@ uint64_t AddPrimeFactors()
             this_prime_it.generate_next_primes();
             for (; this_prime_it.primes_[this_prime_it.size_ - 1] <= limit; this_prime_it.generate_next_primes())
             {
-                PrimeQueueVec[i].insert(PrimeQueueVec[i].end(), this_prime_it.primes_, this_prime_it.primes_ + this_prime_it.size_);
+                PrimeQueueVec[i].insert(
+                    PrimeQueueVec[i].end(),
+                    this_prime_it.primes_,
+                    this_prime_it.primes_ + this_prime_it.size_);
+
+                // also do multiplies for those primes.
+                while(next_prime_idx_to_mul < PrimeQueueVec[i].size())
+                {
+                    uint64_t pval = PrimeQueueVec[i][next_prime_idx_to_mul];
+                    next_prime_idx_to_mul++;
+                    if(num_factors_in_this_prod > 0)
+                    {
+                        auto& tmp_prods = TmpProducts[i].back();
+                        mpfr_mul_ui_fast(
+                            std::get<0>(tmp_prods),
+                            pval+1,
+                            MPFR_RNDD);
+                        mpfr_mul_ui_fast(
+                            std::get<2>(tmp_prods),
+                            pval,
+                            MPFR_RNDD);
+                        num_factors_in_this_prod = (num_factors_in_this_prod+1) % ProductGroupSize;
+                    }
+                    else //(num_factors_in_this_prod == 0)
+                    {
+                        if(TmpProducts[i].size() > 0) [[likely]]
+                        {
+                            // Compute upper bounds based
+                            // on lower bounds.
+                            auto& tmp_prods = TmpProducts[i].back();
+                            mpfr_mul(
+                                std::get<1>(tmp_prods),
+                                std::get<0>(tmp_prods),
+                                ratio_ub_to_lb,
+                                MPFR_RNDU);
+                            mpfr_mul(
+                                std::get<3>(tmp_prods),
+                                std::get<2>(tmp_prods),
+                                ratio_ub_to_lb,
+                                MPFR_RNDU);
+                        }
+                        TmpProducts[i].resize(TmpProducts[i].size()+1));
+                        auto& tmp_prods = TmpProducts[i].back();
+                        // Initialize lhs.
+                        mpfr_set_ui(
+                            std::get<0>(tmp_prods),
+                            pval+1,
+                            MPFR_RNDD);
+                        // Initialize rhs.
+                        mpfr_set_ui(
+                            std::get<2>(tmp_prods),
+                            pval,
+                            MPFR_RNDD);
+                        num_factors_in_this_prod = (num_factors_in_this_prod+1) % ProductGroupSize;
+                    }
+                } // end while loop for multiplies
             }
             for (std::size_t j = 0; this_prime_it.primes_[j] <= limit; j++)
             {
                 PrimeQueueVec[i].push_back(this_prime_it.primes_[j]);
+
+
+
+
+                
             }
 
             // Within threads, also compute
