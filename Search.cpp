@@ -693,17 +693,7 @@ void DoBunchedMul(
             {
                 // Compute upper bounds based
                 // on lower bounds.
-                auto& tmp_prods = TProdVec.back();
-                mpfr_mul(
-                    std::get<1>(tmp_prods),
-                    std::get<0>(tmp_prods),
-                    ratio_ub_to_lb,
-                    MPFR_RNDU);
-                mpfr_mul(
-                    std::get<3>(tmp_prods),
-                    std::get<2>(tmp_prods),
-                    ratio_ub_to_lb,
-                    MPFR_RNDU);
+                BunchedMulUpperBounds(TProdVec.back());
             }
             TProdVec.resize(TProdVec.size()+1));
             auto& tmp_prods = TProdVec.back();
@@ -821,7 +811,13 @@ uint64_t AddPrimeFactors()
             // to finish by computing the
             // upper bounds.
             if(num_factors_in_this_prod == 0)
-                
+            {
+                BunchedMulUpperBounds(TmpProducts[i].back());
+            }
+            else
+            {
+                TmpProducts[i].pop_back();
+            }
 
             // Within threads, also compute
             // intermediate products.
