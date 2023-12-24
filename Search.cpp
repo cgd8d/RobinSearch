@@ -648,6 +648,21 @@ mpfr_holder ratio_ub_to_lb;
 // into TmpProducts.
 // Doing this in small batches helps
 // with keeping prime values in cache.
+void BunchedMulUpperBounds(
+    auto& tmp_prods
+)
+{
+    mpfr_mul(
+        std::get<1>(tmp_prods),
+        std::get<0>(tmp_prods),
+        ratio_ub_to_lb,
+        MPFR_RNDU);
+    mpfr_mul(
+        std::get<3>(tmp_prods),
+        std::get<2>(tmp_prods),
+        ratio_ub_to_lb,
+        MPFR_RNDU);
+}
 void DoBunchedMul(
     const std::vector<uint64_t>& PQueue,
     size_t& next_prime_idx_to_mul,
@@ -779,23 +794,34 @@ uint64_t AddPrimeFactors()
                     this_prime_it.primes_ + this_prime_it.size_);
 
                 // also do multiplies for those primes.
-
-
-
-
-
-
-                
+                DoBunchedMul(
+                    PrimeQueueVec[i],
+                    next_prime_idx_to_mul,
+                    TmpProducts[i],
+                    num_factors_in_this_prod
+                );
             }
+            // Get residual primes.
             for (std::size_t j = 0; this_prime_it.primes_[j] <= limit; j++)
             {
                 PrimeQueueVec[i].push_back(this_prime_it.primes_[j]);
-
-
-
-
-                
             }
+            // Also do residual multiplication.
+            DoBunchedMul(
+                PrimeQueueVec[i],
+                next_prime_idx_to_mul,
+                TmpProducts[i],
+                num_factors_in_this_prod
+            );
+
+            // Cleanup: we do not keep partial
+            // multiplications with fewer than
+            // ProductGroupSize factors.
+            // if we ended cleanly, we still need
+            // to finish by computing the
+            // upper bounds.
+            if(num_factors_in_this_prod == 0)
+                
 
             // Within threads, also compute
             // intermediate products.
