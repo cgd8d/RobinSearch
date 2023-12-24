@@ -642,6 +642,24 @@ std::array<std::vector<std::tuple<
 // but gives significant speedup.
 mpfr_holder ratio_ub_to_lb;
 
+
+
+
+
+// Function that, given a few new values
+// in PrimeQueueVec, will compute a few
+// more products of bunches of primes
+// into TmpProducts.
+// Doing this in small batches helps
+// with keeping prime values in cache.
+
+
+
+
+
+
+
+
 uint64_t AddPrimeFactors()
 {
     // Basic requirement - the last prime group should
