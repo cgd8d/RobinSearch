@@ -652,8 +652,61 @@ mpfr_holder ratio_ub_to_lb;
 // into TmpProducts.
 // Doing this in small batches helps
 // with keeping prime values in cache.
-
-
+void DoBunchedMul(
+    const std::vector<uint64_t>& PQueue,
+    size_t& next_prime_idx_to_mul
+)
+{
+    while(next_prime_idx_to_mul != PQueue.size())
+    {
+                    uint64_t pval = PrimeQueueVec[i][next_prime_idx_to_mul];
+                    next_prime_idx_to_mul++;
+                    if(num_factors_in_this_prod > 0)
+                    {
+                        auto& tmp_prods = TmpProducts[i].back();
+                        mpfr_mul_ui_fast(
+                            std::get<0>(tmp_prods),
+                            pval+1,
+                            MPFR_RNDD);
+                        mpfr_mul_ui_fast(
+                            std::get<2>(tmp_prods),
+                            pval,
+                            MPFR_RNDD);
+                        num_factors_in_this_prod = (num_factors_in_this_prod+1) % ProductGroupSize;
+                    }
+                    else //(num_factors_in_this_prod == 0)
+                    {
+                        if(TmpProducts[i].size() > 0) [[likely]]
+                        {
+                            // Compute upper bounds based
+                            // on lower bounds.
+                            auto& tmp_prods = TmpProducts[i].back();
+                            mpfr_mul(
+                                std::get<1>(tmp_prods),
+                                std::get<0>(tmp_prods),
+                                ratio_ub_to_lb,
+                                MPFR_RNDU);
+                            mpfr_mul(
+                                std::get<3>(tmp_prods),
+                                std::get<2>(tmp_prods),
+                                ratio_ub_to_lb,
+                                MPFR_RNDU);
+                        }
+                        TmpProducts[i].resize(TmpProducts[i].size()+1));
+                        auto& tmp_prods = TmpProducts[i].back();
+                        // Initialize lhs.
+                        mpfr_set_ui(
+                            std::get<0>(tmp_prods),
+                            pval+1,
+                            MPFR_RNDD);
+                        // Initialize rhs.
+                        mpfr_set_ui(
+                            std::get<2>(tmp_prods),
+                            pval,
+                            MPFR_RNDD);
+                        num_factors_in_this_prod = (num_factors_in_this_prod+1) % ProductGroupSize;
+                    }
+                } // end while loop for multiplies
 
 
 
@@ -728,56 +781,13 @@ uint64_t AddPrimeFactors()
                     this_prime_it.primes_ + this_prime_it.size_);
 
                 // also do multiplies for those primes.
-                while(next_prime_idx_to_mul < PrimeQueueVec[i].size())
-                {
-                    uint64_t pval = PrimeQueueVec[i][next_prime_idx_to_mul];
-                    next_prime_idx_to_mul++;
-                    if(num_factors_in_this_prod > 0)
-                    {
-                        auto& tmp_prods = TmpProducts[i].back();
-                        mpfr_mul_ui_fast(
-                            std::get<0>(tmp_prods),
-                            pval+1,
-                            MPFR_RNDD);
-                        mpfr_mul_ui_fast(
-                            std::get<2>(tmp_prods),
-                            pval,
-                            MPFR_RNDD);
-                        num_factors_in_this_prod = (num_factors_in_this_prod+1) % ProductGroupSize;
-                    }
-                    else //(num_factors_in_this_prod == 0)
-                    {
-                        if(TmpProducts[i].size() > 0) [[likely]]
-                        {
-                            // Compute upper bounds based
-                            // on lower bounds.
-                            auto& tmp_prods = TmpProducts[i].back();
-                            mpfr_mul(
-                                std::get<1>(tmp_prods),
-                                std::get<0>(tmp_prods),
-                                ratio_ub_to_lb,
-                                MPFR_RNDU);
-                            mpfr_mul(
-                                std::get<3>(tmp_prods),
-                                std::get<2>(tmp_prods),
-                                ratio_ub_to_lb,
-                                MPFR_RNDU);
-                        }
-                        TmpProducts[i].resize(TmpProducts[i].size()+1));
-                        auto& tmp_prods = TmpProducts[i].back();
-                        // Initialize lhs.
-                        mpfr_set_ui(
-                            std::get<0>(tmp_prods),
-                            pval+1,
-                            MPFR_RNDD);
-                        // Initialize rhs.
-                        mpfr_set_ui(
-                            std::get<2>(tmp_prods),
-                            pval,
-                            MPFR_RNDD);
-                        num_factors_in_this_prod = (num_factors_in_this_prod+1) % ProductGroupSize;
-                    }
-                } // end while loop for multiplies
+
+
+
+
+
+
+                
             }
             for (std::size_t j = 0; this_prime_it.primes_[j] <= limit; j++)
             {
