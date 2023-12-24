@@ -695,7 +695,7 @@ void DoBunchedMul(
                 // on lower bounds.
                 BunchedMulUpperBounds(TProdVec.back());
             }
-            TProdVec.resize(TProdVec.size()+1));
+            TProdVec.resize(TProdVec.size()+1);
             auto& tmp_prods = TProdVec.back();
             // Initialize lhs.
             mpfr_set_ui(
