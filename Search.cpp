@@ -648,6 +648,7 @@ mpfr_holder ratio_ub_to_lb;
 // into TmpProducts.
 // Doing this in small batches helps
 // with keeping prime values in cache.
+inline
 void BunchedMulUpperBounds(
     auto& tmp_prods
 )
@@ -663,6 +664,7 @@ void BunchedMulUpperBounds(
         ratio_ub_to_lb,
         MPFR_RNDU);
 }
+inline
 void DoBunchedMul(
     const std::vector<uint64_t>& PQueue,
     size_t& next_prime_idx_to_mul,
