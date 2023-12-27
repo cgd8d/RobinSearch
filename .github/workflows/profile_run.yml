@@ -39,8 +39,8 @@ jobs:
           sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 60 $JOB_STOP_TIME $IN_FILE
           
       # Print perf report.
-      - name: Report from perf
-        run: sudo PATH=`pwd`:$PATH perf report -i perf.data --call-graph=graph,0.1
+      #- name: Report from perf
+      #  run: sudo PATH=`pwd`:$PATH perf report -i perf.data --call-graph=graph,0.1
 
       # Print perf source annotations.
       - name: Source annotations from perf
