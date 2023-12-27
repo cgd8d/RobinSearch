@@ -765,7 +765,6 @@ uint64_t AddPrimeFactors()
                 TargetPrimeQueueSize/ProductGroupSize);
             size_t next_prime_idx_to_mul = 0;
             size_t num_factors_in_this_prod = 0;
-            //TmpProducts[i].resize(1);
 
             // Make a new prime iterator.
             // This has a large startup cost.
