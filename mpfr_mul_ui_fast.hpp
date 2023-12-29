@@ -82,6 +82,7 @@ two mul operations to try to hide latency.
 xa <- xa*a
 xb <- xb*b
 both are rounded down for simplicity.
+*/
 inline
 void mpfr_mul_ui_fast_2way (
     mpfr_ptr xa,
