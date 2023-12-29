@@ -679,6 +679,12 @@ void DoBunchedMul(
         if(num_factors_in_this_prod > 0)
         {
             auto& tmp_prods = TProdVec.back();
+            mpfr_mul_ui_fast_2way(
+                std::get<2>(tmp_prods),
+                std::get<0>(tmp_prods),
+                pval,
+                pval+1);
+            /*
             mpfr_mul_ui_fast(
                 std::get<0>(tmp_prods),
                 pval+1,
@@ -686,7 +692,7 @@ void DoBunchedMul(
             mpfr_mul_ui_fast(
                 std::get<2>(tmp_prods),
                 pval,
-                MPFR_RNDD);
+                MPFR_RNDD);*/
             num_factors_in_this_prod = (num_factors_in_this_prod+1) % ProductGroupSize;
         }
         else //(num_factors_in_this_prod == 0)
