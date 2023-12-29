@@ -76,4 +76,70 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     }
 }
 
+
+/* an alternative version which interleaves
+two mul operations to try to hide latency.
+xa <- xa*a
+xb <- xb*b
+both are rounded down for simplicity.
+inline
+void mpfr_mul_ui_fast_2way (
+    mpfr_ptr xa,
+    mpfr_ptr xb,
+    unsigned long long int a,
+    unsigned long long int b
+)
+{
+    // Note: X data is stored as little endian
+
+    unsigned long long int out0a, out1a, out2a;
+    unsigned long long int p0a, p1a, p2a;
+    unsigned char c0a;
+    mp_limb_t *xpa = xa->_mpfr_d;
+
+    unsigned long long int out0b, out1b, out2b;
+    unsigned long long int p0b, p1b, p2b;
+    unsigned char c0b;
+    mp_limb_t *xpb = xb->_mpfr_d;
+
+    // Do full multiplication x*u -> out.
+    out0a = _mulx_u64(xpa[0], a, &p0a);
+    out0b = _mulx_u64(xpb[0], b, &p0b);
+    
+    p1a = _mulx_u64(xpa[1], a, &p2a);
+    p1b = _mulx_u64(xpb[1], b, &p2b);
+    
+    c0a = _addcarry_u64(0, p0a, p1a, &out1a);
+    c0b = _addcarry_u64(0, p0b, p1b, &out1b);
+    
+    out2a = p2a + c0a;
+    out2b = p2b + c0b;
+
+    // Count leading zeros.
+    // out2 is guaranteed to be nonzero
+    // because x is normalized and u >= 2.
+    int lsa = __builtin_clzl(out2a);
+    int lsb = __builtin_clzl(out2b);
+
+    // Do shift operations.
+    // Note that there is a lot of pressure
+    // on CPU port 1, so consider changing
+    // this instruction to be implemented
+    // by shl rather than shld (by changing
+    // the or to a plus).  But last time
+    // I checked it didn't help.
+    // Note that shift by a count of 64 is
+    // undefined in C++, so we also need to
+    // ensure ls > 0.  This is guaranteed when
+    // u < 2^63.
+    xpa[0] = (out1a << lsa) | (out0a >> (64-lsa));
+    xpa[1] = (out2a << lsa) | (out1a >> (64-lsa));
+    xpb[0] = (out1b << lsb) | (out0b >> (64-lsb));
+    xpb[1] = (out2b << lsb) | (out1b >> (64-lsb));
+
+    // Update exp.
+    xa->_mpfr_exp += (64-lsa);
+    xb->_mpfr_exp += (64-lsb);
+}
+
 #endif // MPFR_MUL_UI_FAST_HPP
