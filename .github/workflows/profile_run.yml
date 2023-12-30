@@ -44,5 +44,5 @@ jobs:
 
       # Print perf source annotations.
       - name: Source annotations from perf
-        run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data
+        run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data --percent-type global-period
         
