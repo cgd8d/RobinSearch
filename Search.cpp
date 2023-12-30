@@ -626,6 +626,9 @@ struct PrimeQueueEpsilonGroup
 std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
 
 // Store intermediate products of groups of primes.
+// Keeping ProductGroupSize a power of two
+// should be helpful for performance because
+// computing modulus results is fast.
 const size_t ProductGroupSize = 256;
 std::array<std::vector<std::tuple<
     mpfr_holder,
@@ -668,15 +671,13 @@ inline
 void DoBunchedMul(
     const std::vector<uint64_t>& PQueue,
     size_t& next_prime_idx_to_mul,
-    auto& TProdVec,
-    size_t& num_factors_in_this_prod
+    auto& TProdVec
 )
 {
     while(next_prime_idx_to_mul != PQueue.size())
     {
         uint64_t pval = PQueue[next_prime_idx_to_mul];
-        next_prime_idx_to_mul++;
-        if(num_factors_in_this_prod > 0)
+        if(next_prime_idx_to_mul % ProductGroupSize > 0)
         {
             auto& tmp_prods = TProdVec.back();
             mpfr_mul_ui_fast(
@@ -687,9 +688,8 @@ void DoBunchedMul(
                 std::get<2>(tmp_prods),
                 pval,
                 MPFR_RNDD);
-            num_factors_in_this_prod = (num_factors_in_this_prod+1) % ProductGroupSize;
         }
-        else //(num_factors_in_this_prod == 0)
+        else //(next_prime_idx_to_mul % ProductGroupSize == 0)
         {
             if(TProdVec.size() > 0) [[likely]]
             {
@@ -709,12 +709,8 @@ void DoBunchedMul(
                 std::get<2>(tmp_prods),
                 pval,
                 MPFR_RNDD);
-            // The modulo operation only matters in
-            // the odd case ProductGroupSize=1,
-            // so in normal configuration
-            // it will be optimized away.
-            num_factors_in_this_prod = (num_factors_in_this_prod+1) % ProductGroupSize;
         }
+        next_prime_idx_to_mul++;
     } // end while loop for multiplies
 }
 
@@ -764,7 +760,6 @@ uint64_t AddPrimeFactors()
             TmpProducts[i].reserve(
                 TargetPrimeQueueSize/ProductGroupSize);
             size_t next_prime_idx_to_mul = 0;
-            size_t num_factors_in_this_prod = 0;
 
             // Make a new prime iterator.
             // This has a large startup cost.
@@ -788,8 +783,7 @@ uint64_t AddPrimeFactors()
                 DoBunchedMul(
                     PrimeQueueVec[i],
                     next_prime_idx_to_mul,
-                    TmpProducts[i],
-                    num_factors_in_this_prod
+                    TmpProducts[i]
                 );
             }
             // Get residual primes.
@@ -801,8 +795,7 @@ uint64_t AddPrimeFactors()
             DoBunchedMul(
                 PrimeQueueVec[i],
                 next_prime_idx_to_mul,
-                TmpProducts[i],
-                num_factors_in_this_prod
+                TmpProducts[i]
             );
 
             // Cleanup: we do not keep partial
