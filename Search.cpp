@@ -804,7 +804,7 @@ uint64_t AddPrimeFactors()
             // if we ended cleanly, we still need
             // to finish by computing the
             // upper bounds.
-            if(num_factors_in_this_prod == 0)
+            if(next_prime_idx_to_mul % ProductGroupSize == 0)
             {
                 BunchedMulUpperBounds(TmpProducts[i].back());
             }
