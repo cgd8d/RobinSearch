@@ -64,7 +64,21 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     ls &= 63;
     xp[0] = ls ? (out1 << ls) | (out0 >> (64-ls)) : out1;
     xp[1] = ls ? (out2 << ls) | (out1 >> (64-ls)) : out2;
-    
+
+    xp[0] = out1;
+    xp[1] = out2;
+    asm(
+        "lzcntq %[hi], %%rcx;\n"
+        "shldq %%cl, %[mid_ro], %[hi];\n"
+        "shldq %%cl, %[lo], %[mid];\n"
+        : [hi] "+r" (xp[1]),
+          [mid] "+r" (xp[0])
+        : [mid_ro] "r" (out1),
+          [lo] "r" (out0)
+
+
+
+        
     // Update exp.
     x->_mpfr_exp += (64-ls);
 
