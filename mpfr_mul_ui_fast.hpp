@@ -40,7 +40,7 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     // Count leading zeros.
     // out2 is guaranteed to be nonzero
     // because x is normalized and u >= 2.
-    int ls = __builtin_clzl(out2);
+    //int ls = __builtin_clzl(out2);
 
     // Do shift operations.
     // Note that there is a lot of pressure
@@ -61,9 +61,11 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     xp[0] = (uint64_t)(((((unsigned __int128)out1 << 64) | (unsigned __int128)out0) << (ls & 63)) >> 64);
     xp[1] = (uint64_t)(((((unsigned __int128)out2 << 64) | (unsigned __int128)out1) << (ls & 63)) >> 64);
     */
+    /*
     ls &= 63;
     xp[0] = ls ? (out1 << ls) | (out0 >> (64-ls)) : out1;
     xp[1] = ls ? (out2 << ls) | (out1 >> (64-ls)) : out2;
+    */
 
     xp[0] = out1;
     xp[1] = out2;
@@ -75,8 +77,8 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
           [mid] "+r" (xp[0])
         : [mid_ro] "r" (out1),
           [lo] "r" (out0)
-        : "rcx"
-    )
+        : "rcx", "cc"
+    );
 
 
 
