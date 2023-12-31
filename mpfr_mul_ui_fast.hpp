@@ -57,9 +57,13 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
     //xp[1] = (out2 << ls) | (out1 >> (64-ls));
 
     // use shld.
+    /*
     xp[0] = (uint64_t)(((((unsigned __int128)out1 << 64) | (unsigned __int128)out0) << (ls & 63)) >> 64);
     xp[1] = (uint64_t)(((((unsigned __int128)out2 << 64) | (unsigned __int128)out1) << (ls & 63)) >> 64);
-
+    */
+    ls &= 63;
+    xp[0] = ls ? (out1 << ls) | (out0 >> (64-ls)) : out1;
+    xp[1] = ls ? (out2 << ls) | (out1 >> (64-ls)) : out2;
     
     // Update exp.
     x->_mpfr_exp += (64-ls);
