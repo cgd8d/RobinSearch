@@ -75,6 +75,8 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
           [mid] "+r" (xp[0])
         : [mid_ro] "r" (out1),
           [lo] "r" (out0)
+        : "rcx"
+    )
 
 
 
