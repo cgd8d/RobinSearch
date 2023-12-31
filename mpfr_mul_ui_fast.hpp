@@ -69,12 +69,15 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
 
     xp[0] = out1;
     xp[1] = out2;
+    x->_mpfr_exp += 64;
     asm(
         "lzcntq %[hi], %%rcx;\n"
         "shldq %%cl, %[mid_ro], %[hi];\n"
         "shldq %%cl, %[lo], %[mid];\n"
+        "subq %%rcx, %[exp];"
         : [hi] "+r" (xp[1]),
-          [mid] "+r" (xp[0])
+          [mid] "+r" (xp[0]),
+          [exp] "+rm" (x->_mpfr_exp)
         : [mid_ro] "r" (out1),
           [lo] "r" (out0)
         : "rcx", "cc"
@@ -84,7 +87,7 @@ void mpfr_mul_ui_fast (mpfr_ptr x, unsigned long long int u, mpfr_rnd_t rnd_mode
 
         
     // Update exp.
-    x->_mpfr_exp += (64-ls);
+    //x->_mpfr_exp += (64-ls);
 
     // Rounding.
     // Slightly conservative since the discarded
