@@ -11,6 +11,7 @@ env:
   MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.3.0/.libs  -Wl,-rpath=gmp-6.3.0/.libs"
   IN_FILE: "checkpoints/Checkpoint_42hrs_20231211.txt"
   RUNTIME_MIN: 30
+  OMP_DISPLAY_ENV: TRUE
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
