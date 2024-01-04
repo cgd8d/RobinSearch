@@ -1263,6 +1263,17 @@ int main(int argc, char *argv[])
               << cnt_NumPrimeFactors-cnt_NumPrimeFactors_orig
               << std::endl;
 
+    // Print open info.
+    // do this at the end when the environment
+    // has definitely been set up.
+    std::cout << "Number of omp places is:"
+              << omp_get_num_places()
+              << std::endl;
+    std::cout << "omp thread affinity is:"
+              << int(omp_get_proc_bind())
+              << " (0=false, 1=true, 4=spread)"
+              << std::endl;
+
     // save info to file if requested.
     if(argc >= 5 and
         not std::string(argv[4]).empty())
