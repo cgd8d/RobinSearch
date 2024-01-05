@@ -1269,6 +1269,16 @@ int main(int argc, char *argv[])
     std::cout << "Number of omp places is:"
               << omp_get_num_places()
               << std::endl;
+    for(size_t i = 0;
+        i < omp_get_num_places();
+        i++)
+    {
+        std::cout << "Number of omp processors at place "
+              << i
+              << " is:"
+              << omp_get_place_num_procs(i)
+              << std::endl;
+    }
     std::cout << "omp thread affinity is:"
               << int(omp_get_proc_bind())
               << " (0=false, 1=true, 4=spread)"
