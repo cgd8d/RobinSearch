@@ -23,7 +23,7 @@
 
 const mpfr_prec_t Precision = 128;
 const size_t NumLimbs = 2;
-const int NumThreads = 4;
+const int NumThreads = 2;
 
 /*
 Convention: All mpfr_t values should have their rounding
