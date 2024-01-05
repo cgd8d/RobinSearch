@@ -37,7 +37,7 @@ jobs:
       - name: Run
         run: |
           JOB_STOP_TIME=`date --date="+$RUNTIME_MIN mins" +%s`
-          OMP_PROC_BIND=TRUE OMP_PLACES=cores /usr/bin/time -v ./Search 60 $JOB_STOP_TIME $IN_FILE
+          OMP_PROC_BIND=TRUE OMP_PLACES="{0,1},{2,3}" /usr/bin/time -v ./Search 60 $JOB_STOP_TIME $IN_FILE
 
      # Compile code from main branch
       - name: Compile main
