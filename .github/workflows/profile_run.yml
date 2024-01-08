@@ -12,6 +12,8 @@ env:
   IN_FILE: "checkpoints/Checkpoint_42hrs_20231211.txt"
   RUNTIME_MIN: 30
   OMP_DISPLAY_ENV: TRUE
+  OMP_PROC_BIND: TRUE
+  OMP_PLACES: threads
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
