@@ -12,6 +12,8 @@ env:
   IN_FILE: "checkpoints/Checkpoint_42hrs_20231211.txt"
   RUNTIME_MIN: 30
   OMP_DISPLAY_ENV: TRUE
+  OMP_PROC_BIND: TRUE
+  OMP_PLACES: threads
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -30,18 +32,14 @@ jobs:
       # Set up environment
       - name: Setup
         run: |
-          export OMP_PROC_BIND=TRUE
-          export OMP_PLACES=threads
           git rev-parse --short HEAD
           . ./scripts/Setup.sh
 
       # Run code straight, no profiling.
       - name: Run
         run: |
-          export OMP_PROC_BIND=TRUE
-          export OMP_PLACES=threads
           JOB_STOP_TIME=`date --date="+$RUNTIME_MIN mins" +%s`
-          sudo perf record --call-graph dwarf -F 1 -o perf.data ./Search 60 $JOB_STOP_TIME $IN_FILE
+          sudo -E perf record --call-graph dwarf -F 1 -o perf.data ./Search 60 $JOB_STOP_TIME $IN_FILE
           
       # Print perf report.
       #- name: Report from perf
@@ -49,5 +47,5 @@ jobs:
 
       # Print perf source annotations.
       - name: Source annotations from perf
-        run: sudo PATH=`pwd`:$PATH perf annotate -i perf.data --percent-type global-period
+        run: sudo -E PATH=`pwd`:$PATH perf annotate -i perf.data --percent-type global-period
         
