@@ -1281,7 +1281,7 @@ int main(int argc, char *argv[])
               << std::endl;
         std::vector<int> PUs(procs_in_places);
         omp_get_place_proc_ids(i, &PUs[0]);
-        std::cout << "\tPUs: ";
+        std::cout << "\tPU #s: ";
         for(int j = 0; j < procs_in_places; j++)
         {
             std::cout << PUs[j] << "  ";
