@@ -9,6 +9,9 @@ on:
 
 env:
   MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.3.0/.libs  -Wl,-rpath=gmp-6.3.0/.libs"
+  OMP_DISPLAY_ENV: TRUE
+  OMP_PROC_BIND: TRUE
+  OMP_PLACES: threads
   MAXEXP: 47
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
