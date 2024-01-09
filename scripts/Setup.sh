@@ -1,10 +1,13 @@
 sudo apt-get update
-sudo apt-get install gnuplot llvm-15 clang-15 autoconf-archive libomp-15-dev libboost-serialization-dev
+sudo apt-get install gnuplot llvm-15 clang-15 autoconf-archive libomp-15-dev libboost-serialization-dev hwloc
 perf config llvm.clang-path=clang-15
 chmod a+x addr2line
 chmod a+x objdump
 PATH=`pwd`:$PATH which addr2line
 PATH=`pwd`:$PATH which objdump
+
+echo "lstopo-no-graphics says:"
+lstopo-no-graphics -p
 
 echo "Setting up libprimesieve..."
 time bash scripts/SetupPrimeSieve.sh

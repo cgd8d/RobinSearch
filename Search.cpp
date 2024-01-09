@@ -1263,6 +1263,40 @@ int main(int argc, char *argv[])
               << cnt_NumPrimeFactors-cnt_NumPrimeFactors_orig
               << std::endl;
 
+    // Print open info.
+    // do this at the end when the environment
+    // has definitely been set up.
+    std::cout << "Number of omp places is:"
+              << omp_get_num_places()
+              << std::endl;
+    for(size_t i = 0;
+        i < omp_get_num_places();
+        i++)
+    {
+        int procs_in_places = omp_get_place_num_procs(i);
+        std::cout << "Number of omp processors at place "
+              << i
+              << " is:"
+              << procs_in_places
+              << std::endl;
+        std::vector<int> PUs(procs_in_places);
+        omp_get_place_proc_ids(i, &PUs[0]);
+        std::cout << "\tPU #s: ";
+        for(int j = 0; j < procs_in_places; j++)
+        {
+            std::cout << PUs[j] << "  ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << "Main thread is in place "
+        << omp_get_place_num()
+        << " with affinity information:"
+        << std::endl;
+    omp_display_affinity(NULL);
+    std::cout << "omp_proc_bind is:"
+              << int(omp_get_proc_bind())
+              << " (0=false, 1=true, 4=spread)"
+              << std::endl;
     // save info to file if requested.
     if(argc >= 5 and
         not std::string(argv[4]).empty())
