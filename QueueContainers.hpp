@@ -17,10 +17,37 @@ advantage of.  Putting it into a structure
 makes it easier to experiment with that.
 */
 
+const size_t TargetPrimeQueueSize = 1 << 26;
+
+struct PrimeQueueContainer
+{
+
+    std::vector<uint64_t> v;
+
+    PrimeQueueContainer()
+    {
+        v.reserve(TargetPrimeQueueSize);
+    };
+
+    /* discard contents of queue, prepare
+      to start over. */
+    inline
+    void reset()
+    {
+        v.clear(); // does not change capacity
+    }
+
+    /* add values */
+    inline
+    template<typename IterT>
+    void append(IterT begin, IterT end)
+    {
+        v.insert(v.end(), begin, end)
+    }
 
 
 
 
-
+};
 
 #endif
