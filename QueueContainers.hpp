@@ -31,7 +31,6 @@ struct PrimeQueueContainer
 
     /* discard contents of queue, prepare
       to start over. */
-    inline
     void reset()
     {
         v.clear(); // does not change capacity
@@ -45,8 +44,12 @@ struct PrimeQueueContainer
         v.insert(v.end(), begin, end)
     }
 
-
-
+    /* access values */
+    inline
+    uint64_t operator[](size_t idx) const
+    {
+        return v[idx];
+    }
 
 };
 
