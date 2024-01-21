@@ -17,6 +17,9 @@ advantage of.  Putting it into a structure
 makes it easier to experiment with that.
 */
 
+#include <vector>
+#include <tuple>
+
 const size_t TargetPrimeQueueSize = 1 << 26;
 
 struct PrimeQueueContainer
@@ -51,6 +54,27 @@ struct PrimeQueueContainer
         return v[idx];
     }
 
+};
+
+template<uint64_t N> 
+struct TmpProdContainer
+{
+
+
+
+    std::vector<std::tuple<
+        mpfr_holder,
+        mpfr_holder,
+        mpfr_holder,
+        mpfr_holder>> v;
+
+    TmpProdContainer()
+    {
+        v.reserve(TargetPrimeQueueSize/N);
+    }
+
+
+        
 };
 
 #endif
