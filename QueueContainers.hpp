@@ -19,6 +19,7 @@ makes it easier to experiment with that.
 
 #include <vector>
 #include <tuple>
+#include "Robin_mpfr_helpers.hpp"
 
 const size_t TargetPrimeQueueSize = 1 << 26;
 
