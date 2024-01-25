@@ -70,7 +70,9 @@ struct TmpProdContainer
     // but gives significant speedup.
     mpfr_holder ratio_ub_to_lb;
 
-
+    // Local storage for work on product.
+    mpfr_holder tmp_lhs_lb;
+    mpfr_holder tmp_rhs_lb;
 
     std::vector<std::tuple<
         mpfr_holder,
