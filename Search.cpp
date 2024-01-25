@@ -582,15 +582,6 @@ std::array<std::vector<std::tuple<
     mpfr_holder,
     mpfr_holder>>, NumThreads> TmpProducts;
 
-// For groups of values to multiply, rather than
-// separately multiplying with rounding up
-// and down, multiply the whole group with
-// rounding down and then compute a conservative
-// upper bound with a scaling factor.
-// This approach roughly doubles interval size
-// but gives significant speedup.
-mpfr_holder ratio_ub_to_lb;
-
 // Function that, given a few new values
 // in PrimeQueueVec, will compute a few
 // more products of bunches of primes
@@ -1094,24 +1085,6 @@ int main(int argc, char *argv[])
 
     CheckTypes();
     mpfr_tmp.resize(6+4*NumThreads);
-
-    // Compute the ratio between upper and
-    // lower bound for a product of
-    // ProductGroupSize values.
-    {
-        mpfr_holder tmp_1pluseps;
-        mpfr_set_ui(ratio_ub_to_lb, 1, MPFR_RNDU);
-        mpfr_set_ui(tmp_1pluseps, 1, MPFR_RNDU);
-        mpfr_nextabove(tmp_1pluseps);
-        for(size_t i= 0; i < ProductGroupSize; i++)
-        {
-            mpfr_mul(
-                ratio_ub_to_lb,
-                ratio_ub_to_lb,
-                tmp_1pluseps,
-                MPFR_RNDU);
-        }
-    }
 
     // Initialize everything to N = 1.
     mpfr_const_euler(LHS_rndd, MPFR_RNDU);
