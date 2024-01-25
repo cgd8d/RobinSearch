@@ -61,6 +61,15 @@ template<uint64_t N>
 struct TmpProdContainer
 {
 
+    // For groups of values to multiply, rather than
+    // separately multiplying with rounding up
+    // and down, multiply the whole group with
+    // rounding down and then compute a conservative
+    // upper bound with a scaling factor.
+    // This approach roughly doubles interval size
+    // but gives significant speedup.
+    mpfr_holder ratio_ub_to_lb;
+
 
 
     std::vector<std::tuple<
@@ -72,6 +81,22 @@ struct TmpProdContainer
     TmpProdContainer()
     {
         v.reserve(TargetPrimeQueueSize/N);
+
+        // Compute the ratio between upper and
+        // lower bound for a product of
+        // ProductGroupSize values.
+        mpfr_holder tmp_1pluseps;
+        mpfr_set_ui(ratio_ub_to_lb, 1, MPFR_RNDU);
+        mpfr_set_ui(tmp_1pluseps, 1, MPFR_RNDU);
+        mpfr_nextabove(tmp_1pluseps);
+        for(size_t i = 0; i < N; i++)
+        {
+            mpfr_mul(
+                ratio_ub_to_lb,
+                ratio_ub_to_lb,
+                tmp_1pluseps,
+                MPFR_RNDU);
+        }
     }
 
 
