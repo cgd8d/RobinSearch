@@ -50,7 +50,7 @@ struct PrimeQueueContainer
 
     /* access values */
     inline
-    uint64_t operator[](size_t idx) const
+    uint64_t& operator[](size_t idx) const
     {
         return v[idx];
     }
