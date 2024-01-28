@@ -45,7 +45,7 @@ struct PrimeQueueContainer
     template<typename IterT>
     void append(IterT begin, IterT end)
     {
-        v.insert(v.end(), begin, end)
+        v.insert(v.end(), begin, end);
     }
 
     /* access values */
@@ -107,6 +107,32 @@ struct TmpProdContainer
         }
     }
 
+    /* add values */
+    inline
+    template<typename IterT>
+    void append(IterT begin, IterT end)
+    {
+        while(begin != end)
+        {
+            uint64_t& pval = *begin;
+            mpfr_mul_ui_fast(
+                tmp_lhs_lb,
+                pval+1,
+                MPFR_RNDD);
+            mpfr_mul_ui_fast(
+                tmp_rhs_lb,
+                pval,
+                MPFR_RNDD);
+            begin++;
+            NumFactorsInTmp++;
+            if(NumFactorsInTmp == N)
+            {
+    
+
+
+
+            
+    }
 
         
 };
