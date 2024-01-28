@@ -74,8 +74,11 @@ struct TmpProdContainer
     mpfr_holder ratio_ub_to_lb;
 
     // Local storage for work on product.
-    mpfr_holder tmp_lhs_lb;
-    mpfr_holder tmp_rhs_lb;
+    std::tuple<
+        mpfr_holder,
+        mpfr_holder,
+        mpfr_holder,
+        mpfr_holder> tmp_prods;
 
     std::vector<std::tuple<
         mpfr_holder,
@@ -86,9 +89,7 @@ struct TmpProdContainer
     TmpProdContainer()
     {
         v.reserve(TargetPrimeQueueSize/N);
-        NumFactorsInTmp = 0;
-        mpfr_set_ui(tmp_lhs_lb, 1, MPFR_RNDD);
-        mpfr_set_ui(tmp_rhs_lb, 1, MPFR_RNDD);
+        reset_tmp();
 
         // Compute the ratio between upper and
         // lower bound for a product of
@@ -107,6 +108,22 @@ struct TmpProdContainer
         }
     }
 
+    inline
+    void reset_tmp()
+    {
+        NumFactorsInTmp = 0;
+        mpfr_set_ui(std::get<0>(tmp_prods), 1, MPFR_RNDD);
+        mpfr_set_ui(std::get<2>(tmp_prods), 1, MPFR_RNDD);
+    }
+
+    /* discard contents of queue, prepare
+      to start over. */
+    void reset()
+    {
+        v.clear(); // does not change capacity
+        reset_tmp();
+    }
+
     /* add values */
     inline
     template<typename IterT>
@@ -116,25 +133,32 @@ struct TmpProdContainer
         {
             uint64_t& pval = *begin;
             mpfr_mul_ui_fast(
-                tmp_lhs_lb,
+                std::get<0>(tmp_prods),
                 pval+1,
                 MPFR_RNDD);
             mpfr_mul_ui_fast(
-                tmp_rhs_lb,
+                std::get<2>(tmp_prods),
                 pval,
                 MPFR_RNDD);
             begin++;
             NumFactorsInTmp++;
             if(NumFactorsInTmp == N)
             {
-    
-
-
-
-            
+                mpfr_mul(
+                    std::get<1>(tmp_prods),
+                    std::get<0>(tmp_prods),
+                    ratio_ub_to_lb,
+                    MPFR_RNDU);
+                mpfr_mul(
+                    std::get<3>(tmp_prods),
+                    std::get<2>(tmp_prods),
+                    ratio_ub_to_lb,
+                    MPFR_RNDU);
+                v.push_back(tmp_prods);
+                reset_tmp();
+            }
+        }
     }
-
-        
 };
 
 #endif
