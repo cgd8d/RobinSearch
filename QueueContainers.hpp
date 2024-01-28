@@ -60,6 +60,9 @@ struct PrimeQueueContainer
 template<uint64_t N> 
 struct TmpProdContainer
 {
+    // track how many factors have been added
+    // to tmp.
+    uint64_t NumFactorsInTmp;
 
     // For groups of values to multiply, rather than
     // separately multiplying with rounding up
@@ -83,6 +86,9 @@ struct TmpProdContainer
     TmpProdContainer()
     {
         v.reserve(TargetPrimeQueueSize/N);
+        NumFactorsInTmp = 0;
+        mpfr_set_ui(tmp_lhs_lb, 1, MPFR_RNDD);
+        mpfr_set_ui(tmp_rhs_lb, 1, MPFR_RNDD);
 
         // Compute the ratio between upper and
         // lower bound for a product of
