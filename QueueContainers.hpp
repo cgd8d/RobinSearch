@@ -159,6 +159,17 @@ struct TmpProdContainer
             }
         }
     }
+
+    /* access values */
+    inline
+    std::tuple<
+        mpfr_holder,
+        mpfr_holder,
+        mpfr_holder,
+        mpfr_holder>& operator[](size_t idx) const
+    {
+        return v[idx];
+    }
 };
 
 #endif
