@@ -35,7 +35,7 @@ struct PrimeQueueContainer
 
     /* discard contents of queue, prepare
       to start over. */
-    void reset()
+    void clear()
     {
         v.clear(); // does not change capacity
     }
@@ -118,7 +118,7 @@ struct TmpProdContainer
 
     /* discard contents of queue, prepare
       to start over. */
-    void reset()
+    void clear()
     {
         v.clear(); // does not change capacity
         reset_tmp();
