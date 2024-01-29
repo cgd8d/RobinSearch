@@ -686,7 +686,6 @@ uint64_t AddPrimeFactors()
             // Reset queues.
             PrimeQueueVec[i].clear();
             TmpProducts[i].clear();
-            size_t next_prime_idx_to_mul = 0;
 
             // Make a new prime iterator.
             // This has a large startup cost.
@@ -720,40 +719,6 @@ uint64_t AddPrimeFactors()
             TmpProducts[i].append(
                 this_prime_it.primes_,
                 end_primes);
-
-
-
-
-
-            
-            
-
-            
-            for (std::size_t j = 0; this_prime_it.primes_[j] <= limit; j++)
-            {
-                PrimeQueueVec[i].push_back(this_prime_it.primes_[j]);
-            }
-            // Also do residual multiplication.
-            DoBunchedMul(
-                PrimeQueueVec[i],
-                next_prime_idx_to_mul,
-                TmpProducts[i]
-            );
-
-            // Cleanup: we do not keep partial
-            // multiplications with fewer than
-            // ProductGroupSize factors.
-            // if we ended cleanly, we still need
-            // to finish by computing the
-            // upper bounds.
-            if(next_prime_idx_to_mul % ProductGroupSize == 0)
-            {
-                BunchedMulUpperBounds(TmpProducts[i].back());
-            }
-            else
-            {
-                TmpProducts[i].pop_back();
-            }
         } // End parallel region.
         if(PrimeQueueVec.back().back() > (1ull<<63))
         {
