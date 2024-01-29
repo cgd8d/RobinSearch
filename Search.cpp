@@ -683,17 +683,9 @@ uint64_t AddPrimeFactors()
         #pragma omp parallel for num_threads(NumThreads)
         for(int i = 0; i < NumThreads; i++)
         {
-            // Reserve space for prime numbers.
-            // Typically this is cheap because
-            // we already have enough space.
+            // Reset queues.
             PrimeQueueVec[i].clear();
-            PrimeQueueVec[i].reserve(TargetPrimeQueueSize);
-
-            // Also reserve space for intermediate
-            // products. This also is typically cheap.
             TmpProducts[i].clear();
-            TmpProducts[i].reserve(
-                TargetPrimeQueueSize/ProductGroupSize);
             size_t next_prime_idx_to_mul = 0;
 
             // Make a new prime iterator.
@@ -709,18 +701,18 @@ uint64_t AddPrimeFactors()
             this_prime_it.generate_next_primes();
             for (; this_prime_it.primes_[this_prime_it.size_ - 1] <= limit; this_prime_it.generate_next_primes())
             {
-                PrimeQueueVec[i].insert(
-                    PrimeQueueVec[i].end(),
+                PrimeQueueVec[i].append(
                     this_prime_it.primes_,
                     this_prime_it.primes_ + this_prime_it.size_);
-
-                // also do multiplies for those primes.
-                DoBunchedMul(
-                    PrimeQueueVec[i],
-                    next_prime_idx_to_mul,
-                    TmpProducts[i]
-                );
+                TmpProducts[i].append(
+                    this_prime_it.primes_,
+                    this_prime_it.primes_ + this_prime_it.size_);
             }
+
+
+
+
+            
             // Get residual primes.
             for (std::size_t j = 0; this_prime_it.primes_[j] <= limit; j++)
             {
