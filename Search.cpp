@@ -708,12 +708,27 @@ uint64_t AddPrimeFactors()
                     this_prime_it.primes_,
                     this_prime_it.primes_ + this_prime_it.size_);
             }
+            
+            // Get residual primes.
+            auto end_primes = std::upper_bound(
+                this_prime_it.primes_,
+                this_prime_it.primes_ + this_prime_it.size_,
+                limit);
+            PrimeQueueVec[i].append(
+                this_prime_it.primes_,
+                end_primes);
+            TmpProducts[i].append(
+                this_prime_it.primes_,
+                end_primes);
+
 
 
 
 
             
-            // Get residual primes.
+            
+
+            
             for (std::size_t j = 0; this_prime_it.primes_[j] <= limit; j++)
             {
                 PrimeQueueVec[i].push_back(this_prime_it.primes_[j]);
