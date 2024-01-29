@@ -55,6 +55,12 @@ struct PrimeQueueContainer
         return v[idx];
     }
 
+    /* container size */
+    inline
+    size_t size() const
+    {
+        return v.size();
+    }
 };
 
 template<uint64_t N> 
@@ -169,6 +175,13 @@ struct TmpProdContainer
         mpfr_holder>& operator[](size_t idx) const
     {
         return v[idx];
+    }
+
+    /* container size */
+    inline
+    size_t size() const
+    {
+        return v.size();
     }
 };
 
