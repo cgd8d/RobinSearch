@@ -21,6 +21,7 @@
 #include "PlotDelta.hpp"
 #include "Robin_mpfr_helpers.hpp"
 #include "mpfr_mul_ui_fast.hpp"
+#include "QueueContainers.hpp"
 
 const size_t NumLimbs = 2;
 const int NumThreads = 4;
@@ -549,8 +550,7 @@ penalty is a lot.
 Azure free GitHub runners have 7GB RAM, see
 https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
 */
-std::vector<std::vector<uint64_t>> PrimeQueueVec(NumThreads);
-const size_t TargetPrimeQueueSize = 1 << 26;
+std::vector<PrimeQueueContainer> PrimeQueueVec(NumThreads);
 size_t PrimeQueueStep = 2*TargetPrimeQueueSize;
 uint64_t NextPrimeToGen = 3;
 size_t PrimeQueueVecIdx = NumThreads-1;
@@ -576,11 +576,9 @@ std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
 // should be helpful for performance because
 // computing modulus results is fast.
 const size_t ProductGroupSize = 256;
-std::array<std::vector<std::tuple<
-    mpfr_holder,
-    mpfr_holder,
-    mpfr_holder,
-    mpfr_holder>>, NumThreads> TmpProducts;
+std::array<
+    TmpProdContainer<ProductGroupSize>,
+    NumThreads> TmpProducts;
 
 // Function that, given a few new values
 // in PrimeQueueVec, will compute a few
