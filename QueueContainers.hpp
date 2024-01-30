@@ -49,7 +49,7 @@ struct PrimeQueueContainer
     }
 
     /* access values */
-    inline
+    inline const
     uint64_t& operator[](size_t idx) const
     {
         return v[idx];
@@ -167,7 +167,7 @@ struct TmpProdContainer
     }
 
     /* access values */
-    inline
+    inline const
     std::tuple<
         mpfr_holder,
         mpfr_holder,
