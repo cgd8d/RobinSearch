@@ -55,6 +55,13 @@ struct PrimeQueueContainer
         return v[idx];
     }
 
+    /* container back */
+    inline const
+    uint64_t& back() const
+    {
+        return v.back();
+    }
+
     /* container size */
     inline
     size_t size() const
