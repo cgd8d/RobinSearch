@@ -23,7 +23,6 @@
 #include "mpfr_mul_ui_fast.hpp"
 #include "QueueContainers.hpp"
 
-const size_t NumLimbs = 2;
 const int NumThreads = 4;
 
 /*
