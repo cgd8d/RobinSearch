@@ -4,6 +4,7 @@
 #include <mpfr.h>
 
 const mpfr_prec_t Precision = 128;
+const size_t NumLimbs = 2;
 
 // Helper object to store initialized mpfr objects.
 // Provide correct copy semantics.
