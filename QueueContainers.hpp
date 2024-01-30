@@ -41,8 +41,8 @@ struct PrimeQueueContainer
     }
 
     /* add values */
-    inline
     template<typename IterT>
+    inline
     void append(IterT begin, IterT end)
     {
         v.insert(v.end(), begin, end);
@@ -131,8 +131,8 @@ struct TmpProdContainer
     }
 
     /* add values */
-    inline
     template<typename IterT>
+    inline
     void append(IterT begin, IterT end)
     {
         while(begin != end)
