@@ -31,7 +31,7 @@ struct PrimeQueueContainer
     PrimeQueueContainer()
     {
         v.reserve(TargetPrimeQueueSize);
-    };
+    }
 
     /* discard contents of queue, prepare
       to start over. */
