@@ -668,12 +668,8 @@ uint64_t AddPrimeFactors()
         PrimeQueueVecIdx = 0;
         assert(NextPrimeIdx == 0);
     }
-    std::vector<uint64_t>& PrimeQueue = PrimeQueueVec[PrimeQueueVecIdx];
-    std::vector<std::tuple<
-        mpfr_holder,
-        mpfr_holder,
-        mpfr_holder,
-        mpfr_holder>>& ThisTempProd = TmpProducts[PrimeQueueVecIdx];
+    auto& PrimeQueue = PrimeQueueVec[PrimeQueueVecIdx];
+    auto& ThisTempProd = TmpProducts[PrimeQueueVecIdx];
     if(PrimeQueueEpsilonStack.empty())
     {
         PrimeQueueEpsilonStack.emplace(PrimeQueue.size() - 1);
