@@ -30,11 +30,11 @@ struct mpfr_holder
     }
     // assume this is already a well-formed object.
     // also assume it is positive.
-    mpfr_holder& operator=(mpfr_holder& src)
+    mpfr_holder& operator=(const mpfr_holder& src)
     {
         //*val = *src.val;
         //val->_mpfr_d = __gmpfr_local_tab_val;
-        val->_mpfr_exp = src->val->_mpfr_exp;
+        val->_mpfr_exp = src.val->_mpfr_exp;
         for(size_t i = 0;
             i < NumLimbs;
             i++)
