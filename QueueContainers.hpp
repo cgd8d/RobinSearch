@@ -93,6 +93,7 @@ struct TmpProdContainer
         mpfr_holder,
         mpfr_holder> tmp_prods;
 
+    size_t v_size;
     std::vector<std::tuple<
         mpfr_holder,
         mpfr_holder,
@@ -102,7 +103,8 @@ struct TmpProdContainer
     TmpProdContainer()
     {
         v.reserve(TargetPrimeQueueSize/N);
-        reset_tmp();
+        v.resize(v.capacity());
+        clear();
 
         // Compute the ratio between upper and
         // lower bound for a product of
@@ -133,7 +135,7 @@ struct TmpProdContainer
       to start over. */
     void clear()
     {
-        v.clear(); // does not change capacity
+        v_size = 0;
         reset_tmp();
     }
 
@@ -167,7 +169,19 @@ struct TmpProdContainer
                     std::get<2>(tmp_prods),
                     ratio_ub_to_lb,
                     MPFR_RNDU);
-                v.push_back(tmp_prods);
+
+                // Check if we failed to reserve
+                // enough space.
+                while(v_size >= v.size()) [[unlikely]]
+                {
+                    // Don't just resize, since that will
+                    // reserve extra capacity.
+                    v.reserve(2*v.capacity());
+                    v.resize(v.capacity());
+                }
+            
+                v[v_size] = tmp_prods;
+                v_size++;
                 reset_tmp();
             }
         }
@@ -188,7 +202,7 @@ struct TmpProdContainer
     inline
     size_t size() const
     {
-        return v.size();
+        return v_size;
     }
 };
 
