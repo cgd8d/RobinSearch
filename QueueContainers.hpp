@@ -70,12 +70,12 @@ struct PrimeQueueContainer
     }
 };
 
-template<uint64_t N> 
+template<int64_t N> 
 struct TmpProdContainer
 {
     // track how many factors have been added
     // to tmp.
-    uint64_t NumFactorsInTmp;
+    int64_t NumFactorsInTmp;
 
     // For groups of values to multiply, rather than
     // separately multiplying with rounding up
