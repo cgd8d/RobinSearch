@@ -70,12 +70,12 @@ struct PrimeQueueContainer
     }
 };
 
-template<uint64_t N> 
+template<int64_t N> 
 struct TmpProdContainer
 {
     // track how many factors have been added
     // to tmp.
-    uint64_t NumFactorsInTmp;
+    int64_t NumFactorsInTmp;
 
     // For groups of values to multiply, rather than
     // separately multiplying with rounding up
@@ -146,17 +146,25 @@ struct TmpProdContainer
     {
         while(begin != end)
         {
-            uint64_t& pval = *begin;
-            mpfr_mul_ui_fast(
-                std::get<0>(tmp_prods),
-                pval+1,
-                MPFR_RNDD);
-            mpfr_mul_ui_fast(
-                std::get<2>(tmp_prods),
-                pval,
-                MPFR_RNDD);
-            begin++;
-            NumFactorsInTmp++;
+            auto DistToPause = std::min(
+                N - NumFactorsInTmp,
+                std::distance(begin, end));
+            IterT PausePos = begin + DistToPause;
+            NumFactorsInTmp += DistToPause;
+
+            for(; begin != PausePos; begin++)
+            {
+                uint64_t& pval = *begin;
+                mpfr_mul_ui_fast(
+                    std::get<0>(tmp_prods),
+                    pval+1,
+                    MPFR_RNDD);
+                mpfr_mul_ui_fast(
+                    std::get<2>(tmp_prods),
+                    pval,
+                    MPFR_RNDD);
+            }
+
             if(NumFactorsInTmp == N)
             {
                 mpfr_mul(
