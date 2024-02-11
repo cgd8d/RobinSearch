@@ -146,6 +146,19 @@ struct TmpProdContainer
     {
         while(begin != end)
         {
+            IterT PausePos = begin + std::min(
+                N - NumFactorsInTmp,
+                std::distance(begin, end));
+
+            for(; begin != PausePos; begin++)
+
+
+
+
+
+
+                
+            
             uint64_t& pval = *begin;
             mpfr_mul_ui_fast(
                 std::get<0>(tmp_prods),
