@@ -18,22 +18,14 @@ struct mpfr_holder
     {
         val->_mpfr_prec = Precision;
         val->_mpfr_sign = 1;
-        //*val = *src.val;
         val->_mpfr_d = __gmpfr_local_tab_val;
         *this = src;
-        /*for(size_t i = 0;
-            i < NumLimbs;
-            i++)
-        {
-            __gmpfr_local_tab_val[i] = src.__gmpfr_local_tab_val[i];
-        }*/
     }
     // assume this is already a well-formed object.
     // also assume it is positive.
+    inline
     mpfr_holder& operator=(const mpfr_holder& src)
     {
-        //*val = *src.val;
-        //val->_mpfr_d = __gmpfr_local_tab_val;
         val->_mpfr_exp = src.val->_mpfr_exp;
         for(size_t i = 0;
             i < NumLimbs;
