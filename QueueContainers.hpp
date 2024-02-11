@@ -146,30 +146,25 @@ struct TmpProdContainer
     {
         while(begin != end)
         {
-            IterT PausePos = begin + std::min(
+            auto DistToPause = std::min(
                 N - NumFactorsInTmp,
                 std::distance(begin, end));
+            IterT PausePos = begin + DistToPause;
+            NumFactorsInTmp += DistToPause;
 
             for(; begin != PausePos; begin++)
+            {
+                uint64_t& pval = *begin;
+                mpfr_mul_ui_fast(
+                    std::get<0>(tmp_prods),
+                    pval+1,
+                    MPFR_RNDD);
+                mpfr_mul_ui_fast(
+                    std::get<2>(tmp_prods),
+                    pval,
+                    MPFR_RNDD);
+            }
 
-
-
-
-
-
-                
-            
-            uint64_t& pval = *begin;
-            mpfr_mul_ui_fast(
-                std::get<0>(tmp_prods),
-                pval+1,
-                MPFR_RNDD);
-            mpfr_mul_ui_fast(
-                std::get<2>(tmp_prods),
-                pval,
-                MPFR_RNDD);
-            begin++;
-            NumFactorsInTmp++;
             if(NumFactorsInTmp == N)
             {
                 mpfr_mul(
