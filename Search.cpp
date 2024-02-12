@@ -19,10 +19,10 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/list.hpp>
 #include "PlotDelta.hpp"
+#include "Robin_mpfr_helpers.hpp"
 #include "mpfr_mul_ui_fast.hpp"
+#include "QueueContainers.hpp"
 
-const mpfr_prec_t Precision = 128;
-const size_t NumLimbs = 2;
 const int NumThreads = 4;
 
 /*
@@ -71,60 +71,6 @@ void CheckTypes()
         "Precision and NumLimbs are not consistent.");
 }
 
-// Helper object to store initialized mpfr objects.
-// Provide correct copy semantics.
-// Also provide implicit conversion to mpfr_t.
-struct mpfr_holder
-{
-    MPFR_DECL_INIT(val, Precision);
-
-    mpfr_holder() = default;
-    mpfr_holder(const mpfr_holder& src)
-    {
-        *val = *src.val;
-        val->_mpfr_d = __gmpfr_local_tab_val;
-        for(size_t i = 0;
-            i < NumLimbs;
-            i++)
-        {
-            __gmpfr_local_tab_val[i] = src.__gmpfr_local_tab_val[i];
-        }
-    }
-    mpfr_holder& operator=(mpfr_holder& src)
-    {
-        *val = *src.val;
-        val->_mpfr_d = __gmpfr_local_tab_val;
-        for(size_t i = 0;
-            i < NumLimbs;
-            i++)
-        {
-            __gmpfr_local_tab_val[i] = src.__gmpfr_local_tab_val[i];
-        }
-        return *this;
-    }
-
-    operator mpfr_t&()
-    {
-        return val;
-    }
-
-    operator const mpfr_t&() const
-    {
-        return val;
-    }
-
-    template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
-    {
-        // I'm not completely sure what the default
-        // constructor catches, so being conservative here.
-        ar & val->_mpfr_prec; // might be redundant
-        ar & val->_mpfr_exp;
-        ar & val->_mpfr_sign;
-        ar & __gmpfr_local_tab_val;
-        val->_mpfr_d = __gmpfr_local_tab_val; // might be redundant...
-    }
-};
 std::vector<mpfr_holder> mpfr_tmp;
 
 // Helper function to print mpfr_t with error checking.
@@ -603,8 +549,7 @@ penalty is a lot.
 Azure free GitHub runners have 7GB RAM, see
 https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
 */
-std::vector<std::vector<uint64_t>> PrimeQueueVec(NumThreads);
-const size_t TargetPrimeQueueSize = 1 << 26;
+std::vector<PrimeQueueContainer> PrimeQueueVec(NumThreads);
 size_t PrimeQueueStep = 2*TargetPrimeQueueSize;
 uint64_t NextPrimeToGen = 3;
 size_t PrimeQueueVecIdx = NumThreads-1;
@@ -630,89 +575,9 @@ std::stack<PrimeQueueEpsilonGroup> PrimeQueueEpsilonStack;
 // should be helpful for performance because
 // computing modulus results is fast.
 const size_t ProductGroupSize = 256;
-std::array<std::vector<std::tuple<
-    mpfr_holder,
-    mpfr_holder,
-    mpfr_holder,
-    mpfr_holder>>, NumThreads> TmpProducts;
-
-// For groups of values to multiply, rather than
-// separately multiplying with rounding up
-// and down, multiply the whole group with
-// rounding down and then compute a conservative
-// upper bound with a scaling factor.
-// This approach roughly doubles interval size
-// but gives significant speedup.
-mpfr_holder ratio_ub_to_lb;
-
-// Function that, given a few new values
-// in PrimeQueueVec, will compute a few
-// more products of bunches of primes
-// into TmpProducts.
-// Doing this in small batches helps
-// with keeping prime values in cache.
-inline
-void BunchedMulUpperBounds(
-    auto& tmp_prods
-)
-{
-    mpfr_mul(
-        std::get<1>(tmp_prods),
-        std::get<0>(tmp_prods),
-        ratio_ub_to_lb,
-        MPFR_RNDU);
-    mpfr_mul(
-        std::get<3>(tmp_prods),
-        std::get<2>(tmp_prods),
-        ratio_ub_to_lb,
-        MPFR_RNDU);
-}
-inline
-void DoBunchedMul(
-    const std::vector<uint64_t>& PQueue,
-    size_t& next_prime_idx_to_mul,
-    auto& TProdVec
-)
-{
-    while(next_prime_idx_to_mul != PQueue.size())
-    {
-        uint64_t pval = PQueue[next_prime_idx_to_mul];
-        if(next_prime_idx_to_mul % ProductGroupSize > 0)
-        {
-            auto& tmp_prods = TProdVec.back();
-            mpfr_mul_ui_fast(
-                std::get<0>(tmp_prods),
-                pval+1,
-                MPFR_RNDD);
-            mpfr_mul_ui_fast(
-                std::get<2>(tmp_prods),
-                pval,
-                MPFR_RNDD);
-        }
-        else //(next_prime_idx_to_mul % ProductGroupSize == 0)
-        {
-            if(TProdVec.size() > 0) [[likely]]
-            {
-                // Compute upper bounds based
-                // on lower bounds.
-                BunchedMulUpperBounds(TProdVec.back());
-            }
-            TProdVec.resize(TProdVec.size()+1);
-            auto& tmp_prods = TProdVec.back();
-            // Initialize lhs.
-            mpfr_set_ui(
-                std::get<0>(tmp_prods),
-                pval+1,
-                MPFR_RNDD);
-            // Initialize rhs.
-            mpfr_set_ui(
-                std::get<2>(tmp_prods),
-                pval,
-                MPFR_RNDD);
-        }
-        next_prime_idx_to_mul++;
-    } // end while loop for multiplies
-}
+std::array<
+    TmpProdContainer<ProductGroupSize>,
+    NumThreads> TmpProducts;
 
 uint64_t AddPrimeFactors()
 {
@@ -748,18 +613,9 @@ uint64_t AddPrimeFactors()
         #pragma omp parallel for num_threads(NumThreads)
         for(int i = 0; i < NumThreads; i++)
         {
-            // Reserve space for prime numbers.
-            // Typically this is cheap because
-            // we already have enough space.
+            // Reset queues.
             PrimeQueueVec[i].clear();
-            PrimeQueueVec[i].reserve(TargetPrimeQueueSize);
-
-            // Also reserve space for intermediate
-            // products. This also is typically cheap.
             TmpProducts[i].clear();
-            TmpProducts[i].reserve(
-                TargetPrimeQueueSize/ProductGroupSize);
-            size_t next_prime_idx_to_mul = 0;
 
             // Make a new prime iterator.
             // This has a large startup cost.
@@ -774,44 +630,25 @@ uint64_t AddPrimeFactors()
             this_prime_it.generate_next_primes();
             for (; this_prime_it.primes_[this_prime_it.size_ - 1] <= limit; this_prime_it.generate_next_primes())
             {
-                PrimeQueueVec[i].insert(
-                    PrimeQueueVec[i].end(),
+                PrimeQueueVec[i].append(
                     this_prime_it.primes_,
                     this_prime_it.primes_ + this_prime_it.size_);
-
-                // also do multiplies for those primes.
-                DoBunchedMul(
-                    PrimeQueueVec[i],
-                    next_prime_idx_to_mul,
-                    TmpProducts[i]
-                );
+                TmpProducts[i].append(
+                    this_prime_it.primes_,
+                    this_prime_it.primes_ + this_prime_it.size_);
             }
+            
             // Get residual primes.
-            for (std::size_t j = 0; this_prime_it.primes_[j] <= limit; j++)
-            {
-                PrimeQueueVec[i].push_back(this_prime_it.primes_[j]);
-            }
-            // Also do residual multiplication.
-            DoBunchedMul(
-                PrimeQueueVec[i],
-                next_prime_idx_to_mul,
-                TmpProducts[i]
-            );
-
-            // Cleanup: we do not keep partial
-            // multiplications with fewer than
-            // ProductGroupSize factors.
-            // if we ended cleanly, we still need
-            // to finish by computing the
-            // upper bounds.
-            if(next_prime_idx_to_mul % ProductGroupSize == 0)
-            {
-                BunchedMulUpperBounds(TmpProducts[i].back());
-            }
-            else
-            {
-                TmpProducts[i].pop_back();
-            }
+            auto end_primes = std::upper_bound(
+                this_prime_it.primes_,
+                this_prime_it.primes_ + this_prime_it.size_,
+                limit);
+            PrimeQueueVec[i].append(
+                this_prime_it.primes_,
+                end_primes);
+            TmpProducts[i].append(
+                this_prime_it.primes_,
+                end_primes);
         } // End parallel region.
         if(PrimeQueueVec.back().back() > (1ull<<63))
         {
@@ -831,12 +668,8 @@ uint64_t AddPrimeFactors()
         PrimeQueueVecIdx = 0;
         assert(NextPrimeIdx == 0);
     }
-    std::vector<uint64_t>& PrimeQueue = PrimeQueueVec[PrimeQueueVecIdx];
-    std::vector<std::tuple<
-        mpfr_holder,
-        mpfr_holder,
-        mpfr_holder,
-        mpfr_holder>>& ThisTempProd = TmpProducts[PrimeQueueVecIdx];
+    auto& PrimeQueue = PrimeQueueVec[PrimeQueueVecIdx];
+    auto& ThisTempProd = TmpProducts[PrimeQueueVecIdx];
     if(PrimeQueueEpsilonStack.empty())
     {
         PrimeQueueEpsilonStack.emplace(PrimeQueue.size() - 1);
@@ -1148,24 +981,6 @@ int main(int argc, char *argv[])
 
     CheckTypes();
     mpfr_tmp.resize(6+4*NumThreads);
-
-    // Compute the ratio between upper and
-    // lower bound for a product of
-    // ProductGroupSize values.
-    {
-        mpfr_holder tmp_1pluseps;
-        mpfr_set_ui(ratio_ub_to_lb, 1, MPFR_RNDU);
-        mpfr_set_ui(tmp_1pluseps, 1, MPFR_RNDU);
-        mpfr_nextabove(tmp_1pluseps);
-        for(size_t i= 0; i < ProductGroupSize; i++)
-        {
-            mpfr_mul(
-                ratio_ub_to_lb,
-                ratio_ub_to_lb,
-                tmp_1pluseps,
-                MPFR_RNDU);
-        }
-    }
 
     // Initialize everything to N = 1.
     mpfr_const_euler(LHS_rndd, MPFR_RNDU);
