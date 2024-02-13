@@ -25,7 +25,7 @@ jobs:
           echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
     
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Set up environment
       - name: Setup
@@ -74,7 +74,7 @@ jobs:
           echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
     
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Set up environment
       - name: Setup
@@ -129,7 +129,7 @@ jobs:
           echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
     
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Set up environment
       - name: Setup
@@ -184,7 +184,7 @@ jobs:
           echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
     
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Set up environment
       - name: Setup
@@ -239,7 +239,7 @@ jobs:
           echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
     
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Set up environment
       - name: Setup
@@ -294,7 +294,7 @@ jobs:
           echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
     
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Set up environment
       - name: Setup
@@ -349,7 +349,7 @@ jobs:
           echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
     
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Set up environment
       - name: Setup
