@@ -69,6 +69,46 @@ void CheckTypes()
 
     static_assert(Precision == 64*NumLimbs,
         "Precision and NumLimbs are not consistent.");
+
+    // Provide information about mpfr_holder.
+    std::cout << "Layout of mpfr_holder is:"
+        << std::endl
+        << "\t__gmpfr_local_tab_val at byte "
+        << offsetof(mpfr_holder, __gmpfr_local_tab_val)
+        << std::endl
+        << "\t_mpfr_prec at byte "
+        << offsetof(mpfr_holder, _mpfr_prec)
+        << std::endl
+        << "\t_mpfr_sign at byte "
+        << offsetof(mpfr_holder, _mpfr_sign)
+        << std::endl
+        << "\t_mpfr_exp at byte "
+        << offsetof(mpfr_holder, _mpfr_exp)
+        << std::endl
+        << "\t_mpfr_d at byte "
+        << offsetof(mpfr_holder, _mpfr_d)
+        << std::endl;
+    std::cout << "The sizes (bytes) of mpfr members is:"
+        << std::endl
+        << "\t__gmpfr_local_tab_val: "
+        << sizeof(mpfr_holder::__gmpfr_local_tab_val)
+        << std::endl
+        << "\t_mpfr_prec: "
+        << sizeof(mpfr_holder::_mpfr_prec)
+        << std::endl
+        << "\t_mpfr_sign: "
+        << sizeof(mpfr_holder::_mpfr_sign)
+        << std::endl
+        << "\t_mpfr_exp: "
+        << sizeof(mpfr_holder::_mpfr_exp)
+        << std::endl
+        << "\t_mpfr_d: "
+        << sizeof(mpfr_holder::_mpfr_d)
+        << std::endl;
+    std::cout << "The size of mpfr_holder is "
+        << sizeof(mpfr_holder)
+        << " bytes."
+        << std::endl;
 }
 
 std::vector<mpfr_holder> mpfr_tmp;
