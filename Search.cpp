@@ -76,7 +76,10 @@ void CheckTypes()
         << "\t__gmpfr_local_tab_val at byte "
         << offsetof(mpfr_holder, __gmpfr_local_tab_val)
         << std::endl
-        << "\t_mpfr_prec at byte "
+        << "\tval at byte "
+        << offsetof(mpfr_holder, val)
+        << std::endl;
+        /*<< "\t_mpfr_prec at byte "
         << offsetof(mpfr_holder, _mpfr_prec)
         << std::endl
         << "\t_mpfr_sign at byte "
@@ -87,13 +90,16 @@ void CheckTypes()
         << std::endl
         << "\t_mpfr_d at byte "
         << offsetof(mpfr_holder, _mpfr_d)
-        << std::endl;
+        << std::endl;*/
     std::cout << "The sizes (bytes) of mpfr members is:"
         << std::endl
         << "\t__gmpfr_local_tab_val: "
         << sizeof(mpfr_holder::__gmpfr_local_tab_val)
         << std::endl
-        << "\t_mpfr_prec: "
+        << "\tval: "
+        << sizeof(mpfr_holder::val)
+        << std::endl;
+        /*<< "\t_mpfr_prec: "
         << sizeof(mpfr_holder::_mpfr_prec)
         << std::endl
         << "\t_mpfr_sign: "
@@ -104,7 +110,7 @@ void CheckTypes()
         << std::endl
         << "\t_mpfr_d: "
         << sizeof(mpfr_holder::_mpfr_d)
-        << std::endl;
+        << std::endl;*/
     std::cout << "The size of mpfr_holder is "
         << sizeof(mpfr_holder)
         << " bytes."
