@@ -115,6 +115,34 @@ void CheckTypes()
         << sizeof(mpfr_holder)
         << " bytes."
         << std::endl;
+    std::cout << "The layout of __mpfr_struct is:"
+        << std::endl
+        << "\t_mpfr_prec at byte "
+        << offsetof(__mpfr_struct, _mpfr_prec)
+        << std::endl
+        << "\t_mpfr_sign at byte "
+        << offsetof(__mpfr_struct, _mpfr_sign)
+        << std::endl
+        << "\t_mpfr_exp at byte "
+        << offsetof(__mpfr_struct, _mpfr_exp)
+        << std::endl
+        << "\t_mpfr_d at byte "
+        << offsetof(__mpfr_struct, _mpfr_d)
+        << std::endl;
+    std::cout << "The sizes (bytes) of __mpfr_struct members is:"
+        << std::endl
+        << "\t_mpfr_prec: "
+        << sizeof(__mpfr_struct::_mpfr_prec)
+        << std::endl
+        << "\t_mpfr_sign: "
+        << sizeof(__mpfr_struct::_mpfr_sign)
+        << std::endl
+        << "\t_mpfr_exp: "
+        << sizeof(__mpfr_struct::_mpfr_exp)
+        << std::endl
+        << "\t_mpfr_d: "
+        << sizeof(__mpfr_struct::_mpfr_d)
+        << std::endl;
 }
 
 std::vector<mpfr_holder> mpfr_tmp;
