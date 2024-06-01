@@ -6,8 +6,8 @@ git clone --depth 1 --branch 4.2 https://gitlab.inria.fr/mpfr/mpfr
 cd mpfr
 autoreconf -i
 ./configure --help
-#CC=clang-18 CFLAGS="-fuse-ld=gold -flto=thin -march=native -O2" AR=llvm-ar-18 NM=llvm-nm-18 RANLIB=llvm-ranlib-18 ./configure --with-gmp-build=${PWD%/*}/gmp-6.3.0 --disable-shared --disable-decimal-float --disable-float128
-CC=clang-18 CFLAGS="-march=native -O2" AR=llvm-ar-18 NM=llvm-nm-18 RANLIB=llvm-ranlib-18 ./configure --with-gmp-build=${PWD%/*}/gmp-6.3.0 --disable-shared --disable-decimal-float --disable-float128
+#CC=clang-$MY_LLVM_VER CFLAGS="-fuse-ld=gold -flto=thin -march=native -O2" AR=llvm-ar-$MY_LLVM_VER NM=llvm-nm-$MY_LLVM_VER RANLIB=llvm-ranlib-$MY_LLVM_VER ./configure --with-gmp-build=${PWD%/*}/gmp-6.3.0 --disable-shared --disable-decimal-float --disable-float128
+CC=clang-$MY_LLVM_VER CFLAGS="-march=native -O2" AR=llvm-ar-$MY_LLVM_VER NM=llvm-nm-$MY_LLVM_VER RANLIB=llvm-ranlib-$MY_LLVM_VER ./configure --with-gmp-build=${PWD%/*}/gmp-6.3.0 --disable-shared --disable-decimal-float --disable-float128
 #echo "make tune"
 #cd tune
 #make tune
