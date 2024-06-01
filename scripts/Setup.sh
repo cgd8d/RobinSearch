@@ -1,6 +1,6 @@
 sudo apt-get update
-sudo apt-get install gnuplot llvm-18 clang-18 autoconf-archive libomp-18-dev libboost-serialization-dev hwloc
-perf config llvm.clang-path=clang-18
+sudo apt-get install gnuplot llvm-$MY_LLVM_VER clang-$MY_LLVM_VER autoconf-archive libomp-$MY_LLVM_VER-dev libboost-serialization-dev hwloc
+perf config llvm.clang-path=clang-$MY_LLVM_VER
 chmod a+x addr2line
 chmod a+x objdump
 PATH=`pwd`:$PATH which addr2line
