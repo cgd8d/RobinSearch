@@ -9,6 +9,7 @@ on:
 
 env:
   MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.3.0/.libs  -Wl,-rpath=gmp-6.3.0/.libs"
+  MY_LLVM_VER: 17
   IN_FILE: "checkpoints/Checkpoint_42hrs_20231211.txt"
   RUNTIME_MIN: 30
   OMP_DISPLAY_ENV: TRUE
@@ -20,7 +21,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
