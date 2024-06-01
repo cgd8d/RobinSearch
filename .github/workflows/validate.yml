@@ -9,6 +9,7 @@ on:
 
 env:
   MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.3.0/.libs  -Wl,-rpath=gmp-6.3.0/.libs"
+  MY_LLVM_VER: 17
   OMP_DISPLAY_ENV: TRUE
   OMP_PROC_BIND: TRUE
   OMP_PLACES: threads
