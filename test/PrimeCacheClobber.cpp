@@ -20,7 +20,7 @@ uint64_t func1(uint64_t start, uint64_t stop)
 uint64_t func2(uint64_t start, uint64_t stop)
 {
   std::vector<uint64_t> primes;
-  primesieve::generate_primes(start, end, &primes);
+  primesieve::generate_primes(start, stop, &primes);
   uint64_t acc = std::accumulate(
     primes.begin(),
     primes.end(),
