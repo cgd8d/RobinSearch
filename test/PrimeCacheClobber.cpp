@@ -6,6 +6,7 @@
 #include <iostream>
 #include <chrono>
 #include <numeric>
+using std::chrono_literals;
 
 uint64_t func1(uint64_t start, uint64_t stop)
 {
