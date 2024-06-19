@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     uint64_t end = start+step_per_chunk;
     primesieve::iterator it(start);
 
-    prime = it.next_prime();
+    uint64_t prime = it.next_prime();
     for (; prime < limit; prime = it.next_prime())
       sum_mod64 += prime;
   }
