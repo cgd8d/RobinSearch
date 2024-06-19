@@ -5,6 +5,7 @@
 #include <primesieve.hpp>
 #include <iostream>
 #include <chrono>
+#include <numeric>
 
 uint64_t func1(uint64_t start, uint64_t stop)
 {
@@ -13,6 +14,17 @@ uint64_t func1(uint64_t start, uint64_t stop)
   uint64_t prime = it.next_prime();
   for (; prime < stop; prime = it.next_prime())
     acc += prime;
+  return acc;
+}
+
+uint64_t func2(uint64_t start, uint64_t stop)
+{
+  std::vector<uint64_t> primes;
+  primesieve::generate_primes(start, end, &primes);
+  uint64_t acc = std::accumulate(
+    primes.begin(),
+    primes.end(),
+    0ull);
   return acc;
 }
 
@@ -41,6 +53,7 @@ void TimeFunc(F func, std::string fname)
 int main(int argc, char** argv)
 {
   TimeFunc(func1, "func1");
+  TimeFunc(func2, "func2");
 
   return 0;
 }
