@@ -30,10 +30,13 @@ uint64_t func2(uint64_t start, uint64_t stop)
 }
 
 template<typename F>
-void TimeFunc(F func, std::string fname)
+void TimeFunc(
+    F func,
+    std::string fname,
+    uint64_t step_per_chunk,
+    uint64_t nchunks
+)
 {
-  uint64_t step_per_chunk = (1ull << 30);
-  uint64_t nchunks = (1ull << 10);
   uint64_t sum_mod64 = 0;
   
   auto t1 = std::chrono::high_resolution_clock::now();
@@ -47,14 +50,16 @@ void TimeFunc(F func, std::string fname)
   std::cout << "Using " << fname
     << ", sum of primes < " << step_per_chunk*nchunks
     << " (mod 2^64) = " << sum_mod64
-    << " computed in " << (t2-t1)/1.0s << " s"
+    << " computed with " << nchunks
+    << " chunks in " << (t2-t1)/1.0s << " s"
     << std::endl;
 }
 
 int main(int argc, char** argv)
 {
-  TimeFunc(func1, "func1");
-  TimeFunc(func2, "func2");
+  TimeFunc(func1, "func1", 1ull << 30, 1ull << 10);
+  TimeFunc(func1, "func1", 1ull << 40, 1ull << 0);
+  TimeFunc(func2, "func2", 1ull << 30, 1ull << 10);
 
   return 0;
 }
