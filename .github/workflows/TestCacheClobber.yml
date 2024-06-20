@@ -28,12 +28,16 @@ jobs:
         run: |
           git rev-parse --short HEAD
           sudo apt-get update
-          sudo apt-get install gnuplot llvm-$MY_LLVM_VER clang-$MY_LLVM_VER autoconf-archive libomp-$MY_LLVM_VER-dev libboost-serialization-dev hwloc
+          sudo apt-get install llvm-$MY_LLVM_VER clang-$MY_LLVM_VER autoconf-archive libomp-$MY_LLVM_VER-dev hwloc
           perf config llvm.clang-path=clang-$MY_LLVM_VER
           chmod a+x addr2line
           chmod a+x objdump
           PATH=`pwd`:$PATH which addr2line
           PATH=`pwd`:$PATH which objdump
+          echo "lstopo-no-graphics says:"
+          lstopo-no-graphics -p
+          echo "lscpu says:"
+          lscpu
           bash scripts/SetupPrimeSieve.sh
           clang++-$MY_LLVM_VER -std=c++20 -Wall -O3 -march=native $MY_DEPENDENCY_FLAGS test/PrimeCacheClobber.cpp -lprimesieve -o PrimeCacheClobber
 
