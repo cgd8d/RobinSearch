@@ -67,5 +67,9 @@ int main(int argc, char** argv)
   TimeFunc(func1, "func1", 1ull << 47, 1ull << 38, 1ull << 0);
   TimeFunc(func2, "func2", 1ull << 47, 1ull << 30, 1ull << 8);
 
+  TimeFunc(func1, "func1", 1ull << 50, 1ull << 30, 1ull << 8);
+  TimeFunc(func1, "func1", 1ull << 50, 1ull << 38, 1ull << 0);
+  TimeFunc(func2, "func2", 1ull << 50, 1ull << 30, 1ull << 8);
+  
   return 0;
 }
