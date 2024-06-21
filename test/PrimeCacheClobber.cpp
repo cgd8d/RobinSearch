@@ -77,7 +77,7 @@ void TimeFunc(
 int main(int argc, char** argv)
 {
   for(uint64_t start :
-    {0, 1ull << 46, 1ull << 50, 1ull << 54})
+    {0ull, 1ull << 46, 1ull << 50, 1ull << 54})
   {
     TimeFunc(func1, "func1", start, 1ull << 30, 1ull << 8);
     TimeFunc(func1, "func1", start, 1ull << 38, 1ull << 0);
