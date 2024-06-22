@@ -46,13 +46,14 @@ uint64_t func3(uint64_t start, uint64_t stop)
   return acc;
 }
 
+template<uint64_t NThreads>
 uint64_t func4(uint64_t start, uint64_t stop)
 {
-  std::vector<uint64_t> acc(4,0);
-  uint64_t step_per_thread = (stop-start)/4;
+  std::vector<uint64_t> acc(NThreads,0);
+  uint64_t step_per_thread = (stop-start)/NThreads;
 
-  #pragma omp parallel for num_threads(4)
-  for(int i = 0; i < 4; i++)
+  #pragma omp parallel for num_threads(NThreads)
+  for(int i = 0; i < NThreads; i++)
   {
     uint64_t start_local = start+i*step_per_thread;
     uint64_t stop_local = start_local+step_per_thread;
@@ -108,6 +109,12 @@ of 2^33.
 
 int main(int argc, char** argv)
 {
+  std::cout
+    << "Prime sieve default size is "
+    << primesieve::get_sieve_size()
+    << " KiB (kibibytes)."
+    << std::endl;
+
   for(uint64_t start :
     {0ull, 1ull << 46, 1ull << 50, 1ull << 54})
   {
@@ -118,8 +125,10 @@ int main(int argc, char** argv)
     TimeFunc(func3, "func3", start, 1ull << 33, 1ull << 5);
 
     // with four-way multitasking.
-    TimeFunc(func4, "func4", start, 1ull << 35, 1ull << 5);
-    TimeFunc(func4, "func4", start, 1ull << 40, 1ull << 0);
+    TimeFunc(func4<4>, "func4<4>", start, 1ull << 35, 1ull << 5);
+    TimeFunc(func4<4>, "func4<4>", start, 1ull << 40, 1ull << 0);
+    TimeFunc(func4<2>, "func4<2>", start, 1ull << 34, 1ull << 5);
+    TimeFunc(func4<2>, "func4<2>", start, 1ull << 39, 1ull << 0);
   }
   return 0;
 }
