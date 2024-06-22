@@ -46,6 +46,32 @@ uint64_t func3(uint64_t start, uint64_t stop)
   return acc;
 }
 
+uint64_t func4(uint64_t start, uint64_t stop)
+{
+  std::vector<uint64_t> acc(4,0);
+  uint64_t step_per_thread = (stop-start)/4;
+
+  #pragma omp parallel for num_threads(4)
+  for(int i = 0; i < 4; i++)
+  {
+    uint64_t start_local = start+i*step_per_thread;
+    uint64_t stop_local = start_local+step_per_thread;
+    primesieve::iterator it(start_local);
+    it.generate_next_primes();
+
+    for (; it.primes_[it.size_ - 1] < stop_local; it.generate_next_primes())
+      acc[i] = std::accumulate(
+        it.primes_,
+        it.primes_ + it.size_,
+        acc[i]);
+    for (std::size_t j = 0; it.primes_[j] < stop_local; j++)
+      acc[i] += it.primes_[j];
+  }
+
+  return std::accumulate(acc.begin(), acc.end(), 0ull);
+}
+
+
 template<typename F>
 void TimeFunc(
     F func,
@@ -90,6 +116,10 @@ int main(int argc, char** argv)
     TimeFunc(func2, "func2", start, 1ull << 33, 1ull << 5);
     TimeFunc(func2, "func2", start, 1ull << 38, 1ull << 0);
     TimeFunc(func3, "func3", start, 1ull << 33, 1ull << 5);
+
+    // with four-way multitasking.
+    TimeFunc(func4, "func4", start, 1ull << 33, 1ull << 7);
+    TimeFunc(func4, "func4", start, 1ull << 38, 1ull << 2);
   }
   return 0;
 }
