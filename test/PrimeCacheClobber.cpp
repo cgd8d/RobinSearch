@@ -74,29 +74,22 @@ void TimeFunc(
     << std::endl;
 }
 
+/*
+Test assuming prime queue length of 2^28
+which roughly corresponds to a step size
+of 2^33.
+*/
+
 int main(int argc, char** argv)
 {
   for(uint64_t start :
     {0ull, 1ull << 46, 1ull << 50, 1ull << 54})
   {
-    TimeFunc(func1, "func1", start, 1ull << 30, 1ull << 8);
+    TimeFunc(func1, "func1", start, 1ull << 33, 1ull << 5);
     TimeFunc(func1, "func1", start, 1ull << 38, 1ull << 0);
-    TimeFunc(func2, "func2", start, 1ull << 30, 1ull << 8);
+    TimeFunc(func2, "func2", start, 1ull << 33, 1ull << 5);
     TimeFunc(func2, "func2", start, 1ull << 38, 1ull << 0);
-    TimeFunc(func3, "func3", start, 1ull << 30, 1ull << 8);
+    TimeFunc(func3, "func3", start, 1ull << 33, 1ull << 5);
   }
-  /*
-  TimeFunc(func1, "func1", 1ull << 46, 1ull << 30, 1ull << 8);
-  TimeFunc(func1, "func1", 1ull << 46, 1ull << 38, 1ull << 0);
-  TimeFunc(func3, "func3", 1ull << 46, 1ull << 30, 1ull << 8);
-
-  TimeFunc(func1, "func1", 1ull << 50, 1ull << 30, 1ull << 8);
-  TimeFunc(func1, "func1", 1ull << 50, 1ull << 38, 1ull << 0);
-  TimeFunc(func3, "func3", 1ull << 50, 1ull << 30, 1ull << 8);
-
-  TimeFunc(func1, "func1", 1ull << 54, 1ull << 30, 1ull << 8);
-  TimeFunc(func1, "func1", 1ull << 54, 1ull << 38, 1ull << 0);
-  TimeFunc(func3, "func3", 1ull << 54, 1ull << 30, 1ull << 8);
-*/
   return 0;
 }
