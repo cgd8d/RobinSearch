@@ -118,8 +118,8 @@ int main(int argc, char** argv)
     TimeFunc(func3, "func3", start, 1ull << 33, 1ull << 5);
 
     // with four-way multitasking.
-    TimeFunc(func4, "func4", start, 1ull << 33, 1ull << 7);
-    TimeFunc(func4, "func4", start, 1ull << 38, 1ull << 2);
+    TimeFunc(func4, "func4", start, 1ull << 35, 1ull << 5);
+    TimeFunc(func4, "func4", start, 1ull << 40, 1ull << 0);
   }
   return 0;
 }
