@@ -21,7 +21,7 @@ makes it easier to experiment with that.
 #include <tuple>
 #include "Robin_mpfr_helpers.hpp"
 
-const size_t TargetPrimeQueueSize = 1 << 26;
+const size_t TargetPrimeQueueSize = 1 << 28;
 
 struct PrimeQueueContainer
 {
