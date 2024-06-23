@@ -195,6 +195,7 @@ uint64_t func6(uint64_t start, uint64_t stop)
               Vec.resize(((primesieve::IteratorData*)(it.memory_))->primes.size());
               it.primes_ = Vec.data();
               Vec.swap(((primesieve::IteratorData*)(it.memory_))->primes);
+              Vec.resize(it.size_);
               ReadyToConsumeVec.release();
             }
             else
