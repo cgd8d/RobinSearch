@@ -95,7 +95,7 @@ uint64_t func5(uint64_t start, uint64_t stop)
 
     #pragma omp parallel num_threads(2)
     {
-      #pragma opm sections
+      #pragma omp sections
       {
       #pragma omp section
         it_0.generate_next_primes();
