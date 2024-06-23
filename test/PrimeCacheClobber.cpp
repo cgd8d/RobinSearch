@@ -192,9 +192,9 @@ uint64_t func6(uint64_t start, uint64_t stop)
             ReadyToFillVec.acquire();
             if(it.primes_[it.size_ - 1] < stop_local)
             {
-              Vec.resize((IteratorData*)(it.memory_)->primes.size());
-              it.primes = Vec.data();
-              Vec.swap((IteratorData*)(it.memory_)->primes);
+              Vec.resize((primesieve::IteratorData*)(it.memory_)->primes.size());
+              it.primes_ = Vec.data();
+              Vec.swap((primesieve::IteratorData*)(it.memory_)->primes);
               ReadyToConsumeVec.release();
             }
             else
@@ -211,7 +211,7 @@ uint64_t func6(uint64_t start, uint64_t stop)
           while(true)
           {
             ReadyToConsumeVec.acquire();
-            if(Vector.size() == 0) break;
+            if(Vec.size() == 0) break;
             acc[i] = std::accumulate(
               Vec.begin(),
               Vec.end(),
