@@ -192,9 +192,9 @@ uint64_t func6(uint64_t start, uint64_t stop)
             ReadyToFillVec.acquire();
             if(it.primes_[it.size_ - 1] < stop_local)
             {
-              Vec.resize((primesieve::IteratorData*)(it.memory_)->primes.size());
+              Vec.resize(((primesieve::IteratorData*)(it.memory_))->primes.size());
               it.primes_ = Vec.data();
-              Vec.swap((primesieve::IteratorData*)(it.memory_)->primes);
+              Vec.swap(((primesieve::IteratorData*)(it.memory_))->primes);
               ReadyToConsumeVec.release();
             }
             else
