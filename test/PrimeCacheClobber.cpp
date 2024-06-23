@@ -98,7 +98,7 @@ uint64_t func5(uint64_t start, uint64_t stop)
       #pragma omp section
         it_0.generate_next_primes();
       #pragma omp section
-        it_0.generate_next_primes();
+        it_1.generate_next_primes();
     }
 
     while(
