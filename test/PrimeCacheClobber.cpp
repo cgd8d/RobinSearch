@@ -93,12 +93,12 @@ uint64_t func5(uint64_t start, uint64_t stop)
 
       for (; it.primes_[it.size_ - 1] < stop_local; it.generate_next_primes())
       {
-        #pragma omp barrier
+        //#pragma omp barrier
         acc[i] = std::accumulate(
           it.primes_,
           it.primes_ + it.size_,
           acc[i]);
-        #pragma omp barrier
+        //#pragma omp barrier
       }
       for (std::size_t j = 0; it.primes_[j] < stop_local; j++)
         acc[i] += it.primes_[j];
