@@ -145,6 +145,7 @@ of 2^33.
 
 int main(int argc, char** argv)
 {
+  omp_set_max_active_levels(3);
   /*
   std::cout
     << "Prime sieve default size is "
