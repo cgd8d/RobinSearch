@@ -77,33 +77,84 @@ uint64_t func4(uint64_t start, uint64_t stop)
 template<uint64_t NThreads>
 uint64_t func5(uint64_t start, uint64_t stop)
 {
-  std::vector<uint64_t> acc(NThreads,0);
+  std::vector<uint64_t> acc(NThreads/2,0);
   uint64_t step_per_thread = (stop-start)/NThreads;
 
   #pragma omp parallel for num_threads(NThreads/2)
   for(int i_outer = 0; i_outer < NThreads/2; i_outer++)
   {
-    #pragma omp parallel for num_threads(2)
-    for(int i_inner = 0; i_inner < 2; i_inner++)
-    {
-      int i = 2*i_outer+i_inner;
-      uint64_t start_local = start+i*step_per_thread;
-      uint64_t stop_local = start_local+step_per_thread;
-      primesieve::iterator it(start_local);
-      it.generate_next_primes();
+    uint64_t start_local_0 = start+2*i_outer*step_per_thread;
+    uint64_t start_local_1 = start_local_0+step_per_thread;
+    uint64_t stop_local_0 = start_local_0+step_per_thread;
+    uint64_t stop_local_1 = start_local_1+step_per_thread;
+    uint64_t acc_0 = 0;
+    uint64_t acc_1 = 0;
 
-      for (; it.primes_[it.size_ - 1] < stop_local; it.generate_next_primes())
-      {
-        //#pragma omp barrier
-        acc[i] = std::accumulate(
-          it.primes_,
-          it.primes_ + it.size_,
-          acc[i]);
-        #pragma omp barrier
-      }
-      for (std::size_t j = 0; it.primes_[j] < stop_local; j++)
-        acc[i] += it.primes_[j];
+    primesieve::iterator it_0(start_local_0);
+    primesieve::iterator it_1(start_local_1);
+
+    #pragma omp parallel sections num_threads(2)
+    {
+      #pragma omp section
+        it_0.generate_next_primes();
+      #pragma omp section
+        it_0.generate_next_primes();
     }
+
+    while(
+      it_0.primes_[it_0.size_ - 1] < stop_local_0 and
+      it_1.primes_[it_1.size_ - 1] < stop_local_1
+    )
+    {
+    #pragma omp parallel sections num_threads(2)
+    {
+      #pragma omp section
+      {
+        acc_0 = std::accumulate(
+          it_0.primes_,
+          it_0.primes_ + it_0.size_,
+          acc_0);
+        it_0.generate_next_primes();
+      }
+      #pragma omp section
+      {
+        acc_1 = std::accumulate(
+          it_1.primes_,
+          it_1.primes_ + it_1.size_,
+          acc_1);
+        it_1.generate_next_primes();
+      }
+    }
+    }
+
+    while(
+      it_0.primes_[it_0.size_ - 1] < stop_local_0
+    )
+    {
+      acc_0 = std::accumulate(
+          it_0.primes_,
+          it_0.primes_ + it_0.size_,
+          acc_0);
+      it_0.generate_next_primes();
+    }
+    while(
+      it_1.primes_[it_1.size_ - 1] < stop_local_1
+    )
+    {
+      acc_1 = std::accumulate(
+          it_1.primes_,
+          it_1.primes_ + it_1.size_,
+          acc_1);
+        it_1.generate_next_primes();
+    }
+      
+    for (std::size_t j = 0; it_0.primes_[j] < stop_local_0; j++)
+        acc_0 += it_0.primes_[j];
+    }
+    for (std::size_t j = 0; it_1.primes_[j] < stop_local_1; j++)
+        acc_1 += it_1.primes_[j];
+    }
+    acc[i] = acc_0+acc_1;
   }
 
   return std::accumulate(acc.begin(), acc.end(), 0ull);
