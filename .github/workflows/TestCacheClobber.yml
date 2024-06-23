@@ -32,7 +32,7 @@ jobs:
         run: |
           git rev-parse --short HEAD
           sudo apt-get update
-          sudo apt-get install llvm-$MY_LLVM_VER clang-$MY_LLVM_VER autoconf-archive libomp-$MY_LLVM_VER-dev hwloc
+          sudo apt-get install llvm-$MY_LLVM_VER clang-$MY_LLVM_VER autoconf-archive libomp-$MY_LLVM_VER-dev hwloc linux-tools-generic
           perf config llvm.clang-path=clang-$MY_LLVM_VER
           chmod a+x addr2line
           chmod a+x objdump
@@ -48,4 +48,4 @@ jobs:
       # Run code straight, no profiling.
       - name: Run
         run: |
-          ./PrimeCacheClobber
+          perf stat ./PrimeCacheClobber
