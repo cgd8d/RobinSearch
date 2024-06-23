@@ -3,6 +3,7 @@
 /// This is based on libprimesieve with modifications.
 
 #include <primesieve.hpp>
+#include <omp.h>
 #include <iostream>
 #include <chrono>
 #include <numeric>
