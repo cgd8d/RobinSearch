@@ -150,10 +150,8 @@ uint64_t func5(uint64_t start, uint64_t stop)
       
     for (std::size_t j = 0; it_0.primes_[j] < stop_local_0; j++)
         acc_0 += it_0.primes_[j];
-    }
     for (std::size_t j = 0; it_1.primes_[j] < stop_local_1; j++)
         acc_1 += it_1.primes_[j];
-    }
     acc[i] = acc_0+acc_1;
   }
 
