@@ -3,10 +3,12 @@
 /// This is based on libprimesieve with modifications.
 
 #include <primesieve.hpp>
+#include <primesieve/IteratorHelper.hpp>
 #include <omp.h>
 #include <iostream>
 #include <chrono>
 #include <numeric>
+#include <semaphore>
 using namespace std::chrono_literals;
 
 uint64_t func1(uint64_t start, uint64_t stop)
@@ -162,6 +164,73 @@ uint64_t func5(uint64_t start, uint64_t stop)
 }
 
 
+template<uint64_t NThreads>
+uint64_t func6(uint64_t start, uint64_t stop)
+{
+  std::vector<uint64_t> acc(NThreads/2,0);
+  uint64_t step_per_thread = (stop-start)/acc.size();
+
+  #pragma omp parallel for num_threads(NThreads/2)
+  for(int i = 0; i < NThreads/2; i++)
+  {
+    uint64_t start_local = start+i*step_per_thread;
+    uint64_t stop_local = start_local+step_per_thread;
+    primesieve::iterator it(start_local);
+    primesieve::Vector<uint64_t> Vec;
+    std::binary_semaphore ReadyToConsumeVec(0);
+    std::binary_semaphore ReadyToFillVec(1);
+
+    #pragma omp parallel num_threads(2)
+    {
+      #pragma omp sections
+      {
+        #pragma omp section
+        {
+          while(true)
+          {
+            it.generate_next_primes();
+            ReadyToFillVec.acquire();
+            if(it.primes_[it.size_ - 1] < stop_local)
+            {
+              Vec.resize((IteratorData*)(it.memory_)->primes.size());
+              it.primes = Vec.data();
+              Vec.swap((IteratorData*)(it.memory_)->primes);
+              ReadyToConsumeVec.release();
+            }
+            else
+            {
+              Vec.resize(0); // Signal we are done.
+              ReadyToConsumeVec.release();
+              break;
+            }
+          }
+        }
+
+        #pragma omp section
+        {
+          while(true)
+          {
+            ReadyToConsumeVec.acquire();
+            if(Vector.size() == 0) break;
+            acc[i] = std::accumulate(
+              Vec.begin(),
+              Vec.end(),
+              acc[i]);
+            ReadyToFillVec.release();
+          }
+        }
+      }
+    }
+
+    for (std::size_t j = 0; it.primes_[j] < stop_local; j++)
+      acc[i] += it.primes_[j];
+  }
+
+  return std::accumulate(acc.begin(), acc.end(), 0ull);
+}
+
+
+
 template<typename F>
 void TimeFunc(
     F func,
@@ -254,6 +323,8 @@ int main(int argc, char** argv)
     //TimeFunc(func4<2>, "func4<2>", start, 1ull << 39, 1ull << 0);
     TimeFunc(func5<4>, "func5<4>", start, 1ull << 35, 1ull << 5);
     TimeFunc(func5<4>, "func5<4>", start, 1ull << 40, 1ull << 0);
+    TimeFunc(func6<4>, "func6<4>", start, 1ull << 35, 1ull << 5);
+    TimeFunc(func6<4>, "func6<4>", start, 1ull << 40, 1ull << 0);
   }
   
   return 0;
