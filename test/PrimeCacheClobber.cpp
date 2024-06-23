@@ -93,20 +93,22 @@ uint64_t func5(uint64_t start, uint64_t stop)
     primesieve::iterator it_0(start_local_0);
     primesieve::iterator it_1(start_local_1);
 
-    #pragma omp parallel sections num_threads(2)
+    #pragma omp parallel num_threads(2)
     {
+      #pragma opm sections
+      {
       #pragma omp section
         it_0.generate_next_primes();
       #pragma omp section
         it_1.generate_next_primes();
-    }
+      }
 
     while(
       it_0.primes_[it_0.size_ - 1] < stop_local_0 and
       it_1.primes_[it_1.size_ - 1] < stop_local_1
     )
     {
-    #pragma omp parallel sections num_threads(2)
+    #pragma omp sections
     {
       #pragma omp section
       {
@@ -124,6 +126,7 @@ uint64_t func5(uint64_t start, uint64_t stop)
           acc_1);
         it_1.generate_next_primes();
       }
+    }
     }
     }
 
