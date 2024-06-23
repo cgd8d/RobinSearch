@@ -109,6 +109,7 @@ of 2^33.
 
 int main(int argc, char** argv)
 {
+  /*
   std::cout
     << "Prime sieve default size is "
     << primesieve::get_sieve_size()
@@ -146,7 +147,7 @@ int main(int argc, char** argv)
     TimeFunc(func4<2>, "func4<2>", start, 1ull << 34, 1ull << 5);
     TimeFunc(func4<2>, "func4<2>", start, 1ull << 39, 1ull << 0);
   }
-  
+  */
   primesieve::set_sieve_size(1<<10);
   std::cout
     << "Prime sieve size changed to "
@@ -159,8 +160,8 @@ int main(int argc, char** argv)
     // with four-way multitasking.
     TimeFunc(func4<4>, "func4<4>", start, 1ull << 35, 1ull << 5);
     TimeFunc(func4<4>, "func4<4>", start, 1ull << 40, 1ull << 0);
-    TimeFunc(func4<2>, "func4<2>", start, 1ull << 34, 1ull << 5);
-    TimeFunc(func4<2>, "func4<2>", start, 1ull << 39, 1ull << 0);
+    //TimeFunc(func4<2>, "func4<2>", start, 1ull << 34, 1ull << 5);
+    //TimeFunc(func4<2>, "func4<2>", start, 1ull << 39, 1ull << 0);
   }
   
   return 0;
