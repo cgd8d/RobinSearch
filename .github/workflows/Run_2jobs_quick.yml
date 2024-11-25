@@ -22,7 +22,7 @@ jobs:
       # Define stop time.
       - name: SetStopTime
         run: |
-          JOB_STOP_TIME=`date --date="+30 mins" +%s`
+          JOB_STOP_TIME=`date --date="+15 mins" +%s`
           echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
     
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -63,7 +63,7 @@ jobs:
       # Define stop time.
       - name: SetStopTime
         run: |
-          JOB_STOP_TIME=`date --date="+30 mins" +%s`
+          JOB_STOP_TIME=`date --date="+15 mins" +%s`
           echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
     
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
