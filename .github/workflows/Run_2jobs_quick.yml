@@ -9,7 +9,7 @@ on:
 
 env:
   MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.3.0/.libs  -Wl,-rpath=gmp-6.3.0/.libs"
-  MY_LLVM_VER: 17
+  MY_LLVM_VER: 18
 
 jobs:
 
@@ -38,7 +38,7 @@ jobs:
 
       # Save plot of deltas.
       - name: Save delta plot
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: delta_plots_1
           path: |
@@ -47,7 +47,7 @@ jobs:
             
       # Save output file 
       - name: Save job output
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: out1
           path: |
@@ -75,7 +75,7 @@ jobs:
 
       # Download artifact from last job.
       - name: Download last output
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: out1
 
@@ -85,7 +85,7 @@ jobs:
 
       # Save plot of deltas.
       - name: Save delta plot
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: delta_plots_2
           path: |
@@ -94,7 +94,7 @@ jobs:
             
       # Save output file 
       - name: Save job output
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: out2
           path: |
