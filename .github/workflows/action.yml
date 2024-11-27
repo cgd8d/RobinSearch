@@ -1,0 +1,52 @@
+
+name: RobinJob
+
+inputs:
+  num_minutes:
+    required: true
+    default: 355
+    
+runs:
+    using: "composite"
+    steps:
+      # Define stop time.
+      - name: SetStopTime
+        run: |
+          JOB_STOP_TIME=`date --date="+${{ inputs.num_minutes }} mins" +%s`
+          echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
+    
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      # Set up environment
+      - name: Setup
+        run: . ./scripts/Setup.sh
+
+      # Download artifact from last job.
+      - name: Download last output
+        uses: actions/download-artifact@v4
+        with:
+          name: out1
+
+      # Run code
+      - name: Run
+        run: ./Search 55 $JOB_STOP_TIME "job1.txt" "job2.txt"
+
+      # Save plot of deltas.
+      - name: Save delta plot
+        uses: actions/upload-artifact@v4
+        with:
+          name: delta_plots_2
+          path: |
+            DeltaPlot.png
+            DeltaPlotScaled.png
+            
+      # Save output file 
+      - name: Save job output
+        uses: actions/upload-artifact@v4
+        with:
+          name: out2
+          path: |
+            job2.txt
+
+
