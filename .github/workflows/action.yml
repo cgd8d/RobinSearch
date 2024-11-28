@@ -7,16 +7,12 @@ inputs:
     default: 355
     
 runs:
-    using: "composite"
     steps:
       # Define stop time.
       - name: SetStopTime
         run: |
           JOB_STOP_TIME=`date --date="+${{ inputs.num_minutes }} mins" +%s`
           echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
-    
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
 
       # Set up environment
       - name: Setup
