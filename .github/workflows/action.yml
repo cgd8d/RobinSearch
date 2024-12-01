@@ -5,6 +5,13 @@ inputs:
   num_minutes:
     required: true
     default: 355
+  input_file_name:
+    required: true
+  input_artifact_name:
+    required: true
+    default: ""
+  job_number:
+    required: true
     
 runs:
     steps:
@@ -20,13 +27,14 @@ runs:
 
       # Download artifact from last job.
       - name: Download last output
+        if: input.input_artifact_name != ""
         uses: actions/download-artifact@v4
         with:
-          name: out1
+          name: ${{ input.input_artifact_name }}
 
       # Run code
       - name: Run
-        run: ./Search 55 $JOB_STOP_TIME "job1.txt" "job2.txt"
+        run: ./Search 55 $JOB_STOP_TIME "${{ inputs.input_file_name }}" "job2.txt"
 
       # Save plot of deltas.
       - name: Save delta plot
