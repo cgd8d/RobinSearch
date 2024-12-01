@@ -34,13 +34,13 @@ runs:
 
       # Run code
       - name: Run
-        run: ./Search 55 $JOB_STOP_TIME "${{ inputs.input_file_name }}" "job2.txt"
+        run: ./Search 55 $JOB_STOP_TIME "${{ inputs.input_file_name }}" "job${{ inputs.job_number }}.txt"
 
       # Save plot of deltas.
       - name: Save delta plot
         uses: actions/upload-artifact@v4
         with:
-          name: delta_plots_2
+          name: delta_plots_${{ inputs.job_number }}
           path: |
             DeltaPlot.png
             DeltaPlotScaled.png
@@ -49,8 +49,8 @@ runs:
       - name: Save job output
         uses: actions/upload-artifact@v4
         with:
-          name: out2
+          name: out${{ inputs.job_number }}
           path: |
-            job2.txt
+            job${{ inputs.job_number }}.txt
 
 
