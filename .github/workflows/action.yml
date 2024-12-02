@@ -27,10 +27,10 @@ runs:
 
       # Download artifact from last job.
       - name: Download last output
-        if: input.input_artifact_name != ""
+        if: inputs.input_artifact_name != ""
         uses: actions/download-artifact@v4
         with:
-          name: ${{ input.input_artifact_name }}
+          name: ${{ inputs.input_artifact_name }}
 
       # Run code
       - name: Run
