@@ -22,7 +22,7 @@ jobs:
       # Define stop time.
       - name: SetStopTime
         run: |
-          JOB_STOP_TIME=`date --date="+15 mins" +%s`
+          JOB_STOP_TIME=`date --date="+10 mins" +%s`
           echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
     
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -63,7 +63,7 @@ jobs:
       # Define stop time.
       - name: SetStopTime
         run: |
-          JOB_STOP_TIME=`date --date="+15 mins" +%s`
+          JOB_STOP_TIME=`date --date="+10 mins" +%s`
           echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
     
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -109,7 +109,7 @@ jobs:
     - name: run job
       uses: ./.github/workflows
       with:
-        num_minutes: 15
+        num_minutes: 10
         input_file_name: job2.txt
         input_artifact_name: out2
         job_number: 3
