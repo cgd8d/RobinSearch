@@ -14,17 +14,18 @@ inputs:
     required: true
 
 runs:
+    using: "composite"
     steps:
       # Define stop time.
       - name: SetStopTime
-        runs-on: ubuntu-24.04
+        shell: bash
         run: |
           JOB_STOP_TIME=`date --date="+${{ inputs.num_minutes }} mins" +%s`
           echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
 
       # Set up environment
       - name: Setup
-        runs-on: ubuntu-24.04
+        shell: bash
         run: . ./scripts/Setup.sh
 
       # Download artifact from last job.
@@ -36,7 +37,7 @@ runs:
 
       # Run code
       - name: Run
-        runs-on: ubuntu-24.04
+        shell: bash
         run: ./Search 55 $JOB_STOP_TIME "${{ inputs.input_file_name }}" "job${{ inputs.job_number }}.txt"
 
       # Save plot of deltas.
