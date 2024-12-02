@@ -101,13 +101,13 @@ jobs:
             job2.txt
 
   job3:
-    runs-on: ubuntu-24.04
+    #runs-on: ubuntu-24.04
     needs: job2
     steps:
     - name: checkout
       uses: actions/checkout@v4
     - name: run job
-      uses: ./.github/workflows
+      uses: ./.github/workflows/JobAction
       with:
         num_minutes: 10
         input_file_name: job2.txt
