@@ -14,8 +14,6 @@ inputs:
     required: true
 
 runs-on: ubuntu-24.04
-on:
-  workflow_dispatch: # stop it from running automatically on push.
 
 runs:
     steps:
