@@ -9,7 +9,7 @@ inputs:
     required: true
   input_artifact_name:
     required: true
-    default: ""
+    default: ''
   job_number:
     required: true
 
@@ -29,7 +29,7 @@ runs:
 
       # Download artifact from last job.
       - name: Download last output
-        if: inputs.input_artifact_name != ""
+        if: inputs.input_artifact_name != ''
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.input_artifact_name }}
