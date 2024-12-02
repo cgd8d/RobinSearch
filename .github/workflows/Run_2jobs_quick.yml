@@ -100,4 +100,18 @@ jobs:
           path: |
             job2.txt
 
+  job3:
+    runs-on: ubuntu-24.04
+    needs: job2
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/action.yml
+      with:
+        num_minutes: 15
+        input_file_name: job2.txt
+        input_artifact_name: out2
+        job_number: 3
+
   
