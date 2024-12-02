@@ -107,7 +107,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - name: run job
-      uses: ./.github/workflows/action.yml
+      uses: ./.github/workflows
       with:
         num_minutes: 15
         input_file_name: job2.txt
