@@ -7,6 +7,8 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+runs-on: ubuntu-24.04
+
 env:
   MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.3.0/.libs  -Wl,-rpath=gmp-6.3.0/.libs"
   MY_LLVM_VER: 18
