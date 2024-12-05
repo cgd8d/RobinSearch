@@ -12,93 +12,32 @@ env:
   MY_LLVM_VER: 18
 
 jobs:
-
   job1:
-    # The type of runner that the job will run on
     runs-on: ubuntu-24.04
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Define stop time.
-      - name: SetStopTime
-        run: |
-          JOB_STOP_TIME=`date --date="+10 mins" +%s`
-          echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
-    
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-
-      # Set up environment
-      - name: Setup
-        run: . ./scripts/Setup.sh
-
-      # Run code
-      - name: Run
-        run: ./Search 55 $JOB_STOP_TIME "" "job1.txt"
-
-      # Save plot of deltas.
-      - name: Save delta plot
-        uses: actions/upload-artifact@v4
-        with:
-          name: delta_plots_1
-          path: |
-            DeltaPlot.png
-            DeltaPlotScaled.png
-            
-      # Save output file 
-      - name: Save job output
-        uses: actions/upload-artifact@v4
-        with:
-          name: out1
-          path: |
-            job1.txt
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        num_minutes: 10
+        input_file_name: ""
+        input_artifact_name: ""
+        job_number: 1
 
   job2:
-    # The type of runner that the job will run on
     runs-on: ubuntu-24.04
     needs: job1
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Define stop time.
-      - name: SetStopTime
-        run: |
-          JOB_STOP_TIME=`date --date="+10 mins" +%s`
-          echo "JOB_STOP_TIME=$JOB_STOP_TIME" >> $GITHUB_ENV
-    
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-
-      # Set up environment
-      - name: Setup
-        run: . ./scripts/Setup.sh
-
-      # Download artifact from last job.
-      - name: Download last output
-        uses: actions/download-artifact@v4
-        with:
-          name: out1
-
-      # Run code
-      - name: Run
-        run: ./Search 55 $JOB_STOP_TIME "job1.txt" "job2.txt"
-
-      # Save plot of deltas.
-      - name: Save delta plot
-        uses: actions/upload-artifact@v4
-        with:
-          name: delta_plots_2
-          path: |
-            DeltaPlot.png
-            DeltaPlotScaled.png
-            
-      # Save output file 
-      - name: Save job output
-        uses: actions/upload-artifact@v4
-        with:
-          name: out2
-          path: |
-            job2.txt
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        num_minutes: 10
+        input_file_name: job1.txt
+        input_artifact_name: out1
+        job_number: 2
 
   job3:
     runs-on: ubuntu-24.04
