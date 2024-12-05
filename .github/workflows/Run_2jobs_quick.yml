@@ -21,8 +21,9 @@ jobs:
       uses: ./.github/workflows/JobAction
       with:
         num_minutes: 10
-        input_file_name: ""
-        input_artifact_name: ""
+        #input_file_name: ''
+        input_file_name: checkpoints/Checkpoint_84hrs_20231223.txt
+        input_artifact_name: ''
         job_number: 1
 
   job2:
@@ -39,18 +40,5 @@ jobs:
         input_artifact_name: out1
         job_number: 2
 
-  job3:
-    runs-on: ubuntu-24.04
-    needs: job2
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: run job
-      uses: ./.github/workflows/JobAction
-      with:
-        num_minutes: 10
-        input_file_name: job2.txt
-        input_artifact_name: out2
-        job_number: 3
 
   
