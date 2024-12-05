@@ -1,0 +1,339 @@
+# Long run, extending across multiple jobs.
+
+name: Run_150hrs
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  MY_DEPENDENCY_FLAGS: "-Lprimesieve -Wl,-rpath=primesieve -Iprimesieve/include -Lmpfr/src/.libs -Wl,-rpath=mpfr/src/.libs -Impfr/src -Lgmp-6.3.0/.libs  -Wl,-rpath=gmp-6.3.0/.libs"
+  MY_LLVM_VER: 18
+
+jobs:
+  job1:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: ''
+        #input_file_name: checkpoints/Checkpoint_84hrs_20231223.txt
+        input_artifact_name: ''
+        job_number: 1
+
+  job2:
+    runs-on: ubuntu-24.04
+    needs: job1
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job1.txt
+        input_artifact_name: out1
+        job_number: 2
+
+  job3:
+    runs-on: ubuntu-24.04
+    needs: job2
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job2.txt
+        input_artifact_name: out2
+        job_number: 3
+
+  job4:
+    runs-on: ubuntu-24.04
+    needs: job3
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job3.txt
+        input_artifact_name: out3
+        job_number: 4
+
+  job5:
+    runs-on: ubuntu-24.04
+    needs: job4
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job4.txt
+        input_artifact_name: out4
+        job_number: 5
+
+  job6:
+    runs-on: ubuntu-24.04
+    needs: job5
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job5.txt
+        input_artifact_name: out5
+        job_number: 6
+
+  job7:
+    runs-on: ubuntu-24.04
+    needs: job6
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job6.txt
+        input_artifact_name: out6
+        job_number: 7
+  
+  job8:
+    runs-on: ubuntu-24.04
+    needs: job7
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job7.txt
+        input_artifact_name: out7
+        job_number: 8
+
+  job9:
+    runs-on: ubuntu-24.04
+    needs: job8
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job8.txt
+        input_artifact_name: out8
+        job_number: 9
+
+  job10:
+    runs-on: ubuntu-24.04
+    needs: job9
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job9.txt
+        input_artifact_name: out9
+        job_number: 10
+
+  job11:
+    runs-on: ubuntu-24.04
+    needs: job10
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job10.txt
+        input_artifact_name: out10
+        job_number: 11
+
+  job12:
+    runs-on: ubuntu-24.04
+    needs: job11
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job11.txt
+        input_artifact_name: out11
+        job_number: 12
+
+  job13:
+    runs-on: ubuntu-24.04
+    needs: job12
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job12.txt
+        input_artifact_name: out12
+        job_number: 13
+
+  job14:
+    runs-on: ubuntu-24.04
+    needs: job13
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job13.txt
+        input_artifact_name: out13
+        job_number: 14
+
+  job15:
+    runs-on: ubuntu-24.04
+    needs: job14
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job14.txt
+        input_artifact_name: out14
+        job_number: 15
+
+  job16:
+    runs-on: ubuntu-24.04
+    needs: job15
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job15.txt
+        input_artifact_name: out15
+        job_number: 16
+
+  job17:
+    runs-on: ubuntu-24.04
+    needs: job16
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job16.txt
+        input_artifact_name: out16
+        job_number: 17
+
+  job18:
+    runs-on: ubuntu-24.04
+    needs: job17
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job17.txt
+        input_artifact_name: out17
+        job_number: 18
+
+  job19:
+    runs-on: ubuntu-24.04
+    needs: job18
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job18.txt
+        input_artifact_name: out18
+        job_number: 19
+
+  job20:
+    runs-on: ubuntu-24.04
+    needs: job19
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job19.txt
+        input_artifact_name: out19
+        job_number: 20
+
+  job21:
+    runs-on: ubuntu-24.04
+    needs: job20
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job20.txt
+        input_artifact_name: out20
+        job_number: 21
+
+  job22:
+    runs-on: ubuntu-24.04
+    needs: job21
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job21.txt
+        input_artifact_name: out21
+        job_number: 22
+
+  job23:
+    runs-on: ubuntu-24.04
+    needs: job22
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job22.txt
+        input_artifact_name: out22
+        job_number: 23
+
+  job24:
+    runs-on: ubuntu-24.04
+    needs: job23
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job23.txt
+        input_artifact_name: out23
+        job_number: 24
+
+  job25:
+    runs-on: ubuntu-24.04
+    needs: job24
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run job
+      uses: ./.github/workflows/JobAction
+      with:
+        input_file_name: job24.txt
+        input_artifact_name: out24
+        job_number: 25
+
