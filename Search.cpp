@@ -1001,8 +1001,11 @@ int main(int argc, char *argv[])
         return 1;
     }
     unsigned long MaxExp = std::strtoul(argv[1], nullptr, 0);
-    if(MaxExp >= 64)
+    if(MaxExp >= 255)
     {
+        // exp is handled as uint8, and I think
+        // exp=255 may cause infinite loop, but
+        // regardless this limit is plenty big.
         std::cerr << "MaxExp is too large ("
                   << MaxExp
                   << ")"
