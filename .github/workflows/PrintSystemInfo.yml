@@ -12,8 +12,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup
         run: |
-          apt-get update
-          apt-get install hwloc
+          sudo apt-get update
+          sudo apt-get install hwloc
       - name: PrintSystemInfo
         run: |
           git rev-parse --short HEAD
