@@ -7,3 +7,6 @@ lstopo-no-graphics -p
 echo
 echo "lscpu says:"
 lscpu --extended --output-all
+echo
+echo "Contents of cpuinfo:"
+cat /proc/cpuinfo
